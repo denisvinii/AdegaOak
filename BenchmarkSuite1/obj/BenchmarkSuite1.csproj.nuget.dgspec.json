@@ -1,0 +1,198 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\BenchmarkSuite1\\BenchmarkSuite1.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Adega Oak.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Adega Oak.csproj",
+        "projectName": "Adega Oak",
+        "projectPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Adega Oak.csproj",
+        "packagesPath": "C:\\Users\\vinic\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\vinic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.2.2, )"
+            },
+            "MaterialDesignThemes": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            },
+            "Microsoft.Data.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "SQLitePCLRaw.bundle_e_sqlite3": {
+              "target": "Package",
+              "version": "[2.1.7, )"
+            },
+            "SQLitePCLRaw.core": {
+              "target": "Package",
+              "version": "[2.1.7, )"
+            },
+            "Xceed.Products.Wpf.Toolkit.Full": {
+              "target": "Package",
+              "version": "[5.1.25458.6678, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\BenchmarkSuite1\\BenchmarkSuite1.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\BenchmarkSuite1\\BenchmarkSuite1.csproj",
+        "projectName": "BenchmarkSuite1",
+        "projectPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\BenchmarkSuite1\\BenchmarkSuite1.csproj",
+        "packagesPath": "C:\\Users\\vinic\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\BenchmarkSuite1\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\vinic\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0-windows",
+            "projectReferences": {
+              "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Adega Oak.csproj": {
+                "projectPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores versões até agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Adega Oak.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "BenchmarkDotNet": {
+              "target": "Package",
+              "version": "[0.15.2, )"
+            },
+            "Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers": {
+              "target": "Package",
+              "version": "[18.0.36525.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

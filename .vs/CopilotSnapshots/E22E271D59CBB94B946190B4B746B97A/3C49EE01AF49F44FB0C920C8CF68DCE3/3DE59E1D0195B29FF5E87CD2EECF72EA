@@ -1,0 +1,124 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
+
+namespace Adega_Oak.Features.TabelaPrecos;
+
+public partial class TabelaPrecosViewModel : ObservableObject
+{
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly CollectionViewSource _produtosViewSource;
+    private readonly ObservableCollection<ProdutoPrecoItem> _produtos;
+
+    [ObservableProperty]
+    private string _filtro = string.Empty;
+
+    public ICollectionView ProdutosView => _produtosViewSource.View;
+    public ObservableCollection<ProdutoPrecoItem> Produtos => _produtos;
+
+    public TabelaPrecosViewModel(EstoqueRepository estoqueRepository)
+    {
+        _estoqueRepository = estoqueRepository;
+        _produtos = new ObservableCollection<ProdutoPrecoItem>();
+        _produtosViewSource = new CollectionViewSource { Source = _produtos };
+        _produtosViewSource.Filter += ProdutosViewSource_Filter;
+    }
+
+    private void ProdutosViewSource_Filter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not ProdutoPrecoItem produto || string.IsNullOrEmpty(Filtro))
+        {
+            e.Accepted = true;
+            return;
+        }
+
+        e.Accepted = produto.Descricao.Contains(Filtro, System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    [RelayCommand]
+    private void AtualizarPrecoVenda(ProdutoPrecoItem item)
+    {
+        if (item.ValorVenda <= 0)
+            return;
+
+        _estoqueRepository.AtualizarPrecoVenda(item.Descricao, item.ValorVenda);
+
+        // A porcentagem de lucro é atualizada automaticamente pelo setter do ValorVenda
+    }
+
+    private void CarregarTabela()
+    {
+        var estoque = _estoqueRepository.CarregarEstoqueCompleto();
+        _produtos.Clear();
+
+        foreach (var item in estoque)
+        {
+            var valorVenda = item.ValorVenda > 0 ? item.ValorVenda : item.Valor;
+
+            _produtos.Add(new ProdutoPrecoItem
+            {
+                Descricao = $"{item.Bebida} - {item.Tamanho} - {item.Material}",
+                ValorCusto = item.Valor,
+                ValorVenda = valorVenda
+            });
+        }
+    }
+
+    public void CarregarTabelaPrecos()
+    {
+        CarregarTabela();
+    }
+
+    partial void OnFiltroChanged(string value)
+    {
+        _produtosViewSource.View.Refresh();
+    }
+}
+
+public class ProdutoPrecoItem : ObservableObject
+{
+    public string Descricao { get; set; } = string.Empty;
+
+    private decimal _valorCusto;
+    public decimal ValorCusto
+    {
+        get => _valorCusto;
+        set
+        {
+            if (SetProperty(ref _valorCusto, value))
+            {
+                CalcularPorcentagemLucro();
+            }
+        }
+    }
+
+    private decimal _valorVenda;
+    public decimal ValorVenda
+    {
+        get => _valorVenda;
+        set
+        {
+            if (SetProperty(ref _valorVenda, value))
+            {
+                CalcularPorcentagemLucro();
+            }
+        }
+    }
+
+    private decimal _porcentagemLucro;
+    public decimal PorcentagemLucro
+    {
+        get => _porcentagemLucro;
+        private set => SetProperty(ref _porcentagemLucro, value);
+    }
+
+    private void CalcularPorcentagemLucro()
+    {
+        PorcentagemLucro = _valorCusto > 0 && _valorVenda > 0
+            ? ((_valorVenda - _valorCusto) / _valorCusto) * 100
+            : 0;
+    }
+}

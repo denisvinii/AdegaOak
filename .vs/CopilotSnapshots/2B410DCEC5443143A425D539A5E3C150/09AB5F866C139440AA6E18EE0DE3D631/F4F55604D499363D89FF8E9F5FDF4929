@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Adega_Oak.Views.SaldoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="700">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+            <Border Background="#FF2D7DD2" CornerRadius="8" Padding="20" Margin="10">
+                <StackPanel>
+                    <TextBlock Text="Capital Empresa" Foreground="White" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="{Binding CapitalEmpresa, StringFormat={}{0:N2}}" Foreground="White" FontSize="20"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#FF43A047" CornerRadius="8" Padding="20" Margin="10">
+                <StackPanel>
+                    <TextBlock Text="Investimento por Fora" Foreground="White" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="{Binding InvestimentoPorFora, StringFormat={}{0:N2}}" Foreground="White" FontSize="20"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#FFE65100" CornerRadius="8" Padding="20" Margin="10">
+                <StackPanel>
+                    <TextBlock Text="Saldo" Foreground="White" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="{Binding Saldo, StringFormat={}{0:N2}}" Foreground="White" FontSize="20"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Margin="0,0,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <ComboBox Width="60" ItemsSource="{Binding Meses}" SelectedItem="{Binding MesSelecionado, Mode=TwoWay}"/>
+                <TextBlock Text="Ano:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                <TextBox Width="70" Text="{Binding AnoSelecionado, Mode=TwoWay}"/>
+                <Button Content="Filtrar" Margin="10,0,0,0" Padding="10,2" Click="Filtrar_Click"/>
+            </StackPanel>
+            <!-- Espaço reservado para grafico -->
+            <Border Height="250" Background="#FFF5F5F5" CornerRadius="8" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" BorderBrush="#DDD" BorderThickness="1">
+                <TextBlock Text="Grafico de movimentacoes diarias (em breve)" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#888" FontStyle="Italic"/>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

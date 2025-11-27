@@ -1,0 +1,313 @@
+﻿<UserControl x:Class="Adega_Oak.Views.InicioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:Adega_Oak.Converters"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:EstoqueBaixoConverter x:Key="EstoqueBaixoConverter"/>
+        <converters:StringNotEmptyToBoolConverter x:Key="StringNotEmptyToBoolConverter"/>
+        <converters:NovoProdutoVisibilityMultiConverter x:Key="NovoProdutoVisibilityMultiConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Cabeçalho -->
+            <Border Grid.Row="0" 
+                    Background="{DynamicResource MaterialDesignCardBackground}"
+                    CornerRadius="12"
+                    Margin="0,10,0,24"
+                    Effect="{DynamicResource MaterialDesignElevationShadow2}">
+                <Grid Margin="24,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Título da Página -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Nova Movimentação"
+                                 Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                 Foreground="{DynamicResource MaterialDesignBody}"/>
+                        <TextBlock Text="Registre entradas e saídas de produtos"
+                                 Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                 Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                 Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <!-- Botão Limpar -->
+                    <Button Grid.Column="1"
+                           Command="{Binding LimparCommand}"
+                           Style="{StaticResource MaterialDesignOutlinedButton}"
+                           ToolTip="Limpar todos os campos">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Broom" 
+                                                   Width="20" 
+                                                   Height="20"
+                                                   Margin="0,0,8,0"/>
+                            <TextBlock Text="Limpar"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Área Principal -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Painel de Formulário -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource MaterialDesignCardBackground}"
+                        CornerRadius="12"
+                        Margin="0,0,24,0"
+                        Effect="{DynamicResource MaterialDesignElevationShadow2}">
+                    <DockPanel Margin="24">
+                        <TextBlock DockPanel.Dock="Top"
+                                 Text="Dados da Movimentação"
+                                 Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                 Foreground="{DynamicResource MaterialDesignBody}"
+                                 Margin="0,0,0,16"/>
+
+                        <Button DockPanel.Dock="Bottom"
+                                Command="{Binding AdicionarProdutoCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Height="48"
+                                Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" 
+                                                       Width="24" 
+                                                       Height="24"
+                                                       Margin="0,0,8,0"/>
+                                <TextBlock Text="Adicionar à Lista"
+                                         VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <!-- Tipo de Movimentação -->
+                                <ComboBox materialDesign:HintAssist.Hint="Tipo de Movimentação"
+                                         ItemsSource="{Binding TiposMovimentacao}"
+                                         SelectedItem="{Binding TipoMovimentacao}"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Margin="0,0,0,16"/>
+
+                                <!-- Tipo de Saída -->
+                                <ComboBox materialDesign:HintAssist.Hint="Tipo de Saída"
+                                         ItemsSource="{Binding TiposSaida}"
+                                         SelectedItem="{Binding TipoSaida}"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Visibility="{Binding IsSaida, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Margin="0,0,0,16"/>
+
+                                <!-- Tipo de Unidade -->
+                                <ComboBox materialDesign:HintAssist.Hint="Unidade ou Caixa"
+                                         ItemsSource="{Binding TiposUnidadeSaida}"
+                                         SelectedItem="{Binding TipoUnidadeSaida}"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Visibility="{Binding IsSaida, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Margin="0,0,0,16"
+                                         ToolTip="Escolha se a saída será em unidade ou caixa"/>
+
+                                <!-- Produto Existente (único ComboBox, sempre visível) -->
+                                <ComboBox x:Name="ProdutoComboBox"
+                                         materialDesign:HintAssist.Hint="Produto Existente"
+                                         ItemsSource="{Binding ProdutosFiltrados}"
+                                         SelectedItem="{Binding ProdutoSelecionado, Mode=TwoWay}"
+                                         SelectedValuePath="Descricao"
+                                         DisplayMemberPath="Descricao"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Margin="0,0,0,16"
+                                         IsEditable="True"
+                                         Text="{Binding ProdutoFiltroTexto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                         StaysOpenOnEdit="True"/>
+
+                                <!-- Campos de Novo Produto (visíveis apenas quando é Entrada e nenhum produto existente está selecionado) -->
+                                <StackPanel>
+                                    <StackPanel.Visibility>
+                                        <MultiBinding Converter="{StaticResource NovoProdutoVisibilityMultiConverter}">
+                                            <Binding Path="IsEntrada"/>
+                                            <Binding Path="ProdutoSelecionado"/>
+                                        </MultiBinding>
+                                    </StackPanel.Visibility>
+                                    <TextBlock Text="Ou cadastre um novo produto:"
+                                             Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                             Margin="0,0,0,8"/>
+
+                                    <ComboBox materialDesign:HintAssist.Hint="Material"
+                                              ItemsSource="{Binding MateriaisPossiveis}"
+                                              SelectedItem="{Binding NovoProdutoMaterial}"
+                                              Style="{StaticResource MaterialDesignFilledComboBox}"
+                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                              Margin="0,0,0,16"/>
+
+                                    <ComboBox materialDesign:HintAssist.Hint="Tamanho"
+                                              ItemsSource="{Binding TamanhosDisponiveis}"
+                                              SelectedItem="{Binding NovoProdutoTamanho}"
+                                              Style="{StaticResource MaterialDesignFilledComboBox}"
+                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                              Margin="0,0,0,16"
+                                              IsEnabled="{Binding NovoProdutoMaterial, Converter={StaticResource StringNotEmptyToBoolConverter}}"/>
+
+                                    <TextBox materialDesign:HintAssist.Hint="Bebida"
+                                            Text="{Binding NovoProdutoBebida}"
+                                            Style="{StaticResource MaterialDesignFilledTextBox}"
+                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                            Margin="0,0,0,16"/>
+                                </StackPanel>
+
+                                <!-- Valor Unitário (sempre visível em Entrada) -->
+                                <TextBox materialDesign:HintAssist.Hint="Valor Unitário (R$)"
+                                        Text="{Binding ValorUnitario}"
+                                        Style="{StaticResource MaterialDesignFilledTextBox}"
+                                        Foreground="{DynamicResource MaterialDesignBody}"
+                                        Margin="0,0,0,16"
+                                        Visibility="{Binding IsEntrada, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                <!-- Campos sempre visíveis -->
+                                <Grid Margin="0,0,0,16" Width="120" Height="40">
+                                    <TextBox x:Name="QuantidadeTextBox"
+                                             materialDesign:HintAssist.Hint="Quantidade"
+                                             Text="{Binding Quantidade, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                                             Foreground="{DynamicResource MaterialDesignBody}"
+                                             HorizontalContentAlignment="Center"
+                                             VerticalContentAlignment="Center"
+                                             Height="40">
+                                        <TextBox.Template>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Grid>
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                                            BorderThickness="{TemplateBinding BorderThickness}" 
+                                                            CornerRadius="4"/>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="32"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="32"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="-" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Cursor="Hand"
+                                                                   MouseLeftButtonDown="QuantidadeMenos_Click"
+                                                                   Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                        <ScrollViewer Grid.Column="1" x:Name="PART_ContentHost" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="2" Text="+" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Cursor="Hand"
+                                                                   MouseLeftButtonDown="QuantidadeMais_Click"
+                                                                   Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                    </Grid>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </TextBox.Template>
+                                    </TextBox>
+                                </Grid>
+
+                                <ComboBox materialDesign:HintAssist.Hint="Responsável"
+                                         ItemsSource="{Binding Responsaveis}"
+                                         SelectedItem="{Binding ResponsavelSelecionado}"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Margin="0,0,0,16"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+
+                <!-- Lista de Produtos -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource MaterialDesignCardBackground}"
+                        CornerRadius="12"
+                        Effect="{DynamicResource MaterialDesignElevationShadow2}">
+                    <DockPanel Margin="24">
+                        <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Produtos Selecionados"
+                                     Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                     Foreground="{DynamicResource MaterialDesignBody}"/>
+
+
+                            <TextBlock Grid.Column="1" 
+                                     Text="{Binding ValorTotalSelecionado, StringFormat='Total: {0:C2}'}"
+                                     Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                     FontWeight="Bold"
+                                     Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Grid>
+
+                        <Button DockPanel.Dock="Bottom"
+                                Command="{Binding RegistrarMovimentacaoCommand}"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Height="48"
+                                Background="{DynamicResource PrimaryHueDarkBrush}"
+                                Margin="0,16,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ContentSave" 
+                                                       Width="24" 
+                                                       Height="24"
+                                                       Margin="0,0,8,0"/>
+                                <TextBlock Text="Registrar Movimentação"
+                                         VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <DataGrid ItemsSource="{Binding ProdutosSelecionados}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  Style="{StaticResource MaterialDesignDataGrid}"
+                                  Margin="0,0,0,16">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Produto" 
+                                                  Binding="{Binding Descricao}"
+                                                  Width="*"/>
+                                <DataGridTextColumn Header="Qtd." 
+                                                  Binding="{Binding Quantidade}"
+                                                  Width="60"/>
+                                <DataGridTextColumn Header="Tipo" 
+                                                  Binding="{Binding TipoMovimentacao}"
+                                                  Width="100"/>
+                                <DataGridTextColumn Header="Valor Unit." 
+                                                  Binding="{Binding ValorUnitario, StringFormat=C2}"
+                                                  Width="100"/>
+                                <DataGridTextColumn Header="Total" 
+                                                  Binding="{Binding ValorTotal, StringFormat=C2}"
+                                                  Width="100"/>
+                                <DataGridTemplateColumn Width="50">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.RemoverProdutoCommand, 
+                                                    RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignIconButton}"
+                                                    Padding="2"
+                                                    Height="30"
+                                                    Width="30">
+                                                <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl></UserControl>

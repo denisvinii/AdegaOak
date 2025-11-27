@@ -1,0 +1,14 @@
+FALTA:
+
+1. Ao ir em movimentação 'ENTRADA' e selecionar um produto existente os dados devem ser automaticamente preenchidos em baixo 
+ou anular os campos que não precisa.
+
+2. Em historico podemos colocar o valor total para entrada também
+
+3. No relatorio do historico o Valor Unit e Valor Total fica azul quando selecionado, tratar essas colunas.
+
+4. Atualizar produtos de 900ml (está como 1L)
+
+5. Cadastrar demais items como isqueiro, carvão e gelo.
+
+6. Ao Clicar em Limpar na tela inicial ele não limpa o campo Material para vazio.

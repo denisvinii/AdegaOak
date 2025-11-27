@@ -1,0 +1,120 @@
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace Adega_Oak.Views
+{
+    public partial class TabelaPrecosView : UserControl
+    {
+        public TabelaPrecosView()
+        {
+            InitializeComponent();
+        }
+
+        private void ValorVenda_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox &&
+                textBox.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item &&
+                DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel)
+            {
+                viewModel.AtualizarPrecoVendaCommand.Execute(item);
+            }
+        }
+
+        private void QuantidadeCaixa_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox &&
+                textBox.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item &&
+                DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel)
+            {
+                viewModel.AtualizarCaixaPrecosCommand.Execute(item);
+            }
+        }
+
+        private void ValorCaixa_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox &&
+                textBox.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item &&
+                DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel)
+            {
+                viewModel.AtualizarCaixaPrecosCommand.Execute(item);
+            }
+        }
+
+        private void ValorAtacadoCaixa_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox &&
+                textBox.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item &&
+                DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel)
+            {
+                viewModel.AtualizarPrecoAtacadoCommand.Execute(item);
+            }
+        }
+
+        private void QuantidadeMinimaAtacado_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is TextBox textBox &&
+                textBox.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item &&
+                DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel)
+            {
+                viewModel.AtualizarQuantidadeMinimaAtacado(item);
+            }
+        }
+
+        private void AbrirSaldo_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = Application.Current.MainWindow;
+            if (mainWindow != null && mainWindow.DataContext is Features.MainWindow.MainWindowViewModel vm)
+            {
+                vm.NavigateToCommand.Execute("Saldo");
+            }
+        }
+
+        /// <summary>
+        /// Ativa edição ao clicar uma vez na célula (em vez de duplo clique)
+        /// </summary>
+        private void DataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is DataGrid dataGrid)
+            {
+                var cell = GetCellFromPoint(dataGrid, e.GetPosition(dataGrid));
+                if (cell != null && !cell.IsReadOnly)
+                {
+                    dataGrid.SelectedItem = cell.DataContext;
+                    dataGrid.CurrentCell = new DataGridCellInfo(cell);
+                    dataGrid.BeginEdit();
+                    e.Handled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtém a célula na posição clicada
+        /// </summary>
+        private static DataGridCell? GetCellFromPoint(DataGrid dataGrid, Point point)
+        {
+            var hitTest = VisualTreeHelper.HitTest(dataGrid, point);
+            var cell = hitTest?.VisualHit?.FindAncestor<DataGridCell>();
+            return cell;
+        }
+    }
+
+    /// <summary>
+    /// Extensões para navegação na árvore visual
+    /// </summary>
+    public static class VisualTreeExtensions
+    {
+        public static T? FindAncestor<T>(this DependencyObject child) where T : DependencyObject
+        {
+            if (child is T parent)
+                return parent;
+
+            var childParent = VisualTreeHelper.GetParent(child);
+            if (childParent == null)
+                return null;
+
+            return childParent.FindAncestor<T>();
+        }
+    }
+}

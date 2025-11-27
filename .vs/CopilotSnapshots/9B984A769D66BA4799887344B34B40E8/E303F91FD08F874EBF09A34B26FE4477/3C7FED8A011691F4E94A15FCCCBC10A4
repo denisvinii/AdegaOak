@@ -1,0 +1,60 @@
+﻿using Adega_Oak.Features.Estoque;
+using Adega_Oak.Features.Historico;
+using Adega_Oak.Features.MainWindow;
+using Adega_Oak.Repositories;
+using Adega_Oak.Services;
+using Adega_Oak.Views;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System.Windows;
+
+namespace Adega_Oak;
+
+public partial class App : Application
+{
+    private IServiceProvider? ServiceProvider { get; set; }
+    private IConfiguration? Configuration { get; set; }
+
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+        Configuration = builder.Build();
+
+        var services = new ServiceCollection();
+        ConfigureServices(services);
+
+        ServiceProvider = services.BuildServiceProvider();
+
+        var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+        mainWindow.DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
+        mainWindow.Show();
+    }
+
+    private void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IConfiguration>(Configuration!);
+
+        // Services
+        services.AddSingleton<DatabaseService>();
+
+        // Repositories
+        services.AddScoped<MainRepository>();
+        services.AddScoped<EstoqueRepository>();
+        services.AddScoped<HistoricoRepository>();
+
+        // ViewModels
+        services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<EstoqueViewModel>();
+        services.AddTransient<HistoricoViewModel>();
+
+        // Views
+        services.AddTransient<MainWindow>();
+        services.AddTransient<InicioView>();
+        services.AddTransient<EstoqueView>();
+        services.AddTransient<HistoricoView>();
+    }
+}

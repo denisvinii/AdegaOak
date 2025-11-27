@@ -1,0 +1,54 @@
+<UserControl x:Class="Adega_Oak.Views.TabelaPrecosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{DynamicResource MaterialDesignPaper}">
+    <Grid Margin="24" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with title and filter -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource MaterialDesignCardBackground}"
+                CornerRadius="8"
+                Effect="{DynamicResource MaterialDesignElevationShadow2}"
+                Margin="0,10,0,24">
+            <Grid Margin="24,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Tabela de Precos"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <TextBox Width="300"
+                             Margin="0,16,0,0"
+                             Padding="8,4"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             Text="{Binding Filtro, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Price Table -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding ProdutosView}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Margin="10"
+                  Effect="{DynamicResource MaterialDesignElevationShadow2}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Produto" Binding="{Binding Descricao}" Width="auto"/>
+                <DataGridTextColumn Header="Valor de Venda" Binding="{Binding ValorVenda, StringFormat=C2}" Width="auto"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

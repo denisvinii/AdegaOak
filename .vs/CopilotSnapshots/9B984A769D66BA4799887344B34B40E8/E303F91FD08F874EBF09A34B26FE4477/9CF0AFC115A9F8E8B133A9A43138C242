@@ -1,0 +1,71 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
+
+namespace Adega_Oak.Features.TabelaPrecos;
+
+public partial class TabelaPrecosViewModel : ObservableObject
+{
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly CollectionViewSource _produtosViewSource;
+
+    [ObservableProperty]
+    private ObservableCollection<ProdutoPrecoItem> produtos = new();
+
+    [ObservableProperty]
+    private string filtroTexto = "";
+
+    public ICollectionView ProdutosView => _produtosViewSource.View;
+
+    public TabelaPrecosViewModel(EstoqueRepository estoqueRepository)
+    {
+        _estoqueRepository = estoqueRepository;
+        _produtosViewSource = new CollectionViewSource { Source = Produtos };
+        _produtosViewSource.Filter += AplicarFiltro;
+        CarregarProdutos();
+    }
+
+    private void AplicarFiltro(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not ProdutoPrecoItem item || string.IsNullOrWhiteSpace(FiltroTexto))
+        {
+            e.Accepted = true;
+            return;
+        }
+
+        e.Accepted = item.Descricao.Contains(FiltroTexto, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    [RelayCommand]
+    public void CarregarProdutos()
+    {
+        var estoque = _estoqueRepository.CarregarEstoqueCompleto();
+        Produtos.Clear();
+        
+        foreach (var item in estoque.Where(p => p.Valor > 0))
+        {
+            Produtos.Add(new ProdutoPrecoItem
+            {
+                ProductId = item.ProductId,
+                Descricao = $"{item.Bebida} - {item.Tamanho} - {item.Material}",
+                ValorCusto = item.Valor,
+                ValorVenda = item.Valor * 1.3m // 30% de markup
+            });
+        }
+    }
+
+    partial void OnFiltroTextoChanged(string value)
+    {
+        _produtosViewSource.View.Refresh();
+    }
+}
+
+public class ProdutoPrecoItem : ObservableObject
+{
+    public int ProductId { get; set; }
+    public string Descricao { get; set; } = "";
+    public decimal ValorCusto { get; set; }
+    public decimal ValorVenda { get; set; }
+}

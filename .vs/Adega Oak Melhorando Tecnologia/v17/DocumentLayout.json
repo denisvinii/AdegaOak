@@ -1,0 +1,1282 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\saldoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\saldoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\tabelaprecosview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\tabelaprecosview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\features\\tabelaprecos\\tabelaprecosviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\features\\tabelaprecos\\tabelaprecosviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\margintobrushconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\margintobrushconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_MELHORIAS_VISUAIS_V3.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_MELHORIAS_VISUAIS_V3.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TECNICO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_TECNICO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\tipovendatoshadowconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\tipovendatoshadowconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\inicioview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\inicioview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\repositories\\estoquerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\repositories\\estoquerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\c\u00F3digos sql\\consulta de saldo (controle de saldo).sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\c\u00F3digos sql\\consulta de saldo (controle de saldo).sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\services\\databaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\services\\databaseservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\repositories\\mainrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\repositories\\mainrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\repositories\\historicorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\repositories\\historicorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\features\\mainwindow\\mainwindowviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\features\\mainwindow\\mainwindowviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\tipovendatocolorconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\tipovendatocolorconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\repositories\\saldorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\repositories\\saldorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_SQLite.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Scripts\\AddValorAtacadoCaixa_SQLite.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\historicoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\historicoview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SQL_SCRIPTS_PARA_EXECUTAR.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SQL_SCRIPTS_PARA_EXECUTAR.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_IMPLEMENTACAO_FINAL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_IMPLEMENTACAO_FINAL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_TABELAS_MOVIMENTACOES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ANALISE_TABELAS_MOVIMENTACOES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VERIFICACOES_SEGURANCA_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:VERIFICACOES_SEGURANCA_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_PRATICO_DELETAR_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GUIA_PRATICO_DELETAR_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_IMPACTO_DELETAR_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ANALISE_IMPACTO_DELETAR_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SUGESTOES_ADICIONAIS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:SUGESTOES_ADICIONAIS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CONCLUSAO_FINAL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:CONCLUSAO_FINAL.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_RAPIDO_VAREJO_ATACADO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GUIA_RAPIDO_VAREJO_ATACADO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VAREJO_ATACADO_IMPLEMENTATION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:VAREJO_ATACADO_IMPLEMENTATION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\noautocompleteconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\noautocompleteconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\inicioview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\inicioview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\features\\saldo\\saldoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\features\\saldo\\saldoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\features\\estoque\\estoqueviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\features\\estoque\\estoqueviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\saldoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\saldoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\cdd5749241e39265c5aa87bcd79e3b6720f293d8\\Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\features\\historico\\historicoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\features\\historico\\historicoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\nulltovisibilityconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\nulltovisibilityconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\estoquebaixoconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\estoquebaixoconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\statustobrushconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\statustobrushconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\stringnotemptytoboolconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\stringnotemptytoboolconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\estoqueview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\estoqueview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\numbercomparisonconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\numbercomparisonconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\estoqueview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\estoqueview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\8161aa83beaba02d0ac77a30dc98569cf4c8bee13aaa47b3de22f7204583e829\\ButtonBase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\historicoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\historicoview.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\passworddialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\passworddialog.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\views\\passworddialog.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\views\\passworddialog.xaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\MockPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Services\\MockPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\IPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Services\\IPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\EpsonPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Services\\EpsonPrintService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCeService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Models\\NFCeService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Models\\NFCe.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Resources\\README.txt||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Adega Oak\\Resources\\README.txt||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\novoprodutovisibilitymulticonverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\novoprodutovisibilitymulticonverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_EXECUTIVO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_IMPLEMENTACAO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:CHECKLIST_IMPLEMENTACAO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\MAPA_VISUAL_IMPLEMENTACAO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MAPA_VISUAL_IMPLEMENTACAO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_COMPLETO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:INDICE_COMPLETO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESPOSTA_FINAL_IMPACTO_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESPOSTA_FINAL_IMPACTO_SQLITE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\tipovendanotatacadoconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\tipovendanotatacadoconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|c:\\users\\vinic\\onedrive\\documentos\\adega oak melhores vers\u00F5es at\u00E9 agora\\adega_oak clean code (window) (em processo melhorando)\\adega oak\\converters\\invalidpricevalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E09CDC73-12C7-4BEF-A275-1A9BF682A36B}|Adega Oak\\Adega Oak.csproj|solutionrelative:adega oak\\converters\\invalidpricevalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_NOVA_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GUIA_NOVA_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_VALIDACAO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:CHECKLIST_VALIDACAO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANTES_E_DEPOIS_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ANTES_E_DEPOIS_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_EXECUTIVO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VISUAL_SUMMARY_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:VISUAL_SUMMARY_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_DE_DEPLOY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GUIA_DE_DEPLOY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_DOCUMENTACAO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:INDICE_DOCUMENTACAO_TABELA_PRECOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\README_TABELA_PRECOS_V2.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README_TABELA_PRECOS_V2.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\APRESENTACAO_RAPIDA.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:APRESENTACAO_RAPIDA.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\LISTA_COMPLETA_ENTREGAVEIS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LISTA_COMPLETA_ENTREGAVEIS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\PROJETO_CONCLUIDO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:PROJETO_CONCLUIDO.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 46,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TabelaPrecosView.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\TabelaPrecosView.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\TabelaPrecosView.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\TabelaPrecosView.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\TabelaPrecosView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-27T22:22:26.117Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 78,
+              "Title": "RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md",
+              "RelativeDocumentMoniker": "RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md",
+              "RelativeToolTip": "RESUMO_TABELA_PRECOS_TEMA_ESCURO_V4.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T22:18:00.28Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RESUMO_MELHORIAS_VISUAIS_V3.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_MELHORIAS_VISUAIS_V3.md",
+              "RelativeDocumentMoniker": "RESUMO_MELHORIAS_VISUAIS_V3.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_MELHORIAS_VISUAIS_V3.md",
+              "RelativeToolTip": "RESUMO_MELHORIAS_VISUAIS_V3.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T22:10:14.139Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 77,
+              "Title": "PROJETO_CONCLUIDO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\PROJETO_CONCLUIDO.md",
+              "RelativeDocumentMoniker": "PROJETO_CONCLUIDO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\PROJETO_CONCLUIDO.md",
+              "RelativeToolTip": "PROJETO_CONCLUIDO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:40:02.316Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 76,
+              "Title": "LISTA_COMPLETA_ENTREGAVEIS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\LISTA_COMPLETA_ENTREGAVEIS.md",
+              "RelativeDocumentMoniker": "LISTA_COMPLETA_ENTREGAVEIS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\LISTA_COMPLETA_ENTREGAVEIS.md",
+              "RelativeToolTip": "LISTA_COMPLETA_ENTREGAVEIS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:39:35.433Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 75,
+              "Title": "APRESENTACAO_RAPIDA.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\APRESENTACAO_RAPIDA.md",
+              "RelativeDocumentMoniker": "APRESENTACAO_RAPIDA.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\APRESENTACAO_RAPIDA.md",
+              "RelativeToolTip": "APRESENTACAO_RAPIDA.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:39:09.582Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 74,
+              "Title": "README_TABELA_PRECOS_V2.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\README_TABELA_PRECOS_V2.md",
+              "RelativeDocumentMoniker": "README_TABELA_PRECOS_V2.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\README_TABELA_PRECOS_V2.md",
+              "RelativeToolTip": "README_TABELA_PRECOS_V2.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:38:58.936Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 73,
+              "Title": "INDICE_DOCUMENTACAO_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_DOCUMENTACAO_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "INDICE_DOCUMENTACAO_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_DOCUMENTACAO_TABELA_PRECOS.md",
+              "RelativeToolTip": "INDICE_DOCUMENTACAO_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:38:30.543Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 72,
+              "Title": "GUIA_DE_DEPLOY.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_DE_DEPLOY.md",
+              "RelativeDocumentMoniker": "GUIA_DE_DEPLOY.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_DE_DEPLOY.md",
+              "RelativeToolTip": "GUIA_DE_DEPLOY.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:38:06.768Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 71,
+              "Title": "VISUAL_SUMMARY_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VISUAL_SUMMARY_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "VISUAL_SUMMARY_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VISUAL_SUMMARY_TABELA_PRECOS.md",
+              "RelativeToolTip": "VISUAL_SUMMARY_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEIBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:37:43.846Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 70,
+              "Title": "RESUMO_EXECUTIVO_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "RESUMO_EXECUTIVO_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO_TABELA_PRECOS.md",
+              "RelativeToolTip": "RESUMO_EXECUTIVO_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAO4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:37:14.422Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 69,
+              "Title": "ANTES_E_DEPOIS_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANTES_E_DEPOIS_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "ANTES_E_DEPOIS_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANTES_E_DEPOIS_TABELA_PRECOS.md",
+              "RelativeToolTip": "ANTES_E_DEPOIS_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:36:50.657Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 68,
+              "Title": "CHECKLIST_VALIDACAO_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_VALIDACAO_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "CHECKLIST_VALIDACAO_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_VALIDACAO_TABELA_PRECOS.md",
+              "RelativeToolTip": "CHECKLIST_VALIDACAO_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:36:28.065Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "RESUMO_TECNICO_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TECNICO_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "RESUMO_TECNICO_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_TECNICO_TABELA_PRECOS.md",
+              "RelativeToolTip": "RESUMO_TECNICO_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:36:10.72Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 67,
+              "Title": "GUIA_NOVA_TABELA_PRECOS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_NOVA_TABELA_PRECOS.md",
+              "RelativeDocumentMoniker": "GUIA_NOVA_TABELA_PRECOS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_NOVA_TABELA_PRECOS.md",
+              "RelativeToolTip": "GUIA_NOVA_TABELA_PRECOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T21:35:49.736Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 66,
+              "Title": "InvalidPriceValidator.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\InvalidPriceValidator.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\InvalidPriceValidator.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\InvalidPriceValidator.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\InvalidPriceValidator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T21:34:36.034Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MarginToBrushConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\MarginToBrushConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\MarginToBrushConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\MarginToBrushConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\MarginToBrushConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T21:34:30.485Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 65,
+              "Title": "TipoVendaNotAtacadoConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaNotAtacadoConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\TipoVendaNotAtacadoConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaNotAtacadoConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\TipoVendaNotAtacadoConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T05:58:06.882Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AddAtacadoColumns_PostgreSQL_Migration.sql",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql",
+              "RelativeDocumentMoniker": "Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql",
+              "RelativeToolTip": "Scripts\\AddAtacadoColumns_PostgreSQL_Migration.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T05:36:34.57Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Consulta de saldo (controle de saldo).sql",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\C\u00F3digos SQL\\Consulta de saldo (controle de saldo).sql",
+              "RelativeDocumentMoniker": "Adega Oak\\C\u00F3digos SQL\\Consulta de saldo (controle de saldo).sql",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\C\u00F3digos SQL\\Consulta de saldo (controle de saldo).sql",
+              "RelativeToolTip": "Adega Oak\\C\u00F3digos SQL\\Consulta de saldo (controle de saldo).sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T05:23:54.712Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TipoVendaToShadowConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaToShadowConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\TipoVendaToShadowConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaToShadowConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\TipoVendaToShadowConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T04:07:35.896Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ANALISE_TABELAS_MOVIMENTACOES.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_TABELAS_MOVIMENTACOES.md",
+              "RelativeDocumentMoniker": "ANALISE_TABELAS_MOVIMENTACOES.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_TABELAS_MOVIMENTACOES.md",
+              "RelativeToolTip": "ANALISE_TABELAS_MOVIMENTACOES.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:47:15.847Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "SQL_SCRIPTS_PARA_EXECUTAR.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SQL_SCRIPTS_PARA_EXECUTAR.md",
+              "RelativeDocumentMoniker": "SQL_SCRIPTS_PARA_EXECUTAR.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SQL_SCRIPTS_PARA_EXECUTAR.md",
+              "RelativeToolTip": "SQL_SCRIPTS_PARA_EXECUTAR.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:43:55.189Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "RESUMO_IMPLEMENTACAO_FINAL.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_IMPLEMENTACAO_FINAL.md",
+              "RelativeDocumentMoniker": "RESUMO_IMPLEMENTACAO_FINAL.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_IMPLEMENTACAO_FINAL.md",
+              "RelativeToolTip": "RESUMO_IMPLEMENTACAO_FINAL.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:43:28.668Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 64,
+              "Title": "RESPOSTA_FINAL_IMPACTO_SQLITE.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESPOSTA_FINAL_IMPACTO_SQLITE.md",
+              "RelativeDocumentMoniker": "RESPOSTA_FINAL_IMPACTO_SQLITE.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESPOSTA_FINAL_IMPACTO_SQLITE.md",
+              "RelativeToolTip": "RESPOSTA_FINAL_IMPACTO_SQLITE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:27:57.042Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "VERIFICACOES_SEGURANCA_SQLITE.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VERIFICACOES_SEGURANCA_SQLITE.md",
+              "RelativeDocumentMoniker": "VERIFICACOES_SEGURANCA_SQLITE.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VERIFICACOES_SEGURANCA_SQLITE.md",
+              "RelativeToolTip": "VERIFICACOES_SEGURANCA_SQLITE.md",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAAAJEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:27:37.109Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "GUIA_PRATICO_DELETAR_SQLITE.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_PRATICO_DELETAR_SQLITE.md",
+              "RelativeDocumentMoniker": "GUIA_PRATICO_DELETAR_SQLITE.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_PRATICO_DELETAR_SQLITE.md",
+              "RelativeToolTip": "GUIA_PRATICO_DELETAR_SQLITE.md",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAAAA4AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:27:07.206Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "ANALISE_IMPACTO_DELETAR_SQLITE.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_IMPACTO_DELETAR_SQLITE.md",
+              "RelativeDocumentMoniker": "ANALISE_IMPACTO_DELETAR_SQLITE.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\ANALISE_IMPACTO_DELETAR_SQLITE.md",
+              "RelativeToolTip": "ANALISE_IMPACTO_DELETAR_SQLITE.md",
+              "ViewState": "AgIAAKUAAAAAAAAAAAAAAGoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:26:39.553Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 63,
+              "Title": "INDICE_COMPLETO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_COMPLETO.md",
+              "RelativeDocumentMoniker": "INDICE_COMPLETO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\INDICE_COMPLETO.md",
+              "RelativeToolTip": "INDICE_COMPLETO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGQBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:25:24.013Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "CONCLUSAO_FINAL.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CONCLUSAO_FINAL.md",
+              "RelativeDocumentMoniker": "CONCLUSAO_FINAL.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CONCLUSAO_FINAL.md",
+              "RelativeToolTip": "CONCLUSAO_FINAL.md",
+              "ViewState": "AgIAAPMAAAAAAAAAAAAAAHsBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:24:52.406Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 62,
+              "Title": "MAPA_VISUAL_IMPLEMENTACAO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\MAPA_VISUAL_IMPLEMENTACAO.md",
+              "RelativeDocumentMoniker": "MAPA_VISUAL_IMPLEMENTACAO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\MAPA_VISUAL_IMPLEMENTACAO.md",
+              "RelativeToolTip": "MAPA_VISUAL_IMPLEMENTACAO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJ4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:24:13.717Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 61,
+              "Title": "CHECKLIST_IMPLEMENTACAO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_IMPLEMENTACAO.md",
+              "RelativeDocumentMoniker": "CHECKLIST_IMPLEMENTACAO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\CHECKLIST_IMPLEMENTACAO.md",
+              "RelativeToolTip": "CHECKLIST_IMPLEMENTACAO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADoBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:23:36.339Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "SCRIPT_COMPLETO_PostgreSQL.sql",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql",
+              "RelativeDocumentMoniker": "Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql",
+              "RelativeToolTip": "Scripts\\SCRIPT_COMPLETO_PostgreSQL.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T03:22:58.914Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 60,
+              "Title": "RESUMO_EXECUTIVO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO.md",
+              "RelativeDocumentMoniker": "RESUMO_EXECUTIVO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\RESUMO_EXECUTIVO.md",
+              "RelativeToolTip": "RESUMO_EXECUTIVO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:22:40.535Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "GUIA_RAPIDO_VAREJO_ATACADO.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_RAPIDO_VAREJO_ATACADO.md",
+              "RelativeDocumentMoniker": "GUIA_RAPIDO_VAREJO_ATACADO.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\GUIA_RAPIDO_VAREJO_ATACADO.md",
+              "RelativeToolTip": "GUIA_RAPIDO_VAREJO_ATACADO.md",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAGgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:22:08.847Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "SUGESTOES_ADICIONAIS.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SUGESTOES_ADICIONAIS.md",
+              "RelativeDocumentMoniker": "SUGESTOES_ADICIONAIS.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\SUGESTOES_ADICIONAIS.md",
+              "RelativeToolTip": "SUGESTOES_ADICIONAIS.md",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAAAF0BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:21:34.485Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "VAREJO_ATACADO_IMPLEMENTATION.md",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VAREJO_ATACADO_IMPLEMENTATION.md",
+              "RelativeDocumentMoniker": "VAREJO_ATACADO_IMPLEMENTATION.md",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\VAREJO_ATACADO_IMPLEMENTATION.md",
+              "RelativeToolTip": "VAREJO_ATACADO_IMPLEMENTATION.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-27T03:21:01.516Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "AddValorAtacadoCaixa_SQLite.sql",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_SQLite.sql",
+              "RelativeDocumentMoniker": "Scripts\\AddValorAtacadoCaixa_SQLite.sql",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_SQLite.sql",
+              "RelativeToolTip": "Scripts\\AddValorAtacadoCaixa_SQLite.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T03:20:23.658Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "AddValorAtacadoCaixa_PostgreSQL.sql",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql",
+              "RelativeDocumentMoniker": "Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql",
+              "RelativeToolTip": "Scripts\\AddValorAtacadoCaixa_PostgreSQL.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T03:20:14.163Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "TipoVendaToColorConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaToColorConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\TipoVendaToColorConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\TipoVendaToColorConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\TipoVendaToColorConverter.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T03:14:00.814Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "NoAutoCompleteConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NoAutoCompleteConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\NoAutoCompleteConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NoAutoCompleteConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\NoAutoCompleteConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-19T22:19:37.545Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\cdd5749241e39265c5aa87bcd79e3b6720f293d8\\Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\cdd5749241e39265c5aa87bcd79e3b6720f293d8\\Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs",
+              "ToolTip": "C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\cdd5749241e39265c5aa87bcd79e3b6720f293d8\\Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\cdd5749241e39265c5aa87bcd79e3b6720f293d8\\Adega_Oak.Features.MainWindow.MainWindowViewModel.g.cs",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAAAIUAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T05:02:18.069Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MainRepository.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\MainRepository.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Repositories\\MainRepository.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\MainRepository.cs",
+              "RelativeToolTip": "Adega Oak\\Repositories\\MainRepository.cs",
+              "ViewState": "AgIAAIwAAAAAAAAAAAAewJkAAABeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T04:46:22.404Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SaldoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\SaldoRepository.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Repositories\\SaldoRepository.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\SaldoRepository.cs",
+              "RelativeToolTip": "Adega Oak\\Repositories\\SaldoRepository.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAADMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T04:04:11.182Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\MainWindow.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T00:15:57.808Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "SaldoView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\SaldoView.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\SaldoView.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\SaldoView.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\SaldoView.xaml.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAIBJwBUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-13T23:01:08.604Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SaldoView.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\SaldoView.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\SaldoView.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\SaldoView.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\SaldoView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-13T23:00:52.801Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "SaldoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Saldo\\SaldoViewModel.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Features\\Saldo\\SaldoViewModel.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Saldo\\SaldoViewModel.cs",
+              "RelativeToolTip": "Adega Oak\\Features\\Saldo\\SaldoViewModel.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-13T22:17:18.453Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 59,
+              "Title": "NovoProdutoVisibilityMultiConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NovoProdutoVisibilityMultiConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\NovoProdutoVisibilityMultiConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NovoProdutoVisibilityMultiConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\NovoProdutoVisibilityMultiConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T20:27:52.534Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "NullToVisibilityConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NullToVisibilityConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\NullToVisibilityConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NullToVisibilityConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\NullToVisibilityConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T00:53:54.902Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "HistoricoView.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\HistoricoView.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\HistoricoView.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\HistoricoView.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\HistoricoView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-04T03:27:26.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "EstoqueViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Estoque\\EstoqueViewModel.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Features\\Estoque\\EstoqueViewModel.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Estoque\\EstoqueViewModel.cs",
+              "RelativeToolTip": "Adega Oak\\Features\\Estoque\\EstoqueViewModel.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAIAwwDIAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T03:26:47.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "ButtonBase.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\8161aa83beaba02d0ac77a30dc98569cf4c8bee13aaa47b3de22f7204583e829\\ButtonBase.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\8161aa83beaba02d0ac77a30dc98569cf4c8bee13aaa47b3de22f7204583e829\\ButtonBase.cs",
+              "ToolTip": "C:\\Users\\vinic\\AppData\\Local\\Temp\\.vsdbgsrc\\8161aa83beaba02d0ac77a30dc98569cf4c8bee13aaa47b3de22f7204583e829\\ButtonBase.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\8161aa83beaba02d0ac77a30dc98569cf4c8bee13aaa47b3de22f7204583e829\\ButtonBase.cs",
+              "ViewState": "AgIAAIQBAAAAAAAAAAAowJMBAAADAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T03:26:19.218Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "EstoqueView.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\EstoqueView.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\EstoqueView.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\EstoqueView.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\EstoqueView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-04T01:21:56.557Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "NumberComparisonConverters.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NumberComparisonConverters.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\NumberComparisonConverters.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\NumberComparisonConverters.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\NumberComparisonConverters.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T00:13:03.31Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "EstoqueBaixoConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\EstoqueBaixoConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\EstoqueBaixoConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\EstoqueBaixoConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\EstoqueBaixoConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T23:33:10.503Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "StatusToBrushConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\StatusToBrushConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\StatusToBrushConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\StatusToBrushConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\StatusToBrushConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T23:33:09.683Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "EstoqueRepository.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\EstoqueRepository.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Repositories\\EstoqueRepository.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\EstoqueRepository.cs",
+              "RelativeToolTip": "Adega Oak\\Repositories\\EstoqueRepository.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAAAAsBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-26T22:16:56.479Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TabelaPrecosViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\TabelaPrecos\\TabelaPrecosViewModel.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Features\\TabelaPrecos\\TabelaPrecosViewModel.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\TabelaPrecos\\TabelaPrecosViewModel.cs",
+              "RelativeToolTip": "Adega Oak\\Features\\TabelaPrecos\\TabelaPrecosViewModel.cs",
+              "ViewState": "AgIAACcBAAAAAAAAAAAAACcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:17:23.638Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\App.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\App.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\App.xaml",
+              "RelativeToolTip": "Adega Oak\\App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-30T01:04:24.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "StringNotEmptyToBoolConverter.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\StringNotEmptyToBoolConverter.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Converters\\StringNotEmptyToBoolConverter.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Converters\\StringNotEmptyToBoolConverter.cs",
+              "RelativeToolTip": "Adega Oak\\Converters\\StringNotEmptyToBoolConverter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:25:08.492Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "InicioView.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\InicioView.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\InicioView.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\InicioView.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\InicioView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-30T00:14:31.654Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "MainWindowViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\MainWindow\\MainWindowViewModel.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Features\\MainWindow\\MainWindowViewModel.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\MainWindow\\MainWindowViewModel.cs",
+              "RelativeToolTip": "Adega Oak\\Features\\MainWindow\\MainWindowViewModel.cs",
+              "ViewState": "AgIAAIoDAAAAAAAAAABRwI0DAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:03:10.966Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "DatabaseService.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\DatabaseService.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Services\\DatabaseService.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\DatabaseService.cs",
+              "RelativeToolTip": "Adega Oak\\Services\\DatabaseService.cs",
+              "ViewState": "AgIAAPIBAAAAAAAAAAAwwAECAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:02:11.235Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\App.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\App.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\App.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\App.xaml.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAwwA4AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:01:52.186Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\MainWindow.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-29T22:39:00.061Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 58,
+              "Title": "README.txt",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Resources\\README.txt",
+              "RelativeDocumentMoniker": "Adega Oak\\Resources\\README.txt",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Resources\\README.txt",
+              "RelativeToolTip": "Adega Oak\\Resources\\README.txt",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-09-27T03:05:36.74Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "PasswordDialog.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\PasswordDialog.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\PasswordDialog.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\PasswordDialog.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\PasswordDialog.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-17T04:47:13.385Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
+              "Title": "PasswordDialog.xaml",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\PasswordDialog.xaml",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\PasswordDialog.xaml",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\PasswordDialog.xaml",
+              "RelativeToolTip": "Adega Oak\\Views\\PasswordDialog.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-09-17T04:47:01.116Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 53,
+              "Title": "MockPrintService.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\MockPrintService.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Services\\MockPrintService.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\MockPrintService.cs",
+              "RelativeToolTip": "Adega Oak\\Services\\MockPrintService.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T22:46:19.947Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 54,
+              "Title": "IPrintService.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\IPrintService.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Services\\IPrintService.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\IPrintService.cs",
+              "RelativeToolTip": "Adega Oak\\Services\\IPrintService.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T22:45:41.852Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 55,
+              "Title": "EpsonPrintService.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\EpsonPrintService.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Services\\EpsonPrintService.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Services\\EpsonPrintService.cs",
+              "RelativeToolTip": "Adega Oak\\Services\\EpsonPrintService.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T22:38:06.245Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 56,
+              "Title": "NFCeService.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCeService.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Models\\NFCeService.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCeService.cs",
+              "RelativeToolTip": "Adega Oak\\Models\\NFCeService.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T22:36:34.922Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 57,
+              "Title": "NFCe.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCe.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Models\\NFCe.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Models\\NFCe.cs",
+              "RelativeToolTip": "Adega Oak\\Models\\NFCe.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T22:36:19.366Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "InicioView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\InicioView.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\InicioView.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\InicioView.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\InicioView.xaml.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAAADIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T04:09:20.263Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": "HistoricoView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\HistoricoView.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\HistoricoView.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\HistoricoView.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\HistoricoView.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T03:59:43.553Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "EstoqueView.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\EstoqueView.xaml.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Views\\EstoqueView.xaml.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Views\\EstoqueView.xaml.cs",
+              "RelativeToolTip": "Adega Oak\\Views\\EstoqueView.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T03:59:37.107Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "HistoricoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Historico\\HistoricoViewModel.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Features\\Historico\\HistoricoViewModel.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Features\\Historico\\HistoricoViewModel.cs",
+              "RelativeToolTip": "Adega Oak\\Features\\Historico\\HistoricoViewModel.cs",
+              "ViewState": "AgIAAHEAAAAAAAAAAEBVwHUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T03:32:54.233Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "HistoricoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\HistoricoRepository.cs",
+              "RelativeDocumentMoniker": "Adega Oak\\Repositories\\HistoricoRepository.cs",
+              "ToolTip": "C:\\Users\\vinic\\OneDrive\\Documentos\\Adega Oak Melhores vers\u00F5es at\u00E9 agora\\Adega_Oak Clean Code (Window) (em processo melhorando)\\Adega Oak\\Repositories\\HistoricoRepository.cs",
+              "RelativeToolTip": "Adega Oak\\Repositories\\HistoricoRepository.cs",
+              "ViewState": "AgIAAOYAAAAAAAAAAAAQwPMAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-18T23:07:17.868Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 121,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

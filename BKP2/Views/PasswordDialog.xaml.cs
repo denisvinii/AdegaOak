@@ -1,0 +1,23 @@
+using System.Windows;
+
+namespace Adega_Oak.Views
+{
+    public partial class PasswordDialog : Window
+    {
+        public PasswordDialog()
+        {
+            InitializeComponent();
+        }
+        public string Password => PasswordBox.Password;
+        private void Ok_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+    }
+}
