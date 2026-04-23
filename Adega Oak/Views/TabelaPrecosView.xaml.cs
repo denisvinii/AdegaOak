@@ -98,6 +98,83 @@ namespace Adega_Oak.Views
             var cell = hitTest?.VisualHit?.FindAncestor<DataGridCell>();
             return cell;
         }
+
+        /// <summary>
+        /// Permite que Enter confirme a edição e Escape cancele
+        /// </summary>
+        private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && sender is DataGrid dataGrid)
+            {
+                // Confirma a edição atual
+                dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape && sender is DataGrid dataGridEsc)
+            {
+                // Cancela a edição
+                dataGridEsc.CancelEdit(DataGridEditingUnit.Row);
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Salva os dados automaticamente ao terminar edição de célula
+        /// </summary>
+        private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (!(DataContext is Features.TabelaPrecos.TabelaPrecosViewModel viewModel) ||
+                !(e.Row.DataContext is Features.TabelaPrecos.ProdutoPrecoItem item))
+            {
+                return;
+            }
+
+            // Obtém o nome do cabeçalho da coluna para identificar qual campo foi editado
+            var columnHeader = e.Column.Header?.ToString() ?? "";
+
+            // Executa o comando apropriado baseado na coluna editada
+            switch (columnHeader)
+            {
+                case "Venda":
+                    // Aba Varejo - Preço de Venda
+                    viewModel.AtualizarPrecoVendaCommand.Execute(item);
+                    break;
+
+                case "Qtd/Cx":
+                    // Aba Caixa - Quantidade por Caixa
+                    viewModel.AtualizarCaixaPrecosCommand.Execute(item);
+                    break;
+
+                case "Valor":
+                    // Pode ser tanto Caixa quanto Atacado - verificar qual DataGrid
+                    var parentDataGrid = sender as DataGrid;
+                    var parent = parentDataGrid?.Parent;
+
+                    // Procura pelo TabItem pai para determinar qual aba estamos
+                    while (parent != null && !(parent is TabItem))
+                    {
+                        parent = LogicalTreeHelper.GetParent(parent);
+                    }
+
+                    if (parent is TabItem tabItem)
+                    {
+                        if (tabItem.Header?.ToString() == "Caixa")
+                        {
+                            viewModel.AtualizarCaixaPrecosCommand.Execute(item);
+                        }
+                        else if (tabItem.Header?.ToString() == "Atacado")
+                        {
+                            viewModel.AtualizarPrecoAtacadoCommand.Execute(item);
+                        }
+                    }
+                    break;
+
+                case "Qtd Min":
+                    // Aba Atacado - Quantidade Mínima
+                    viewModel.AtualizarQuantidadeMinimaAtacado(item);
+                    break;
+            }
+        }
     }
 
     /// <summary>

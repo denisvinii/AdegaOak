@@ -1,0 +1,23 @@
+﻿-- PostgreSQL schemas for combos and drinks history
+CREATE TABLE IF NOT EXISTS combos (
+    comboid SERIAL PRIMARY KEY,
+    nome TEXT NOT NULL,
+    descricao TEXT,
+    valor DECIMAL NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS combo_items (
+    comboid INTEGER NOT NULL REFERENCES combos(comboid),
+    productid INTEGER NOT NULL REFERENCES estoque(productid),
+    quantidade INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS drinks_history (
+    id SERIAL PRIMARY KEY,
+    comboid INTEGER NOT NULL REFERENCES combos(comboid),
+    data TIMESTAMP NOT NULL,
+    tipo TEXT NOT NULL,
+    responsavel TEXT NOT NULL,
+    quantidade INTEGER NOT NULL,
+    valor_total DECIMAL NOT NULL DEFAULT 0
+);

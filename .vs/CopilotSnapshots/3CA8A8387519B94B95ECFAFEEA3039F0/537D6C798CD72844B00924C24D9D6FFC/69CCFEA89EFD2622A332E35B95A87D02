@@ -1,0 +1,567 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Adega_Oak.Repositories;
+
+namespace Adega_Oak.Features.Combos;
+
+public partial class ComboViewModel : ObservableObject
+{
+    private readonly ComboRepository _comboRepository;
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly MainRepository _mainRepository;
+
+    // ==================== COMBOS ====================
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.Combo> combos = new();
+
+    [ObservableProperty]
+    private ComboRepository.Combo? comboSelecionado;
+
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.ComboComposicao> produtosComposicaoCombo = new();
+
+    [ObservableProperty]
+    private string nomeCombo = string.Empty;
+
+    [ObservableProperty]
+    private decimal precoCombo = 0;
+
+    [ObservableProperty]
+    private string descricaoCombo = string.Empty;
+
+    [ObservableProperty]
+    private bool emEdicaoCombo = false;
+
+    // ==================== COPÕES ====================
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.Combo> copoes = new();
+
+    [ObservableProperty]
+    private ComboRepository.Combo? copaoSelecionado;
+
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.ComboComposicao> produtosComposicaoCopao = new();
+
+    [ObservableProperty]
+    private string nomeCopao = string.Empty;
+
+    [ObservableProperty]
+    private decimal precoCopao = 0;
+
+    [ObservableProperty]
+    private string descricaoCopao = string.Empty;
+
+    [ObservableProperty]
+    private bool emEdicaoCopao = false;
+
+    // ==================== COMUM ====================
+    private ObservableCollection<MainRepository.Produto> _produtos = new();
+    public ObservableCollection<MainRepository.Produto> Produtos
+    {
+        get => _produtos;
+        set => SetProperty(ref _produtos, value);
+    }
+
+    private MainRepository.Produto? _produtoSelecionado;
+    public MainRepository.Produto? ProdutoSelecionado
+    {
+        get => _produtoSelecionado;
+        set
+        {
+            if (SetProperty(ref _produtoSelecionado, value))
+            {
+                if (_produtoSelecionado != null)
+                {
+                    _ignorarFiltro = true;
+                    ProdutoFiltroTexto = _produtoSelecionado.Descricao;
+                }
+            }
+        }
+    }
+
+    private ObservableCollection<MainRepository.Produto> _produtosFiltrados = new();
+    public ObservableCollection<MainRepository.Produto> ProdutosFiltrados
+    {
+        get => _produtosFiltrados;
+        set => SetProperty(ref _produtosFiltrados, value);
+    }
+
+    private string? _produtoFiltroTexto;
+    private bool _ignorarFiltro = false;
+
+    public string? ProdutoFiltroTexto
+    {
+        get => _produtoFiltroTexto;
+        set
+        {
+            if (SetProperty(ref _produtoFiltroTexto, value))
+            {
+                if (!_ignorarFiltro)
+                    FiltrarProdutos();
+                _ignorarFiltro = false;
+            }
+        }
+    }
+
+    [ObservableProperty]
+    private decimal quantidadeProduto = 0;
+
+    [ObservableProperty]
+    private bool debitaEstoque = false;
+
+    [ObservableProperty]
+    private string? mensagemErro;
+
+    [ObservableProperty]
+    private bool temErro = false;
+
+    [ObservableProperty]
+    private int abaTipoAtual = 0; // 0 = Combo, 1 = Copão
+
+    // ==================== FILTROS ====================
+    private string _filtroCombo = string.Empty;
+    public string FiltroCombo
+    {
+        get => _filtroCombo;
+        set
+        {
+            if (SetProperty(ref _filtroCombo, value))
+                AtualizarCombosFiltrados();
+        }
+    }
+
+    private string _filtroCopao = string.Empty;
+    public string FiltroCopao
+    {
+        get => _filtroCopao;
+        set
+        {
+            if (SetProperty(ref _filtroCopao, value))
+                AtualizarCopoesFiltrados();
+        }
+    }
+
+    private ObservableCollection<ComboRepository.Combo> _combosFiltrados = new();
+    public ObservableCollection<ComboRepository.Combo> CombosFiltrados
+    {
+        get => _combosFiltrados;
+        set => SetProperty(ref _combosFiltrados, value);
+    }
+
+    private ObservableCollection<ComboRepository.Combo> _copoesFiltradas = new();
+    public ObservableCollection<ComboRepository.Combo> CopoesFiltradas
+    {
+        get => _copoesFiltradas;
+        set => SetProperty(ref _copoesFiltradas, value);
+    }
+
+    public ComboViewModel(ComboRepository comboRepository, EstoqueRepository estoqueRepository, MainRepository mainRepository)
+    {
+        _comboRepository = comboRepository;
+        _estoqueRepository = estoqueRepository;
+        _mainRepository = mainRepository;
+
+        CarregarCombos();
+        CarregarCopoes();
+        CarregarProdutosEstoque();
+    }
+
+    // ==================== COMBOS ====================
+
+    [RelayCommand]
+    public void CarregarCombos()
+    {
+        var combosCarregados = _comboRepository.CarregarCombos(apenasAtivos: true);
+        Combos.Clear();
+        foreach (var combo in combosCarregados)
+        {
+            Combos.Add(combo);
+        }
+        AtualizarCombosFiltrados();
+        LimparFormularioCombo();
+        MensagemErro = null;
+        TemErro = false;
+    }
+
+    [RelayCommand]
+    public void SelecionarCombo(ComboRepository.Combo combo)
+    {
+        ComboSelecionado = combo;
+        NomeCombo = combo.Nome;
+        PrecoCombo = combo.PrecoVenda;
+        DescricaoCombo = combo.Descricao ?? "";
+        ProdutosComposicaoCombo.Clear();
+        foreach (var item in combo.Composicao)
+        {
+            ProdutosComposicaoCombo.Add(item);
+        }
+        EmEdicaoCombo = true;
+    }
+
+    [RelayCommand]
+    public void AdicionarProdutoComposicaoCombo()
+    {
+        if (ProdutoSelecionado == null)
+        {
+            MensagemErro = "Selecione um produto";
+            TemErro = true;
+            return;
+        }
+
+        if (QuantidadeProduto <= 0)
+        {
+            MensagemErro = "Quantidade deve ser maior que zero";
+            TemErro = true;
+            return;
+        }
+
+        var item = new ComboRepository.ComboComposicao
+        {
+            ProductId = ProdutoSelecionado.ProductId,
+            Quantidade = QuantidadeProduto,
+            Unidade = "ml",
+            DebitaEstoque = true, // COMBO SEMPRE DEBITA
+            ProdutoDescricao = ProdutoSelecionado.Descricao
+        };
+
+        ProdutosComposicaoCombo.Add(item);
+        QuantidadeProduto = 0;
+        DebitaEstoque = false;
+        ProdutoSelecionado = null;
+        MensagemErro = null;
+        TemErro = false;
+    }
+
+    [RelayCommand]
+    public void RemoverProdutoComposicaoCombo(ComboRepository.ComboComposicao item)
+    {
+        ProdutosComposicaoCombo.Remove(item);
+    }
+
+    [RelayCommand]
+    public void SalvarCombo()
+    {
+        if (string.IsNullOrWhiteSpace(NomeCombo))
+        {
+            MensagemErro = "Nome é obrigatório";
+            TemErro = true;
+            return;
+        }
+
+        if (PrecoCombo <= 0)
+        {
+            MensagemErro = "Preço deve ser maior que zero";
+            TemErro = true;
+            return;
+        }
+
+        if (ProdutosComposicaoCombo.Count == 0)
+        {
+            MensagemErro = "Adicione pelo menos um produto à composição";
+            TemErro = true;
+            return;
+        }
+
+        try
+        {
+            var combo = new ComboRepository.Combo
+            {
+                ComboId = ComboSelecionado?.ComboId ?? 0,
+                Nome = NomeCombo,
+                Descricao = DescricaoCombo,
+                PrecoVenda = PrecoCombo,
+                Ativo = true
+            };
+
+            var composicao = ProdutosComposicaoCombo.ToList();
+
+            if (EmEdicaoCombo && ComboSelecionado != null)
+            {
+                _comboRepository.EditarCombo(combo, composicao);
+                System.Windows.MessageBox.Show("Combo editado com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+            else
+            {
+                _comboRepository.CriarCombo(combo, composicao);
+                System.Windows.MessageBox.Show("Combo criado com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+
+            CarregarCombos();
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = $"Erro: {ex.Message}";
+            TemErro = true;
+        }
+    }
+
+    [RelayCommand]
+    public void RemoverCombo(ComboRepository.Combo target)
+    {
+        var confirm = System.Windows.MessageBox.Show(
+            $"Tem certeza que deseja remover '{target.Nome}'?",
+            "Confirmar Remoção",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+
+        if (confirm != System.Windows.MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            _comboRepository.RemoverCombo(target.ComboId);
+            System.Windows.MessageBox.Show("Combo removido com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            CarregarCombos();
+        }
+        catch (Exception ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void NovoCombo()
+    {
+        LimparFormularioCombo();
+    }
+
+    private void LimparFormularioCombo()
+    {
+        NomeCombo = string.Empty;
+        PrecoCombo = 0;
+        DescricaoCombo = string.Empty;
+        ProdutosComposicaoCombo.Clear();
+        EmEdicaoCombo = false;
+        ComboSelecionado = null;
+    }
+
+    // ==================== COPÕES ====================
+
+    [RelayCommand]
+    public void CarregarCopoes()
+    {
+        var copoesCarregados = _comboRepository.CarregarCopoes(apenasAtivos: true);
+        Copoes.Clear();
+        foreach (var copao in copoesCarregados)
+        {
+            Copoes.Add(copao);
+        }
+        AtualizarCopoesFiltrados();
+        LimparFormularioCopao();
+        MensagemErro = null;
+        TemErro = false;
+    }
+
+    [RelayCommand]
+    public void SelecionarCopao(ComboRepository.Combo copao)
+    {
+        CopaoSelecionado = copao;
+        NomeCopao = copao.Nome;
+        PrecoCopao = copao.PrecoVenda;
+        DescricaoCopao = copao.Descricao ?? "";
+        ProdutosComposicaoCopao.Clear();
+        foreach (var item in copao.Composicao)
+        {
+            ProdutosComposicaoCopao.Add(item);
+        }
+        EmEdicaoCopao = true;
+    }
+
+    [RelayCommand]
+    public void AdicionarProdutoComposicaoCopao()
+    {
+        if (ProdutoSelecionado == null)
+        {
+            MensagemErro = "Selecione um produto";
+            TemErro = true;
+            return;
+        }
+
+        if (QuantidadeProduto <= 0)
+        {
+            MensagemErro = "Quantidade deve ser maior que zero";
+            TemErro = true;
+            return;
+        }
+
+        var item = new ComboRepository.ComboComposicao
+        {
+            ProductId = ProdutoSelecionado.ProductId,
+            Quantidade = QuantidadeProduto,
+            Unidade = "ml",
+            DebitaEstoque = DebitaEstoque, // COPÃO: CONDICIONAL
+            ProdutoDescricao = ProdutoSelecionado.Descricao
+        };
+
+        ProdutosComposicaoCopao.Add(item);
+        QuantidadeProduto = 0;
+        DebitaEstoque = false;
+        ProdutoSelecionado = null;
+        MensagemErro = null;
+        TemErro = false;
+    }
+
+    [RelayCommand]
+    public void RemoverProdutoComposicaoCopao(ComboRepository.ComboComposicao item)
+    {
+        ProdutosComposicaoCopao.Remove(item);
+    }
+
+    [RelayCommand]
+    public void SalvarCopao()
+    {
+        if (string.IsNullOrWhiteSpace(NomeCopao))
+        {
+            MensagemErro = "Nome é obrigatório";
+            TemErro = true;
+            return;
+        }
+
+        if (PrecoCopao <= 0)
+        {
+            MensagemErro = "Preço deve ser maior que zero";
+            TemErro = true;
+            return;
+        }
+
+        if (ProdutosComposicaoCopao.Count == 0)
+        {
+            MensagemErro = "Adicione pelo menos um produto à composição";
+            TemErro = true;
+            return;
+        }
+
+        try
+        {
+            var copao = new ComboRepository.Combo
+            {
+                ComboId = CopaoSelecionado?.ComboId ?? 0,
+                Nome = NomeCopao,
+                Descricao = DescricaoCopao,
+                PrecoVenda = PrecoCopao,
+                Ativo = true
+            };
+
+            var composicao = ProdutosComposicaoCopao.ToList();
+
+            if (EmEdicaoCopao && CopaoSelecionado != null)
+            {
+                _comboRepository.EditarCopao(copao, composicao);
+                System.Windows.MessageBox.Show("Copão editado com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+            else
+            {
+                _comboRepository.CriarCopao(copao, composicao);
+                System.Windows.MessageBox.Show("Copão criado com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+
+            CarregarCopoes();
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = $"Erro: {ex.Message}";
+            TemErro = true;
+        }
+    }
+
+    [RelayCommand]
+    public void RemoverCopao(ComboRepository.Combo target)
+    {
+        var confirm = System.Windows.MessageBox.Show(
+            $"Tem certeza que deseja remover '{target.Nome}'?",
+            "Confirmar Remoção",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+
+        if (confirm != System.Windows.MessageBoxResult.Yes)
+            return;
+
+        try
+        {
+            _comboRepository.RemoverCopao(target.ComboId);
+            System.Windows.MessageBox.Show("Copão removido com sucesso!", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            CarregarCopoes();
+        }
+        catch (Exception ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void NovoCopao()
+    {
+        LimparFormularioCopao();
+    }
+
+    private void LimparFormularioCopao()
+    {
+        NomeCopao = string.Empty;
+        PrecoCopao = 0;
+        DescricaoCopao = string.Empty;
+        ProdutosComposicaoCopao.Clear();
+        EmEdicaoCopao = false;
+        CopaoSelecionado = null;
+    }
+
+    // ==================== COMUM ====================
+
+    private void CarregarProdutosEstoque()
+    {
+        var produtos = _estoqueRepository.CarregarEstoqueCompleto();
+        ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(
+            _mainRepository.CarregarProdutos()
+        );
+    }
+
+    private void FiltrarProdutos()
+    {
+        if (string.IsNullOrWhiteSpace(ProdutoFiltroTexto))
+        {
+            ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(_mainRepository.CarregarProdutos());
+            return;
+        }
+
+        var filtrados = _mainRepository.CarregarProdutos()
+            .Where(p => p.Descricao.Contains(ProdutoFiltroTexto, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(filtrados);
+    }
+
+    private void AtualizarCombosFiltrados()
+    {
+        if (string.IsNullOrWhiteSpace(FiltroCombo))
+        {
+            CombosFiltrados = new ObservableCollection<ComboRepository.Combo>(Combos);
+        }
+        else
+        {
+            var filtrados = Combos
+                .Where(c => c.Nome.Contains(FiltroCombo, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            CombosFiltrados = new ObservableCollection<ComboRepository.Combo>(filtrados);
+        }
+    }
+
+    private void AtualizarCopoesFiltrados()
+    {
+        if (string.IsNullOrWhiteSpace(FiltroCopao))
+        {
+            CopoesFiltradas = new ObservableCollection<ComboRepository.Combo>(Copoes);
+        }
+        else
+        {
+            var filtrados = Copoes
+                .Where(c => c.Nome.Contains(FiltroCopao, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            CopoesFiltradas = new ObservableCollection<ComboRepository.Combo>(filtrados);
+        }
+    }
+}

@@ -150,12 +150,45 @@
                               Stretch="Uniform"/>
                     </RadioButton>
 
+                    <!-- Despesas -->
+                    <RadioButton Style="{StaticResource MenuButton}"
+                               Command="{Binding NavigateToCommand}"
+                               CommandParameter="Despesas"
+                               Tag="Despesas">
+                        <Path Data="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M12,20C7.58,20 4,16.42 4,12C4,7.58 7.58,4 12,4C16.42,4 20,7.58 20,12C20,16.42 16.42,20 12,20M12.5,7H11V13H12.5V7M12,15.5C11.17,15.5 10.5,16.17 10.5,17C10.5,17.83 11.17,18.5 12,18.5C12.83,18.5 13.5,17.83 13.5,17C13.5,16.17 12.83,15.5 12,15.5Z" 
+                              Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}"
+                              Width="18" Height="18"
+                              Stretch="Uniform"/>
+                    </RadioButton>
+
                     <!-- Saldo -->
                     <RadioButton Style="{StaticResource MenuButton}"
                                Command="{Binding NavigateToCommand}"
                                CommandParameter="Saldo"
                                Tag="Saldo">
                         <Path Data="M12,18A4,4 0 0,1 8,14C8,11.83 9.5,10.75 11.25,10.31L11.72,10.2C11.9,10.15 12.1,10.15 12.28,10.2L12.75,10.31C14.5,10.75 16,11.83 16,14A4,4 0 0,1 12,18M7,6H17C18.66,6 20,7.34 20,9V19A2,2 0 0,1 18,21H6A2,2 0 0,1 4,19V9C4,7.34 5.34,6 7,6M12,14C11.17,14 10.5,13.33 10.5,12.5C10.5,11.67 11.17,11 12,11C12.83,11 13.5,11.67 13.5,12.5C13.5,13.33 12.83,14 12,14M7,4A2,2 0 0,1 9,2H15A2,2 0 0,1 17,4H7Z" 
+                              Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}"
+                              Width="18" Height="18"
+                              Stretch="Uniform"/>
+                    </RadioButton>
+
+                    <!-- Copões -->
+                    <RadioButton Style="{StaticResource MenuButton}"
+                               Command="{Binding NavigateToCommand}"
+                               CommandParameter="Copoes"
+                               Tag="Combos">
+                        <Path Data="M7,18C5.9,18 5,18.9 5,20C5,21.1 5.9,22 7,22C8.1,22 9,21.1 9,20C9,18.9 8.1,18 7,18M1,2V4H3L6.6,11.59L5.25,14C5.1,14.35 5,14.65 5,15C5,16.1 5.9,17 7,17H19V15H7.42C7.28,15 7.17,14.89 7.17,14.75L7.2,14.63H16.6C17.45,14.63 18.17,14.14 18.35,13.41L20.88,7.5C20.95,7.34 21,7.17 21,7C21,6.4 20.6,6 20,6H5.21L4.27,4M17,18C15.9,18 15,18.9 15,20C15,21.1 15.9,22 17,22C18.1,22 19,21.1 19,20C19,18.9 18.1,18 17,18Z" 
+                              Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}"
+                              Width="18" Height="18"
+                              Stretch="Uniform"/>
+                    </RadioButton>
+
+                    <!-- Vender Copões -->
+                    <RadioButton Style="{StaticResource MenuButton}"
+                               Command="{Binding NavigateToCommand}"
+                               CommandParameter="VendaCopao"
+                               Tag="Vender Combos">
+                        <Path Data="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M13,17H11V11H13V17M13,9H11V7H13V9Z" 
                               Fill="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=Foreground}"
                               Width="18" Height="18"
                               Stretch="Uniform"/>

@@ -1,4 +1,5 @@
 ﻿using Adega_Oak.Features.MainWindow;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -47,5 +48,24 @@ public partial class InicioView : UserControl
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
 
+    }
+
+    private void SenhaBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm && sender is PasswordBox pb)
+        {
+            vm.SenhaDesconto = pb.Password;
+        }
+    }
+
+    private void SenhaBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && DataContext is MainWindowViewModel vm)
+        {
+            // Execute the validation command when Enter is pressed
+            if (vm.ValidarSenhaDescontoCommand.CanExecute(null))
+                vm.ValidarSenhaDescontoCommand.Execute(null);
+            e.Handled = true;
+        }
     }
 }

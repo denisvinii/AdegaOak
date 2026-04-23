@@ -1,0 +1,356 @@
+﻿using Adega_Oak.Services;
+using System.Data;
+using System.Collections.Generic;
+using System;
+
+namespace Adega_Oak.Repositories;
+
+public class DrinksRepository
+{
+    private readonly DatabaseService _dbService;
+    private readonly MainRepository _mainRepository;
+
+    public DrinksRepository(DatabaseService dbService, MainRepository mainRepository)
+    {
+        _dbService = dbService;
+        _mainRepository = mainRepository;
+    }
+
+    public class ComboItem
+    {
+        public int ComboId { get; set; }
+        public int ProductId { get; set; }
+        public int Quantidade { get; set; }
+    }
+
+    public class Combo
+    {
+        public int ComboId { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string? Descricao { get; set; }
+        public decimal Valor { get; set; }
+        public List<ComboItem> Items { get; set; } = new();
+    }
+
+    public List<Combo> GetCombos()
+    {
+        var combos = new List<Combo>();
+        using var conn = _dbService.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT comboid, nome, descricao, valor FROM combos ORDER BY comboid";
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            combos.Add(new Combo
+            {
+                ComboId = reader.GetInt32(0),
+                Nome = reader.GetString(1),
+                Descricao = reader.IsDBNull(2) ? null : reader.GetString(2),
+                Valor = reader.IsDBNull(3) ? 0m : reader.GetDecimal(3)
+            });
+        }
+
+        // load items
+        foreach (var c in combos)
+        {
+            c.Items = GetComboItems(c.ComboId);
+        }
+
+        return combos;
+    }
+
+    public List<ComboItem> GetComboItems(int comboId)
+    {
+        var items = new List<ComboItem>();
+        using var conn = _dbService.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT comboid, productid, quantidade FROM combo_items WHERE comboid = @comboid";
+        var p = cmd.CreateParameter(); p.ParameterName = "@comboid"; p.Value = comboId; cmd.Parameters.Add(p);
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            items.Add(new ComboItem
+            {
+                ComboId = reader.GetInt32(0),
+                ProductId = reader.GetInt32(1),
+                Quantidade = reader.GetInt32(2)
+            });
+        }
+        return items;
+    }
+
+    public int CreateCombo(Combo combo)
+    {
+        using var conn = _dbService.GetConnection();
+        using var tx = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+        cmd.Transaction = tx;
+
+        // determine next id
+        cmd.CommandText = "SELECT COALESCE(MAX(comboid), 0) + 1 FROM combos";
+        var nextId = Convert.ToInt32(cmd.ExecuteScalar());
+
+        cmd.CommandText = "INSERT INTO combos (comboid, nome, descricao, valor) VALUES (@id, @nome, @descricao, @valor)";
+        var pId = cmd.CreateParameter(); pId.ParameterName = "@id"; pId.Value = nextId; cmd.Parameters.Add(pId);
+        var pNome = cmd.CreateParameter(); pNome.ParameterName = "@nome"; pNome.Value = combo.Nome; cmd.Parameters.Add(pNome);
+        var pDesc = cmd.CreateParameter(); pDesc.ParameterName = "@descricao"; pDesc.Value = combo.Descricao ?? string.Empty; cmd.Parameters.Add(pDesc);
+        var pValor = cmd.CreateParameter(); pValor.ParameterName = "@valor"; pValor.Value = combo.Valor; cmd.Parameters.Add(pValor);
+        cmd.ExecuteNonQuery();
+
+        // insert items
+        foreach (var item in combo.Items)
+        {
+            using var icmd = conn.CreateCommand();
+            icmd.Transaction = tx;
+            icmd.CommandText = "INSERT INTO combo_items (comboid, productid, quantidade) VALUES (@comboid, @productid, @quantidade)";
+            var ip1 = icmd.CreateParameter(); ip1.ParameterName = "@comboid"; ip1.Value = nextId; icmd.Parameters.Add(ip1);
+            var ip2 = icmd.CreateParameter(); ip2.ParameterName = "@productid"; ip2.Value = item.ProductId; icmd.Parameters.Add(ip2);
+            var ip3 = icmd.CreateParameter(); ip3.ParameterName = "@quantidade"; ip3.Value = item.Quantidade; icmd.Parameters.Add(ip3);
+            icmd.ExecuteNonQuery();
+        }
+
+        tx.Commit();
+        return nextId;
+    }
+
+    public void UpdateCombo(Combo combo)
+    {
+        using var conn = _dbService.GetConnection();
+        using var tx = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+        cmd.Transaction = tx;
+
+        cmd.CommandText = "UPDATE combos SET nome = @nome, descricao = @descricao, valor = @valor WHERE comboid = @id";
+        var up1 = cmd.CreateParameter(); up1.ParameterName = "@nome"; up1.Value = combo.Nome; cmd.Parameters.Add(up1);
+        var up2 = cmd.CreateParameter(); up2.ParameterName = "@descricao"; up2.Value = combo.Descricao ?? string.Empty; cmd.Parameters.Add(up2);
+        var up3 = cmd.CreateParameter(); up3.ParameterName = "@valor"; up3.Value = combo.Valor; cmd.Parameters.Add(up3);
+        var up4 = cmd.CreateParameter(); up4.ParameterName = "@id"; up4.Value = combo.ComboId; cmd.Parameters.Add(up4);
+        cmd.ExecuteNonQuery();
+
+        // replace items: delete existing, insert new
+        using (var del = conn.CreateCommand())
+        {
+            del.Transaction = tx;
+            del.CommandText = "DELETE FROM combo_items WHERE comboid = @comboid";
+            var dp = del.CreateParameter(); dp.ParameterName = "@comboid"; dp.Value = combo.ComboId; del.Parameters.Add(dp);
+            del.ExecuteNonQuery();
+        }
+
+        foreach (var item in combo.Items)
+        {
+            using var icmd = conn.CreateCommand();
+            icmd.Transaction = tx;
+            icmd.CommandText = "INSERT INTO combo_items (comboid, productid, quantidade) VALUES (@comboid, @productid, @quantidade)";
+            var iup1 = icmd.CreateParameter(); iup1.ParameterName = "@comboid"; iup1.Value = combo.ComboId; icmd.Parameters.Add(iup1);
+            var iup2 = icmd.CreateParameter(); iup2.ParameterName = "@productid"; iup2.Value = item.ProductId; icmd.Parameters.Add(iup2);
+            var iup3 = icmd.CreateParameter(); iup3.ParameterName = "@quantidade"; iup3.Value = item.Quantidade; icmd.Parameters.Add(iup3);
+            icmd.ExecuteNonQuery();
+        }
+
+        tx.Commit();
+    }
+
+    public void DeleteCombo(int comboId)
+    {
+        using var conn = _dbService.GetConnection();
+        using var tx = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+        cmd.Transaction = tx;
+
+        cmd.CommandText = "DELETE FROM combo_items WHERE comboid = @comboid";
+        var dpd = cmd.CreateParameter(); dpd.ParameterName = "@comboid"; dpd.Value = comboId; cmd.Parameters.Add(dpd);
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = "DELETE FROM combos WHERE comboid = @id";
+        var did = cmd.CreateParameter(); did.ParameterName = "@id"; did.Value = comboId; cmd.Parameters.Add(did);
+        cmd.ExecuteNonQuery();
+
+        tx.Commit();
+    }
+
+    public void RegisterComboOperation(int comboId, int quantidade, string responsavel, bool isConsumo)
+    {
+        // Load combo items
+        var items = GetComboItems(comboId);
+        if (items == null || items.Count == 0) return;
+
+        foreach (var item in items)
+        {
+            // For each item, create a movimentacao for the used units
+            int unidades = item.Quantidade * quantidade;
+
+            // Determine unit price from estoque (valor_venda or valor)
+            decimal unitPrice = 0m;
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COALESCE(valor_venda, valor) FROM estoque WHERE productid = @productid";
+            var pp = cmd.CreateParameter(); pp.ParameterName = "@productid"; pp.Value = item.ProductId; cmd.Parameters.Add(pp);
+            var res = cmd.ExecuteScalar();
+            unitPrice = res == null || res == DBNull.Value ? 0m : Convert.ToDecimal(res);
+
+            var mov = new MainRepository.Movimentacao
+            {
+                Data = DateTime.Now,
+                Tipo = "Saída",
+                TipoVenda = "Varejo",
+                ProductId = item.ProductId,
+                ProdutoDescricao = GetProductDescricao(item.ProductId),
+                Quantidade = unidades,
+                Responsavel = responsavel,
+                TipoSaida = isConsumo ? "Consumo" : "Venda Combo",
+                ValorUnitario = isConsumo ? 0m : unitPrice
+            };
+
+            // Use MainRepository to register movement
+            _mainRepository.RegistrarMovimentacao(mov);
+        }
+
+        // Insert into drinks_history table for auditing
+        using (var conn2 = _dbService.GetConnection())
+        using (var cmd2 = conn2.CreateCommand())
+        {
+            cmd2.CommandText = "INSERT INTO drinks_history (comboid, data, tipo, responsavel, quantidade, valor_total) VALUES (@comboid, @data, @tipo, @responsavel, @quantidade, @valor_total)";
+            var c1 = cmd2.CreateParameter(); c1.ParameterName = "@comboid"; c1.Value = comboId; cmd2.Parameters.Add(c1);
+            var c2 = cmd2.CreateParameter(); c2.ParameterName = "@data"; c2.Value = conn2 is Microsoft.Data.Sqlite.SqliteConnection ? (object)DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now; cmd2.Parameters.Add(c2);
+            var c3 = cmd2.CreateParameter(); c3.ParameterName = "@tipo"; c3.Value = isConsumo ? "Consumo" : "Saída"; cmd2.Parameters.Add(c3);
+            var c4 = cmd2.CreateParameter(); c4.ParameterName = "@responsavel"; c4.Value = responsavel; cmd2.Parameters.Add(c4);
+            var c5 = cmd2.CreateParameter(); c5.ParameterName = "@quantidade"; c5.Value = quantidade; cmd2.Parameters.Add(c5);
+            // valor_total: if consumo -> 0 else get combo.valor
+            decimal valorTotal = 0m;
+            using var cmdGet = conn2.CreateCommand();
+            cmdGet.CommandText = "SELECT valor FROM combos WHERE comboid = @id";
+            var cget = cmdGet.CreateParameter(); cget.ParameterName = "@id"; cget.Value = comboId; cmdGet.Parameters.Add(cget);
+            var v = cmdGet.ExecuteScalar();
+            valorTotal = v == null || v == DBNull.Value ? 0m : Convert.ToDecimal(v);
+            var c6 = cmd2.CreateParameter(); c6.ParameterName = "@valor_total"; c6.Value = isConsumo ? 0m : valorTotal * quantidade; cmd2.Parameters.Add(c6);
+            cmd2.ExecuteNonQuery();
+        }
+    }
+
+    public void RegisterComboOperationPerItem(int comboId, int quantidade, string responsavel, IEnumerable<(int productId, bool isConsumo)> perItemFlags)
+    {
+        var items = GetComboItems(comboId);
+        if (items == null || items.Count == 0) return;
+
+        foreach (var item in items)
+        {
+            var flag = perItemFlags.FirstOrDefault(p => p.productId == item.ProductId);
+            bool isConsumo = flag == default ? false : flag.isConsumo;
+
+            int unidades = item.Quantidade * quantidade;
+
+            // Determine unit price from estoque (valor_venda or valor)
+            decimal unitPrice = 0m;
+            using (var conn = _dbService.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT COALESCE(valor_venda, valor) FROM estoque WHERE productid = @productid";
+                var pp = cmd.CreateParameter(); pp.ParameterName = "@productid"; pp.Value = item.ProductId; cmd.Parameters.Add(pp);
+                var res = cmd.ExecuteScalar();
+                unitPrice = res == null || res == DBNull.Value ? 0m : Convert.ToDecimal(res);
+            }
+
+            var mov = new MainRepository.Movimentacao
+            {
+                Data = DateTime.Now,
+                Tipo = "Saída",
+                TipoVenda = "Varejo",
+                ProductId = item.ProductId,
+                ProdutoDescricao = GetProductDescricao(item.ProductId),
+                Quantidade = unidades,
+                Responsavel = responsavel,
+                TipoSaida = isConsumo ? "Consumo" : "Venda Combo",
+                ValorUnitario = isConsumo ? 0m : unitPrice
+            };
+
+            _mainRepository.RegistrarMovimentacao(mov);
+        }
+
+        // auditing
+        using var conn2 = _dbService.GetConnection();
+        using var cmd2 = conn2.CreateCommand();
+        cmd2.CommandText = "INSERT INTO drinks_history (comboid, data, tipo, responsavel, quantidade, valor_total) VALUES (@comboid, @data, @tipo, @responsavel, @quantidade, @valor_total)";
+        var c1 = cmd2.CreateParameter(); c1.ParameterName = "@comboid"; c1.Value = comboId; cmd2.Parameters.Add(c1);
+        var c2 = cmd2.CreateParameter(); c2.ParameterName = "@data"; c2.Value = conn2 is Microsoft.Data.Sqlite.SqliteConnection ? (object)DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now; cmd2.Parameters.Add(c2);
+        var c3 = cmd2.CreateParameter(); c3.ParameterName = "@tipo"; c3.Value = "Venda/Consumo Misto"; cmd2.Parameters.Add(c3);
+        var c4 = cmd2.CreateParameter(); c4.ParameterName = "@responsavel"; c4.Value = responsavel; cmd2.Parameters.Add(c4);
+        var c5 = cmd2.CreateParameter(); c5.ParameterName = "@quantidade"; c5.Value = quantidade; cmd2.Parameters.Add(c5);
+        var c6 = cmd2.CreateParameter(); c6.ParameterName = "@valor_total"; c6.Value = 0m; cmd2.Parameters.Add(c6);
+        cmd2.ExecuteNonQuery();
+    }
+
+    public void RegisterConsumptionSelectedItems(int comboId, int quantidade, string responsavel, IEnumerable<int> finishedProductIds)
+    {
+        var items = GetComboItems(comboId);
+        if (items == null || items.Count == 0) return;
+
+        using var conn = _dbService.GetConnection();
+        using var tx = conn.BeginTransaction();
+        try
+        {
+            foreach (var item in items)
+            {
+                if (!finishedProductIds.Contains(item.ProductId))
+                    continue; // only register movements for finished products
+
+                int unidades = item.Quantidade * quantidade;
+
+                using var cmd = conn.CreateCommand();
+                cmd.Transaction = tx;
+                cmd.CommandText = @"
+                    INSERT INTO movimentacoes (data, tipo, tipo_venda, productid, produto, quantidade, responsavel, saida, valor_unitario)
+                    VALUES (@data, @tipo, @tipo_venda, @productid, @produto, @quantidade, @responsavel, @saida, @valor_unitario)";
+
+                var pData = cmd.CreateParameter(); pData.ParameterName = "@data"; pData.Value = conn is Microsoft.Data.Sqlite.SqliteConnection ? (object)DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now; cmd.Parameters.Add(pData);
+                var pTipo = cmd.CreateParameter(); pTipo.ParameterName = "@tipo"; pTipo.Value = "Saída"; cmd.Parameters.Add(pTipo);
+                var pTipoVenda = cmd.CreateParameter(); pTipoVenda.ParameterName = "@tipo_venda"; pTipoVenda.Value = "Varejo"; cmd.Parameters.Add(pTipoVenda);
+                var pProdId = cmd.CreateParameter(); pProdId.ParameterName = "@productid"; pProdId.Value = item.ProductId; cmd.Parameters.Add(pProdId);
+                var pProd = cmd.CreateParameter(); pProd.ParameterName = "@produto"; pProd.Value = GetProductDescricao(item.ProductId); cmd.Parameters.Add(pProd);
+                var pQtd = cmd.CreateParameter(); pQtd.ParameterName = "@quantidade"; pQtd.Value = unidades; cmd.Parameters.Add(pQtd);
+                var pResp = cmd.CreateParameter(); pResp.ParameterName = "@responsavel"; pResp.Value = responsavel; cmd.Parameters.Add(pResp);
+                var pSaida = cmd.CreateParameter(); pSaida.ParameterName = "@saida"; pSaida.Value = "Consumo"; cmd.Parameters.Add(pSaida);
+                var pVal = cmd.CreateParameter(); pVal.ParameterName = "@valor_unitario"; pVal.Value = 0m; cmd.Parameters.Add(pVal);
+
+                cmd.ExecuteNonQuery();
+            }
+
+            // Insert drinks_history entry for audit
+            using var cmd2 = conn.CreateCommand();
+            cmd2.Transaction = tx;
+            cmd2.CommandText = @"
+                INSERT INTO drinks_history (comboid, data, tipo, responsavel, quantidade, valor_total)
+                VALUES (@comboid, @data, @tipo, @responsavel, @quantidade, @valor_total)";
+            var h1 = cmd2.CreateParameter(); h1.ParameterName = "@comboid"; h1.Value = comboId; cmd2.Parameters.Add(h1);
+            var h2 = cmd2.CreateParameter(); h2.ParameterName = "@data"; h2.Value = conn is Microsoft.Data.Sqlite.SqliteConnection ? (object)DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") : DateTime.Now; cmd2.Parameters.Add(h2);
+            var h3 = cmd2.CreateParameter(); h3.ParameterName = "@tipo"; h3.Value = "Consumo Parcial"; cmd2.Parameters.Add(h3);
+            var h4 = cmd2.CreateParameter(); h4.ParameterName = "@responsavel"; h4.Value = responsavel; cmd2.Parameters.Add(h4);
+            var h5 = cmd2.CreateParameter(); h5.ParameterName = "@quantidade"; h5.Value = quantidade; cmd2.Parameters.Add(h5);
+            var h6 = cmd2.CreateParameter(); h6.ParameterName = "@valor_total"; h6.Value = 0m; cmd2.Parameters.Add(h6);
+            cmd2.ExecuteNonQuery();
+
+            tx.Commit();
+        }
+        catch
+        {
+            tx.Rollback();
+            throw;
+        }
+    }
+
+    public string GetProductDescricao(int productId)
+    {
+        using var conn = _dbService.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT bebida, tamanho, material FROM estoque WHERE productid = @id";
+        var gp = cmd.CreateParameter(); gp.ParameterName = "@id"; gp.Value = productId; cmd.Parameters.Add(gp);
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            var b = reader.IsDBNull(0) ? "" : reader.GetString(0);
+            var t = reader.IsDBNull(1) ? "" : reader.GetString(1);
+            var m = reader.IsDBNull(2) ? "" : reader.GetString(2);
+            return $"{b} - {t} - {m}";
+        }
+        return "Produto Desconhecido";
+    }
+}

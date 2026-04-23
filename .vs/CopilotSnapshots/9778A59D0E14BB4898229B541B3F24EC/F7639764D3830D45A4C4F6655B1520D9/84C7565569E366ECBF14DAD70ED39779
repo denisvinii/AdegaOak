@@ -1,0 +1,25 @@
+﻿using System.Windows;
+using System.Windows.Controls;
+
+namespace Adega_Oak.Views;
+
+public partial class DrinksView : UserControl
+{
+    public DrinksView()
+    {
+        InitializeComponent();
+    }
+
+    private void OnSalvarComboClick(object sender, RoutedEventArgs e)
+    {
+        var vm = DataContext as Adega_Oak.Features.Drinks.DrinksViewModel;
+        if (vm == null) return;
+
+        var result = MessageBox.Show("Confirma salvar este combo?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+        {
+            vm.SalvarComboCommand.Execute(null);
+            MessageBox.Show("Combo salvo com sucesso.", "Informação", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+}

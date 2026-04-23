@@ -121,6 +121,20 @@
             <converters:LessThanZeroConverter x:Key="LessThanZeroConverter"/>
             <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:TipoDespesaToColorConverter x:Key="TipoDespesaToColorConverter"/>
+            <converters:TipoDespesaToStringConverter x:Key="TipoDespesaToStringConverter"/>
+            <converters:TipoDespesaToIconPathConverter x:Key="TipoDespesaToIconPathConverter"/>
+            <converters:PagoToColorConverter x:Key="PagoToColorConverter"/>
+            <converters:PagoToStringConverter x:Key="PagoToStringConverter"/>
+            <converters:PagoToActionConverter x:Key="PagoToActionConverter"/>
+            <converters:PagoToButtonColorConverter x:Key="PagoToButtonColorConverter"/>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
+            <converters:EnumToIntConverter x:Key="EnumToIntConverter"/>
+            <converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:IntToBoolConverter x:Key="IntToBoolConverter"/>
+            <converters:IntToVisibilityConverter x:Key="IntToVisibilityConverter"/>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

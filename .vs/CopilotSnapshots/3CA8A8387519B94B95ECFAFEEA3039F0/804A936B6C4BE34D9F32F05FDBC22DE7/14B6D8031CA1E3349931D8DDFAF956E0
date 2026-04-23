@@ -1,0 +1,45 @@
+﻿using System.Windows.Controls;
+using System.Windows;
+using Adega_Oak.Features.Combos;
+
+namespace Adega_Oak.Views;
+
+public partial class ComboView : UserControl
+{
+    public ComboView()
+    {
+        InitializeComponent();
+        Loaded += ComboView_Loaded;
+        DataContextChanged += ComboView_DataContextChanged;
+    }
+
+    private void ComboView_Loaded(object? sender, RoutedEventArgs e)
+    {
+        TryClearSelections();
+    }
+
+    private void ComboView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        // When DataContext changes (navigation), ensure viewmodel state is clean
+        TryClearSelections();
+    }
+
+    private void TryClearSelections()
+    {
+        // Use Dispatcher to ensure execution on UI thread
+        Dispatcher.BeginInvoke(new Action(() =>
+        {
+            if (DataContext is ComboViewModel vm)
+            {
+                try
+                {
+                    vm.LimparSelecoes();
+                }
+                catch
+                {
+                    // swallow - do not interfere with UI if vm doesn't support it
+                }
+            }
+        }));
+    }
+}

@@ -17,6 +17,10 @@ namespace Adega_Oak.Features.Saldo
     public class SaldoViewModel : INotifyPropertyChanged
     {
         private readonly SaldoRepository _saldoRepository;
+        private DateTime _dataInicial = DateTime.Now.AddMonths(-1);
+        private DateTime _dataFinal = DateTime.Now;
+        private string _buscaTexto = string.Empty;
+
         public decimal CapitalEmpresa { get; private set; }
         public decimal InvestimentoPorFora { get; private set; }
         public decimal Saldo { get; private set; }
@@ -24,6 +28,45 @@ namespace Adega_Oak.Features.Saldo
         public ObservableCollection<int> Meses { get; } = new(Enumerable.Range(1, 12));
         public int MesSelecionado { get; set; } = DateTime.Now.Month;
         public int AnoSelecionado { get; set; } = DateTime.Now.Year;
+
+        public DateTime DataInicial
+        {
+            get => _dataInicial;
+            set
+            {
+                if (_dataInicial != value)
+                {
+                    _dataInicial = value;
+                    OnPropertyChanged(nameof(DataInicial));
+                }
+            }
+        }
+
+        public DateTime DataFinal
+        {
+            get => _dataFinal;
+            set
+            {
+                if (_dataFinal != value)
+                {
+                    _dataFinal = value;
+                    OnPropertyChanged(nameof(DataFinal));
+                }
+            }
+        }
+
+        public string BuscaTexto
+        {
+            get => _buscaTexto;
+            set
+            {
+                if (_buscaTexto != value)
+                {
+                    _buscaTexto = value;
+                    OnPropertyChanged(nameof(BuscaTexto));
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public ICommand ReloadCommand { get; }

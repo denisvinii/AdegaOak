@@ -1,0 +1,227 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+
+namespace Adega_Oak.Features.Drinks;
+
+public partial class DrinksViewModel : ObservableObject
+{
+    private readonly DrinksRepository _drinksRepository;
+    private readonly MainRepository _mainRepository;
+
+    private ObservableCollection<DrinksRepository.Combo> _combos = new();
+    public ObservableCollection<DrinksRepository.Combo> Combos { get => _combos; set => SetProperty(ref _combos, value); }
+
+    private DrinksRepository.Combo? _selectedCombo;
+    public DrinksRepository.Combo? SelectedCombo
+    {
+        get => _selectedCombo;
+        set
+        {
+            if (SetProperty(ref _selectedCombo, value))
+            {
+                OnSelectedComboChanged(value);
+            }
+        }
+    }
+
+    private string _editNome = string.Empty;
+    public string EditNome { get => _editNome; set => SetProperty(ref _editNome, value); }
+
+    private string _editDescricao = string.Empty;
+    public string EditDescricao { get => _editDescricao; set => SetProperty(ref _editDescricao, value); }
+
+    private decimal _editValor = 0m;
+    public decimal EditValor { get => _editValor; set => SetProperty(ref _editValor, value); }
+
+    private ObservableCollection<DrinksRepository.ComboItem> _editItems = new();
+    public ObservableCollection<DrinksRepository.ComboItem> EditItems { get => _editItems; set => SetProperty(ref _editItems, value); }
+
+    private ObservableCollection<SelectableComboItem> _consumableItems = new();
+    public ObservableCollection<SelectableComboItem> ConsumableItems { get => _consumableItems; set => SetProperty(ref _consumableItems, value); }
+
+    private int _operationQuantity = 1;
+    public int OperationQuantity { get => _operationQuantity; set => SetProperty(ref _operationQuantity, value); }
+
+    public DrinksViewModel(DrinksRepository drinksRepository, MainRepository mainRepository)
+    {
+        _drinksRepository = drinksRepository;
+        _mainRepository = mainRepository;
+        CarregarCombos();
+    }
+
+    private void OnSelectedComboChanged(DrinksRepository.Combo? value)
+    {
+        if (value == null)
+        {
+            EditNome = string.Empty;
+            EditDescricao = string.Empty;
+            EditValor = 0m;
+            EditItems = new ObservableCollection<DrinksRepository.ComboItem>();
+            ConsumableItems = new ObservableCollection<SelectableComboItem>();
+            return;
+        }
+
+        EditNome = value.Nome;
+        EditDescricao = value.Descricao ?? string.Empty;
+        EditValor = value.Valor;
+        EditItems = new ObservableCollection<DrinksRepository.ComboItem>(value.Items);
+
+        // populate consumable selectable items with product descriptions
+        var selectable = new ObservableCollection<SelectableComboItem>();
+        foreach (var it in value.Items)
+        {
+            var desc = _drinksRepository.GetProductDescricao(it.ProductId);
+            selectable.Add(new SelectableComboItem
+            {
+                ProductId = it.ProductId,
+                ProdutoDescricao = desc,
+                Quantidade = it.Quantidade,
+                IsSelected = false
+            });
+        }
+        ConsumableItems = selectable;
+    }
+
+    [RelayCommand]
+    public void CarregarCombos()
+    {
+        Combos = new ObservableCollection<DrinksRepository.Combo>(_drinksRepository.GetCombos());
+    }
+
+    [RelayCommand]
+    public void NovoCombo()
+    {
+        SelectedCombo = new DrinksRepository.Combo { ComboId = 0, Nome = "Novo Combo" };
+        EditNome = SelectedCombo.Nome;
+        EditDescricao = string.Empty;
+        EditValor = 0m;
+        EditItems = new ObservableCollection<DrinksRepository.ComboItem>();
+    }
+
+    [RelayCommand]
+    public void EditarCombo()
+    {
+        if (SelectedCombo == null) return;
+        // já está em modo edição
+    }
+
+    [RelayCommand]
+    public void ExcluirCombo()
+    {
+        if (SelectedCombo == null || SelectedCombo.ComboId == 0) return;
+        if (MessageBox.Show($"Deseja excluir o combo '{SelectedCombo.Nome}'?", "Confirmar", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+        {
+            _drinksRepository.DeleteCombo(SelectedCombo.ComboId);
+            CarregarCombos();
+        }
+    }
+
+    [RelayCommand]
+    public void SalvarCombo()
+    {
+        var combo = new DrinksRepository.Combo
+        {
+            ComboId = SelectedCombo?.ComboId ?? 0,
+            Nome = EditNome,
+            Descricao = EditDescricao,
+            Valor = EditValor,
+            Items = EditItems.ToList()
+        };
+
+        if (combo.ComboId == 0)
+        {
+            var id = _drinksRepository.CreateCombo(combo);
+            SelectedCombo = _drinksRepository.GetCombos().FirstOrDefault(c => c.ComboId == id);
+        }
+        else
+        {
+            _drinksRepository.UpdateCombo(combo);
+        }
+
+        CarregarCombos();
+    }
+
+    [RelayCommand]
+    public void AdicionarItem()
+    {
+        // abre diálogo simples para selecionar produto e quantidade
+        var produtos = _mainRepository.CarregarProdutos();
+        // só adiciona o primeiro para simplificar UI de teste
+        if (produtos.Any())
+        {
+            var p = produtos.First();
+            EditItems.Add(new DrinksRepository.ComboItem { ComboId = 0, ProductId = p.ProductId, Quantidade = 1 });
+        }
+    }
+
+    [RelayCommand]
+    public void RemoverItem()
+    {
+        if (EditItems.Any())
+            EditItems.RemoveAt(EditItems.Count - 1);
+    }
+
+    [RelayCommand]
+    public void RegistrarSaida()
+    {
+        if (SelectedCombo == null) return;
+        var resp = "admin"; // pode abrir seleção
+        _drinksRepository.RegisterComboOperation(SelectedCombo.ComboId, 1, resp, false);
+        MessageBox.Show("Saída registrada");
+    }
+
+    [RelayCommand]
+    public void RegistrarConsumo()
+    {
+        if (SelectedCombo == null) return;
+        var resp = "admin";
+        _drinksRepository.RegisterComboOperation(SelectedCombo.ComboId, 1, resp, true);
+        MessageBox.Show("Consumo registrado (valor 0)");
+    }
+
+    [RelayCommand]
+    public void VenderCombo()
+    {
+        if (SelectedCombo == null) return;
+        var resp = "admin"; // TODO: expose responsavel selection
+        _drinksRepository.RegisterComboOperation(SelectedCombo.ComboId, OperationQuantity > 0 ? OperationQuantity : 1, resp, false);
+        MessageBox.Show("Venda de combo registrada");
+    }
+
+    [RelayCommand]
+    public void AbrirConsumo()
+    {
+        // ensure consumable items populated
+        if (SelectedCombo == null) return;
+        OnSelectedComboChanged(SelectedCombo);
+    }
+
+    [RelayCommand]
+    public void RegistrarConsumoParcial()
+    {
+        if (SelectedCombo == null) return;
+        var finished = ConsumableItems.Where(x => x.IsSelected).Select(x => x.ProductId).ToList();
+        if (!finished.Any())
+        {
+            MessageBox.Show("Selecione ao menos um produto que foi consumido completamente.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        var resp = "admin";
+        _drinksRepository.RegisterConsumptionSelectedItems(SelectedCombo.ComboId, OperationQuantity > 0 ? OperationQuantity : 1, resp, finished);
+        MessageBox.Show("Consumo parcial registrado (apenas itens selecionados baixados)");
+    }
+
+    // new helper class
+    public class SelectableComboItem : ObservableObject
+    {
+        private bool _isSelected;
+        public bool IsSelected { get => _isSelected; set => SetProperty(ref _isSelected, value); }
+        public int ProductId { get; set; }
+        public string ProdutoDescricao { get; set; } = string.Empty;
+        public int Quantidade { get; set; }
+    }
+}

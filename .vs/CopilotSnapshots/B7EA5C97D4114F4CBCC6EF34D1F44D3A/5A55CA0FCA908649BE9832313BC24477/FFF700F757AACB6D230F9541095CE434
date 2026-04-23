@@ -1,0 +1,126 @@
+﻿using System.Data;
+using System.Globalization;
+using Adega_Oak.Services;
+
+namespace Adega_Oak.Repositories
+{
+    public class SaldoRepository
+    {
+        private readonly DatabaseService _dbService;
+
+        public SaldoRepository(DatabaseService dbService)
+        {
+            _dbService = dbService;
+        }
+
+        public MainRepository.SaldoGeral ObterSaldoGeral()
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+WITH controledesaldo AS (
+    SELECT
+        SUM(CASE WHEN tipo = 'Saída' THEN valor_unitario * quantidade ELSE 0 END) AS total_saidas,
+        SUM(CASE WHEN tipo = 'Entrada' THEN valor_unitario * quantidade ELSE 0 END) AS total_entradas
+    FROM movimentacoes
+    WHERE responsavel <> 'admin'
+),
+capital_admin AS (
+    SELECT COALESCE(SUM(valor_unitario * quantidade), 0) AS valor_admin
+    FROM movimentacoes
+    WHERE responsavel = 'admin'
+    AND tipo = 'Entrada'
+),
+despesas_pagas AS (
+    SELECT COALESCE(SUM(valor), 0) AS total_despesas_pagas
+    FROM despesas
+    WHERE pago = TRUE
+)
+SELECT
+    (total_saidas - total_entradas) + (SELECT valor_admin FROM capital_admin) AS capitalempresa,
+    (SELECT valor_admin FROM capital_admin) AS investidoporfora,
+    (total_saidas - total_entradas) - COALESCE((SELECT total_despesas_pagas FROM despesas_pagas), 0) AS saldo
+FROM controledesaldo
+";
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                // Use a safe conversion to decimal to avoid OverflowException from unexpected DB types
+                decimal capitalEmpresa = ReadDecimalSafe(reader, 0);
+                decimal investimentoPorFora = ReadDecimalSafe(reader, 1);
+                decimal saldo = ReadDecimalSafe(reader, 2);
+
+                return new MainRepository.SaldoGeral
+                {
+                    CapitalEmpresa = capitalEmpresa,
+                    InvestimentoPorFora = investimentoPorFora,
+                    Saldo = saldo
+                };
+            }
+            return new MainRepository.SaldoGeral();
+        }
+
+        // Safely read a decimal value from a data reader, handling common underlying types and parsing strings.
+        private static decimal ReadDecimalSafe(IDataReader reader, int index)
+        {
+            if (reader.IsDBNull(index))
+                return 0m;
+
+            object val = reader.GetValue(index);
+            if (val == null)
+                return 0m;
+
+            switch (val)
+            {
+                case decimal d:
+                    return d;
+                case double db:
+                    // double may overflow when converting to decimal; try a safe conversion via string first
+                    if (double.IsInfinity(db) || double.IsNaN(db))
+                        return 0m;
+                    if (decimal.TryParse(db.ToString(CultureInfo.InvariantCulture), NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var fromDouble))
+                        return fromDouble;
+                    try { return Convert.ToDecimal(db); } catch { return 0m; }
+                case float f:
+                    if (float.IsInfinity(f) || float.IsNaN(f))
+                        return 0m;
+                    if (decimal.TryParse(f.ToString(CultureInfo.InvariantCulture), NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var fromFloat))
+                        return fromFloat;
+                    try { return Convert.ToDecimal(f); } catch { return 0m; }
+                case long l:
+                    return Convert.ToDecimal(l);
+                case int i:
+                    return Convert.ToDecimal(i);
+                case short s:
+                    return Convert.ToDecimal(s);
+                case byte b:
+                    return Convert.ToDecimal(b);
+                case string str:
+                    if (string.IsNullOrWhiteSpace(str))
+                        return 0m;
+                    if (decimal.TryParse(str, NumberStyles.Number | NumberStyles.AllowExponent | NumberStyles.AllowCurrencySymbol, CultureInfo.InvariantCulture, out var parsed))
+                        return parsed;
+                    // try with current culture as fallback
+                    if (decimal.TryParse(str, out parsed))
+                        return parsed;
+                    return 0m;
+                default:
+                    try
+                    {
+                        // last resort: try Convert.ToDecimal which handles many numeric types
+                        return Convert.ToDecimal(val);
+                    }
+                    catch
+                    {
+                        // unable to convert, return 0 as safe default
+                        return 0m;
+                    }
+            }
+        }
+    }
+}
+
+
+
+
+

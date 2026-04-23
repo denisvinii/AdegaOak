@@ -17,3 +17,14 @@ SELECT m.data, m.tipo, m.productid, m.produto, m.quantidade, m.responsavel, m.sa
 FROM movimentacoes m
 LEFT JOIN estoque e ON e.productid = m.productid
 ORDER BY m.data DESC
+
+
+SELECT COALESCE(SUM(CASE WHEN m.tipo = 'Saída' THEN (m.quantidade * e.valor_venda) ELSE 0 END), 0) 
+    - COALESCE(SUM(CASE WHEN m.tipo = 'Saída' THEN (m.quantidade * e.valor) ELSE 0 END), 0),
+	COALESCE(SUM(CASE WHEN m.tipo = 'Saída' THEN (m.quantidade * e.valor_venda) ELSE 0 END), 0),
+	COALESCE(SUM(CASE WHEN m.tipo = 'Saída' THEN (m.quantidade * e.valor_venda) ELSE 0 END), 0) * 100 / COALESCE(SUM(CASE WHEN m.tipo = 'Saída' THEN (m.quantidade * e.valor) ELSE 0 END), 0) - 100
+FROM movimentacoes m
+INNER JOIN estoque e ON m.productid = e.productid
+
+SELECT * FROM movimentacoes
+SELECT * FROM estoque

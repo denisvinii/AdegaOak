@@ -2,13 +2,14 @@
 using Npgsql;
 using System.Data;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace Adega_Oak.Services;
 
 public class DatabaseService
 {
-    private readonly string _dbCloudConnectionString = "Host=pg-2f7b3510-vinicarvalho5555-092c.g.aivencloud.com;Port=28066;Database=AdegaOak;Username=avnadmin;Password=AVNS_PSAhQQ5Gj9OY-quuZ5s;Ssl Mode=Require;Trust Server Certificate=true;Pooling=true;Timeout=30";
-    private readonly string _sqliteDbPath = "adega_local.db";
+    private readonly string _dbCloudConnectionString;
+    private readonly string _sqliteDbPath;
     private bool? _isOnlineCache = null;
     private System.Timers.Timer? _connectionCheckTimer;
 
@@ -19,8 +20,16 @@ public class DatabaseService
     public string StatusText => IsOnlineStatus ? "Online" : "Offline (usando local)";
 
     #region Inicialização
-    public DatabaseService()
+    public DatabaseService(IConfiguration configuration)
     {
+        // ✅ Ler do appsettings.json
+        _dbCloudConnectionString = configuration["DatabaseSettings:CloudConnectionString"] 
+            ?? throw new InvalidOperationException(
+                "CloudConnectionString não encontrada em appsettings.json. " +
+                "Adicione: \"DatabaseSettings\": { \"CloudConnectionString\": \"Host=...\" }");
+        
+        _sqliteDbPath = configuration["DatabaseSettings:LocalPath"] ?? "adega_local.db";
+
         try
         {
             // Inicializa o SQLite
@@ -755,6 +764,153 @@ public class DatabaseService
             )";
         cmd.ExecuteNonQuery();
 
+        // Tabela de despesas
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS despesas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                descricao TEXT NOT NULL,
+                valor REAL NOT NULL,
+                data DATETIME NOT NULL,
+                tipo INTEGER NOT NULL,
+                pago BOOLEAN DEFAULT 0,
+                data_pagamento DATETIME,
+                notas TEXT,
+                criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+            )";
+        cmd.ExecuteNonQuery();
+
+        // Tabela de Copoes
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS copoes (
+                copao_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE,
+                descricao TEXT,
+                preco_venda DECIMAL(10,2) NOT NULL,
+                ativo BOOLEAN DEFAULT 1,
+                data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
+            )";
+        cmd.ExecuteNonQuery();
+
+        // Tabela de Composicao de Copoes
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS copao_composicao (
+                composicao_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                copao_id INTEGER NOT NULL,
+                product_id INTEGER NOT NULL,
+                quantidade DECIMAL(10,4) NOT NULL,
+                unidade TEXT NOT NULL,
+                debita_estoque BOOLEAN DEFAULT 0,
+                FOREIGN KEY (copao_id) REFERENCES copoes(copao_id) ON DELETE CASCADE,
+                FOREIGN KEY (product_id) REFERENCES estoque(productid) ON DELETE RESTRICT
+            )";
+        cmd.ExecuteNonQuery();
+
+        // Tabela de Vendas de Copoes
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS copao_vendas (
+                venda_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                copao_id INTEGER NOT NULL,
+                quantidade INTEGER NOT NULL,
+                preco_unitario DECIMAL(10,2) NOT NULL,
+                preco_total DECIMAL(10,2) NOT NULL,
+                data_venda DATETIME DEFAULT CURRENT_TIMESTAMP,
+                responsavel TEXT,
+                observacoes TEXT,
+                FOREIGN KEY (copao_id) REFERENCES copoes(copao_id)
+            )";
+        cmd.ExecuteNonQuery();
+
+        // ==================== COMBOS (NOVO SISTEMA) ====================
+        // Tabela de Combos (Principal)
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS combos (
+                combo_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE,
+                descricao TEXT,
+                preco_venda DECIMAL(10,2) NOT NULL,
+                ativo BOOLEAN DEFAULT 1,
+                data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
+            )";
+        cmd.ExecuteNonQuery();
+
+        // Tabela de Composicao de Combos
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS combo_composicao (
+                composicao_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                combo_id INTEGER NOT NULL,
+                product_id INTEGER NOT NULL,
+                quantidade DECIMAL(10,4) NOT NULL,
+                unidade TEXT NOT NULL,
+                debita_estoque BOOLEAN DEFAULT 0,
+                FOREIGN KEY (combo_id) REFERENCES combos(combo_id) ON DELETE CASCADE,
+                FOREIGN KEY (product_id) REFERENCES estoque(productid) ON DELETE RESTRICT
+            )";
+        cmd.ExecuteNonQuery();
+
+        // Tabela de Vendas de Combos (com tipo_movimento)
+        cmd.CommandText = @"
+            CREATE TABLE IF NOT EXISTS combo_vendas (
+                venda_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                combo_id INTEGER NOT NULL,
+                quantidade INTEGER NOT NULL,
+                preco_unitario DECIMAL(10,2) NOT NULL,
+                preco_total DECIMAL(10,2) NOT NULL,
+                data_venda DATETIME DEFAULT CURRENT_TIMESTAMP,
+                responsavel TEXT,
+                observacoes TEXT,
+                tipo_movimento TEXT DEFAULT 'Normal',
+                FOREIGN KEY (combo_id) REFERENCES combos(combo_id)
+            )";
+        cmd.ExecuteNonQuery();
+
+        // ==================== INDICES ====================
+        // Criar indices para Copoes
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_copao_composicao_copao 
+            ON copao_composicao(copao_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_copao_composicao_product 
+            ON copao_composicao(product_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_copao_vendas_copao 
+            ON copao_vendas(copao_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_copao_vendas_data 
+            ON copao_vendas(data_venda)";
+        cmd.ExecuteNonQuery();
+
+        // Criar indices para Combos
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_combo_composicao_combo 
+            ON combo_composicao(combo_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_combo_composicao_product 
+            ON combo_composicao(product_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_combo_vendas_combo 
+            ON combo_vendas(combo_id)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_combo_vendas_data 
+            ON combo_vendas(data_venda)";
+        cmd.ExecuteNonQuery();
+
+        cmd.CommandText = @"
+            CREATE INDEX IF NOT EXISTS idx_combo_vendas_tipo_movimento 
+            ON combo_vendas(tipo_movimento)";
+        cmd.ExecuteNonQuery();
+
         // Garante que existe pelo menos um usuário admin
         using (var checkCmd = conn.CreateCommand())
         {
@@ -985,6 +1141,92 @@ public class DatabaseService
                     ativo BOOLEAN DEFAULT true,
                     FOREIGN KEY (productid) REFERENCES estoque(productid)
                 );";
+            cmd.ExecuteNonQuery();
+
+            // Tabela de despesas
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS despesas (
+                    id SERIAL PRIMARY KEY,
+                    descricao TEXT NOT NULL,
+                    valor REAL NOT NULL,
+                    data TIMESTAMP NOT NULL,
+                    tipo INTEGER NOT NULL,
+                    pago BOOLEAN DEFAULT false,
+                    data_pagamento TIMESTAMP,
+                    notas TEXT,
+                    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );";
+            cmd.ExecuteNonQuery();
+
+            // ==================== COMBOS (NOVO SISTEMA) ====================
+            // Tabela de Combos (Principal)
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS combos (
+                    combo_id SERIAL PRIMARY KEY,
+                    nome VARCHAR(100) NOT NULL UNIQUE,
+                    descricao VARCHAR(255),
+                    preco_venda DECIMAL(10,2) NOT NULL,
+                    ativo BOOLEAN DEFAULT true,
+                    data_criacao TIMESTAMP DEFAULT NOW()
+                );";
+            cmd.ExecuteNonQuery();
+
+            // Tabela de Composicao de Combos
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS combo_composicao (
+                    composicao_id SERIAL PRIMARY KEY,
+                    combo_id INT NOT NULL,
+                    product_id INT NOT NULL,
+                    quantidade DECIMAL(10,4) NOT NULL,
+                    unidade VARCHAR(20) NOT NULL,
+                    debita_estoque BOOLEAN DEFAULT false,
+                    FOREIGN KEY (combo_id) REFERENCES combos(combo_id) ON DELETE CASCADE,
+                    FOREIGN KEY (product_id) REFERENCES estoque(productid) ON DELETE RESTRICT
+                );";
+            cmd.ExecuteNonQuery();
+
+            // Tabela de Vendas de Combos (com tipo_movimento)
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS combo_vendas (
+                    venda_id SERIAL PRIMARY KEY,
+                    combo_id INT NOT NULL,
+                    quantidade INT NOT NULL,
+                    preco_unitario DECIMAL(10,2) NOT NULL,
+                    preco_total DECIMAL(10,2) NOT NULL,
+                    data_venda TIMESTAMP DEFAULT NOW(),
+                    responsavel VARCHAR(100),
+                    observacoes VARCHAR(255),
+                    tipo_movimento TEXT DEFAULT 'Normal',
+                    FOREIGN KEY (combo_id) REFERENCES combos(combo_id)
+                );";
+            cmd.ExecuteNonQuery();
+
+            // ==================== INDICES ====================
+
+            // Criar indices para Combos
+            cmd.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_combo_composicao_combo 
+                ON combo_composicao(combo_id)";
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_combo_composicao_product 
+                ON combo_composicao(product_id)";
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_combo_vendas_combo 
+                ON combo_vendas(combo_id)";
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_combo_vendas_data 
+                ON combo_vendas(data_venda)";
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_combo_vendas_tipo_movimento 
+                ON combo_vendas(tipo_movimento)";
             cmd.ExecuteNonQuery();
 
             // Garante que existe pelo menos um usuário admin na nuvem

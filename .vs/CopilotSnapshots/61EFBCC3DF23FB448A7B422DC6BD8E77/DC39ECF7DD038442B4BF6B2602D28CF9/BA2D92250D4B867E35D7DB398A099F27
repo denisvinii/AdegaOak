@@ -1,0 +1,90 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
+
+namespace Adega_Oak.Features.Estoque;
+
+public partial class EstoqueViewModel : ObservableObject
+{
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly MainRepository _mainRepository;
+    private readonly CollectionViewSource _estoqueViewSource;
+    private readonly ObservableCollection<EstoqueRepository.EstoqueView> _estoque;
+
+    [ObservableProperty]
+    private string filtro = string.Empty;
+
+    public ICollectionView EstoqueView => _estoqueViewSource.View;
+    public ObservableCollection<EstoqueRepository.EstoqueView> Estoque => _estoque;
+
+    public EstoqueViewModel(EstoqueRepository estoqueRepository, MainRepository mainRepository)
+    {
+        _estoqueRepository = estoqueRepository;
+        _mainRepository = mainRepository;
+        _estoque = new ObservableCollection<EstoqueRepository.EstoqueView>();
+        _estoqueViewSource = new CollectionViewSource { Source = _estoque };
+        _estoqueViewSource.Filter += EstoqueViewSource_Filter;
+        
+        CarregarEstoque();
+    }
+
+    private void EstoqueViewSource_Filter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not EstoqueRepository.EstoqueView item || string.IsNullOrWhiteSpace(Filtro))
+        {
+            e.Accepted = true;
+            return;
+        }
+
+        var filtroLower = Filtro.ToLower();
+        e.Accepted = item.Bebida.Contains(filtroLower, System.StringComparison.OrdinalIgnoreCase) ||
+                     item.Tamanho.Contains(filtroLower, System.StringComparison.OrdinalIgnoreCase) ||
+                     item.Material.Contains(filtroLower, System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    [RelayCommand]
+    public void CarregarEstoque()
+    {
+        var estoqueAtualizado = _estoqueRepository.CarregarEstoqueCompleto();
+        _estoque.Clear();
+        foreach (var item in estoqueAtualizado)
+        {
+            _estoque.Add(item);
+        }
+    }
+
+    // Adicionando o comando AtualizarCommand
+    public IRelayCommand AtualizarCommand => new RelayCommand(CarregarEstoque);
+
+    [RelayCommand]
+    public void ExcluirProduto(EstoqueRepository.EstoqueView produto)
+    {
+        if (produto.Quantidade != 0)
+        {
+            System.Windows.MessageBox.Show("Só é possível excluir produtos com quantidade igual a 0.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+        // Solicita senha com PasswordBox
+        var dialog = new Adega_Oak.Views.PasswordDialog();
+        var result = dialog.ShowDialog();
+        if (result != true)
+            return;
+        var senha = dialog.Password;
+        if (senha != "ADEGA2024")
+        {
+            System.Windows.MessageBox.Show("Senha incorreta.", "Erro", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            return;
+        }
+        _mainRepository.ExcluirProduto(produto.ProductId);
+        CarregarEstoque();
+        System.Windows.MessageBox.Show("Produto excluído com sucesso.", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+    }
+
+    partial void OnFiltroChanged(string value)
+    {
+        _estoqueViewSource.View.Refresh();
+    }
+}}

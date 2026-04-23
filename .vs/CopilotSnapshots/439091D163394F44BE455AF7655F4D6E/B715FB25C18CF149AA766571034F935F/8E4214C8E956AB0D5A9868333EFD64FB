@@ -1,0 +1,85 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+
+namespace Adega_Oak.Features.Drinks;
+
+public partial class DrinksViewModel : ObservableObject
+{
+    private readonly DrinksRepository _drinksRepository;
+    private readonly EstoqueRepository _estoqueRepository;
+
+    [ObservableProperty]
+    private ObservableCollection<DrinksRepository.Drink> drinks = new();
+
+    [ObservableProperty]
+    private DrinksRepository.Drink? selectedDrink;
+
+    [ObservableProperty]
+    private string tamanhoSelecionado = "M";
+
+    [ObservableProperty]
+    private int quantidade = 1;
+
+    [ObservableProperty]
+    private decimal valor = 0;
+
+    [ObservableProperty]
+    private string? responsavel;
+
+    [ObservableProperty]
+    private ObservableCollection<DrinksRepository.DrinkRecipeItem> ingredientes = new();
+
+    public DrinksViewModel(DrinksRepository drinksRepository, EstoqueRepository estoqueRepository)
+    {
+        _drinksRepository = drinksRepository;
+        _estoqueRepository = estoqueRepository;
+        CarregarDrinks();
+    }
+
+    [RelayCommand]
+    private void CarregarDrinks()
+    {
+        Drinks.Clear();
+        foreach (var d in _drinksRepository.GetDrinks())
+            Drinks.Add(d);
+    }
+
+    partial void OnSelectedDrinkChanged(DrinksRepository.Drink? value)
+    {
+        if (value == null) return;
+        Ingredientes.Clear();
+        foreach (var r in _drinksRepository.GetRecipeForDrink(value.DrinkId))
+            Ingredientes.Add(r);
+        Valor = value.PrecoPadrao;
+        TamanhoSelecionado = value.TamanhoPadrao;
+    }
+
+    [RelayCommand]
+    private void RegistrarDrink()
+    {
+        if (SelectedDrink == null)
+        {
+            System.Windows.MessageBox.Show("Selecione um combo de drink ou crie um.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+        if (string.IsNullOrEmpty(Responsavel))
+        {
+            System.Windows.MessageBox.Show("Selecione um responsável.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+
+        // Criar instância e registrar movimentações
+        _drinksRepository.CreateDrinkInstance(SelectedDrink.DrinkId, TamanhoSelecionado, Valor, Responsavel ?? "");
+        System.Windows.MessageBox.Show("Drink registrado com sucesso.", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        CarregarDrinks();
+    }
+
+    [RelayCommand]
+    private void GerenciarCombos()
+    {
+        // Abrir tela de gerenciamento de combos - futura implementação
+        System.Windows.MessageBox.Show("Abrir gerenciamento de combos (ainda não implementado).", "Info", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+    }
+}

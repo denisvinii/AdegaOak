@@ -1,0 +1,217 @@
+﻿using Adega_Oak.Services;
+using System.Data;
+using System.Collections.Generic;
+
+namespace Adega_Oak.Repositories;
+
+public class DrinksRepository
+{
+    private readonly DatabaseService _db;
+    public DrinksRepository(DatabaseService db)
+    {
+        _db = db;
+    }
+
+    public class Drink
+    {
+        public int DrinkId { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string TamanhoPadrao { get; set; } = "M";
+        public decimal PrecoPadrao { get; set; }
+        public int ProductId { get; set; } // product in estoque representing the drink sale
+    }
+
+    public class DrinkRecipeItem
+    {
+        public int DrinkRecipeId { get; set; }
+        public int DrinkId { get; set; }
+        public int ProductId { get; set; }
+        public int QuantidadePorDrink { get; set; }
+    }
+
+    public class DrinkInstance
+    {
+        public int Id { get; set; }
+        public int DrinkId { get; set; }
+        public string Tamanho { get; set; } = "M";
+        public decimal Valor { get; set; }
+        public string Responsavel { get; set; } = string.Empty;
+        public string Observacao { get; set; } = string.Empty;
+        public DateTime Data { get; set; }
+    }
+
+    public IEnumerable<Drink> GetDrinks()
+    {
+        var lista = new List<Drink>();
+        using var conn = _db.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT drink_id, nome, tamanho_padrao, preco_padrao, productid FROM drinks";
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            lista.Add(new Drink
+            {
+                DrinkId = reader.GetInt32(0),
+                Nome = reader.GetString(1),
+                TamanhoPadrao = reader.IsDBNull(2) ? "M" : reader.GetString(2),
+                PrecoPadrao = reader.IsDBNull(3) ? 0 : reader.GetDecimal(3),
+                ProductId = reader.IsDBNull(4) ? 0 : reader.GetInt32(4)
+            });
+        }
+        return lista;
+    }
+
+    public IEnumerable<DrinkRecipeItem> GetRecipeForDrink(int drinkId)
+    {
+        var lista = new List<DrinkRecipeItem>();
+        using var conn = _db.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT id, drink_id, productid, quantidade_por_drink FROM drink_recipes WHERE drink_id = @drinkId";
+        var p = cmd.CreateParameter(); p.ParameterName = "@drinkId"; p.Value = drinkId; cmd.Parameters.Add(p);
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            lista.Add(new DrinkRecipeItem
+            {
+                DrinkRecipeId = reader.GetInt32(0),
+                DrinkId = reader.GetInt32(1),
+                ProductId = reader.GetInt32(2),
+                QuantidadePorDrink = reader.GetInt32(3)
+            });
+        }
+        return lista;
+    }
+
+    private IDbDataParameter AddParameter(IDbCommand cmd, string name, object? value)
+    {
+        var p = cmd.CreateParameter();
+        p.ParameterName = name;
+        p.Value = value ?? (object)DBNull.Value;
+        cmd.Parameters.Add(p);
+        return p;
+    }
+
+    public int CreateDrink(string nome, string tamanhoPadrao, decimal precoPadrao, List<(int productId, int quantidade)> recipe)
+    {
+        using var conn = _db.GetConnection();
+        using var tx = conn.BeginTransaction();
+        try
+        {
+            // Create a product in estoque to represent the drink sale
+            using var cmdMax = conn.CreateCommand();
+            cmdMax.CommandText = "SELECT COALESCE(MAX(productid),0) + 1 FROM estoque";
+            var nextIdObj = cmdMax.ExecuteScalar();
+            int nextId = Convert.ToInt32(nextIdObj);
+
+            using var insertProduto = conn.CreateCommand();
+            insertProduto.CommandText = @"INSERT INTO estoque (productid, bebida, tamanho, material, valor_venda) VALUES (@id, @bebida, @tamanho, @material, @valor)";
+            AddParameter(insertProduto, "@id", nextId);
+            AddParameter(insertProduto, "@bebida", "DRINK - " + nome);
+            AddParameter(insertProduto, "@tamanho", tamanhoPadrao ?? "M");
+            AddParameter(insertProduto, "@material", "Drink");
+            AddParameter(insertProduto, "@valor", precoPadrao);
+            insertProduto.ExecuteNonQuery();
+
+            // Insert into drinks table
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO drinks (nome, tamanho_padrao, preco_padrao, productid) VALUES (@nome, @tamanho, @preco, @productid) RETURNING drink_id";
+            AddParameter(cmd, "@nome", nome);
+            AddParameter(cmd, "@tamanho", tamanhoPadrao);
+            AddParameter(cmd, "@preco", precoPadrao);
+            AddParameter(cmd, "@productid", nextId);
+            var drinkIdObj = cmd.ExecuteScalar();
+            int drinkId = Convert.ToInt32(drinkIdObj);
+
+            // Insert recipe
+            foreach (var item in recipe)
+            {
+                using var rc = conn.CreateCommand();
+                rc.CommandText = "INSERT INTO drink_recipes (drink_id, productid, quantidade_por_drink) VALUES (@did, @pid, @qtd)";
+                AddParameter(rc, "@did", drinkId);
+                AddParameter(rc, "@pid", item.productId);
+                AddParameter(rc, "@qtd", item.quantidade);
+                rc.ExecuteNonQuery();
+            }
+
+            tx.Commit();
+            return drinkId;
+        }
+        catch
+        {
+            tx.Rollback();
+            throw;
+        }
+    }
+
+    public int CreateDrinkInstance(int drinkId, string tamanho, decimal valor, string responsavel, string? observacao = null)
+    {
+        using var conn = _db.GetConnection();
+        using var tx = conn.BeginTransaction();
+        try
+        {
+            // Insert instance
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO drink_instances (drink_id, tamanho, valor, responsavel, observacao, data) VALUES (@did, @tamanho, @valor, @resp, @obs, @data) RETURNING id";
+            AddParameter(cmd, "@did", drinkId);
+            AddParameter(cmd, "@tamanho", tamanho);
+            AddParameter(cmd, "@valor", valor);
+            AddParameter(cmd, "@resp", responsavel);
+            AddParameter(cmd, "@obs", observacao ?? string.Empty);
+            AddParameter(cmd, "@data", DateTime.Now);
+            var instObj = cmd.ExecuteScalar();
+            int instanceId = Convert.ToInt32(instObj);
+
+            // Get drink productid to record sale
+            int drinkProductId = 0;
+            using (var q = conn.CreateCommand())
+            {
+                q.CommandText = "SELECT productid FROM drinks WHERE drink_id = @did";
+                AddParameter(q, "@did", drinkId);
+                var r = q.ExecuteScalar();
+                drinkProductId = r == null ? 0 : Convert.ToInt32(r);
+            }
+
+            // Insert sale movimentacao (1 unidade do produto drink)
+            using (var saleCmd = conn.CreateCommand())
+            {
+                saleCmd.CommandText = @"INSERT INTO movimentacoes (data, tipo, tipo_venda, productid, produto, quantidade, responsavel, saida, valor_unitario) VALUES (@data, @tipo, @tipo_venda, @productid, @produto, @quantidade, @responsavel, @saida, @valor_unitario)";
+                AddParameter(saleCmd, "@data", DateTime.Now);
+                AddParameter(saleCmd, "@tipo", "Saída");
+                AddParameter(saleCmd, "@tipo_venda", "Varejo");
+                AddParameter(saleCmd, "@productid", drinkProductId);
+                AddParameter(saleCmd, "@produto", "DRINK - " + drinkId);
+                AddParameter(saleCmd, "@quantidade", 1);
+                AddParameter(saleCmd, "@responsavel", responsavel);
+                AddParameter(saleCmd, "@saida", "Venda (Drink)");
+                AddParameter(saleCmd, "@valor_unitario", valor);
+                saleCmd.ExecuteNonQuery();
+            }
+
+            // Insert ingredient consumptions as movimentacoes with valor_unitario = 0
+            var recipes = GetRecipeForDrink(drinkId);
+            foreach (var r in recipes)
+            {
+                using var ingCmd = conn.CreateCommand();
+                ingCmd.CommandText = @"INSERT INTO movimentacoes (data, tipo, tipo_venda, productid, produto, quantidade, responsavel, saida, valor_unitario) VALUES (@data, @tipo, @tipo_venda, @productid, @produto, @quantidade, @responsavel, @saida, @valor_unitario)";
+                AddParameter(ingCmd, "@data", DateTime.Now);
+                AddParameter(ingCmd, "@tipo", "Saída");
+                AddParameter(ingCmd, "@tipo_venda", "Varejo");
+                AddParameter(ingCmd, "@productid", r.ProductId);
+                AddParameter(ingCmd, "@produto", r.ProductId);
+                AddParameter(ingCmd, "@quantidade", r.QuantidadePorDrink);
+                AddParameter(ingCmd, "@responsavel", responsavel);
+                AddParameter(ingCmd, "@saida", "Consumo (Drink)");
+                AddParameter(ingCmd, "@valor_unitario", 0);
+                ingCmd.ExecuteNonQuery();
+            }
+
+            tx.Commit();
+            return instanceId;
+        }
+        catch
+        {
+            tx.Rollback();
+            throw;
+        }
+    }
+}

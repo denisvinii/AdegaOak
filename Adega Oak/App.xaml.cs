@@ -20,9 +20,10 @@ public partial class App : Application
     #region Inicialização
     protected override void OnStartup(StartupEventArgs e)
     {
+        // ✅ Configurar builders com appsettings.json
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory());
-            //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         Configuration = builder.Build();
 
@@ -38,21 +39,9 @@ public partial class App : Application
         var historicoRepository = ServiceProvider.GetRequiredService<HistoricoRepository>();
         var saldoRepository = new SaldoRepository(databaseService);
         var estoqueViewModel = new EstoqueViewModel(estoqueRepository, mainRepository);
-        var historicoViewModel = new HistoricoViewModel(historicoRepository);
+        var historicoViewModel = new HistoricoViewModel(historicoRepository, mainRepository);
         var tabelaPrecosViewModel = new TabelaPrecosViewModel(estoqueRepository);
-        var mainWindowViewModel = new MainWindowViewModel(mainRepository, estoqueViewModel, historicoViewModel, saldoRepository, databaseService, tabelaPrecosViewModel);
-
-        // Adiciona ao App.Current.Resources (comentado, pois DI já resolve dependências)
-        /*
-        Resources["DatabaseService"] = databaseService;
-        Resources["MainRepository"] = mainRepository;
-        Resources["EstoqueRepository"] = estoqueRepository;
-        Resources["HistoricoRepository"] = historicoRepository;
-        Resources["EstoqueViewModel"] = estoqueViewModel;
-        Resources["HistoricoViewModel"] = historicoViewModel;
-        Resources["TabelaPrecosViewModel"] = tabelaPrecosViewModel;
-        Resources["MainWindowViewModel"] = mainWindowViewModel;
-        */
+        var mainWindowViewModel = new MainWindowViewModel(mainRepository, estoqueViewModel, historicoViewModel, saldoRepository, databaseService, tabelaPrecosViewModel, Configuration!);
 
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         mainWindow.DataContext = mainWindowViewModel;

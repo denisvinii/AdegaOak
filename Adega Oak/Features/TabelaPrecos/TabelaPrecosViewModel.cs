@@ -39,6 +39,12 @@ public partial class TabelaPrecosViewModel : ObservableObject
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(produto.Descricao))
+        {
+            e.Accepted = false;
+            return;
+        }
+
         e.Accepted = produto.Descricao.Contains(Filtro, System.StringComparison.OrdinalIgnoreCase);
     }
 
@@ -70,12 +76,14 @@ public partial class TabelaPrecosViewModel : ObservableObject
     [RelayCommand]
     private void AtualizarPrecoVenda(ProdutoPrecoItem item)
     {
-        if (item.ValorVenda <= 0)
+        if (item == null || item.ValorVenda <= 0)
             return;
 
         if (!ValidarPrecoMinimo(item.ValorCusto, item.ValorVenda, 1, "de venda", out var precoMinimo))
         {
             item.ValorVenda = precoMinimo;
+            // Salva o valor ajustado mesmo com erro de validação
+            _estoqueRepository.AtualizarPrecoVenda(item.Descricao, item.ValorVenda);
             return;
         }
 
@@ -85,12 +93,14 @@ public partial class TabelaPrecosViewModel : ObservableObject
     [RelayCommand]
     private void AtualizarCaixaPrecos(ProdutoPrecoItem item)
     {
-        if (item.QuantidadeCaixa <= 0 || item.ValorCaixa <= 0)
+        if (item == null || item.QuantidadeCaixa <= 0 || item.ValorCaixa <= 0)
             return;
 
         if (!ValidarPrecoMinimo(item.ValorCusto, item.ValorCaixa, item.QuantidadeCaixa, "de caixa", out var precoMinimo))
         {
             item.ValorCaixa = precoMinimo;
+            // Salva o valor ajustado mesmo com erro de validação
+            _estoqueRepository.AtualizarCaixaPreco(item.Descricao, item.QuantidadeCaixa, item.ValorCaixa);
             return;
         }
 
@@ -100,12 +110,14 @@ public partial class TabelaPrecosViewModel : ObservableObject
     [RelayCommand]
     private void AtualizarPrecoAtacado(ProdutoPrecoItem item)
     {
-        if (item.ValorAtacadoCaixa <= 0)
+        if (item == null || item.ValorAtacadoCaixa <= 0)
             return;
 
         if (!ValidarPrecoMinimo(item.ValorCusto, item.ValorAtacadoCaixa, item.QuantidadeCaixa, "de atacado", out var precoMinimo))
         {
             item.ValorAtacadoCaixa = precoMinimo;
+            // Salva o valor ajustado mesmo com erro de validação
+            _estoqueRepository.AtualizarPrecoAtacado(item.Descricao, item.ValorAtacadoCaixa);
             return;
         }
 
@@ -134,10 +146,13 @@ public partial class TabelaPrecosViewModel : ObservableObject
             var valorVenda = item.ValorVenda > 0 ? item.ValorVenda : item.Valor;
             var quantidadeCaixa = item.QuantidadeCaixa > 0 ? item.QuantidadeCaixa : 1;
             var valorCaixa = item.ValorCaixa > 0 ? item.ValorCaixa : (valorVenda * quantidadeCaixa);
-            var valorAtacadoCaixa = item.ValorAtacadoCaixa > 0 ? item.ValorAtacadoCaixa : valorCaixa;
-            var minimoAtacado = item.QuantidadeMinimaAtacado > 0 ? item.QuantidadeMinimaAtacado : 20;
+            var minimoAtacado = item.QuantidadeMinimaAtacado > 0 ? item.QuantidadeMinimaAtacado : 1;
+            
+            // Atacado = Valor Caixa × Quantidade Mínima (se não foi editado no banco)
+            // Se o valor_atacado_caixa > 0, significa que foi editado manualmente antes
+            var valorAtacadoCaixa = item.ValorAtacadoCaixa > 0 ? item.ValorAtacadoCaixa : (valorCaixa * minimoAtacado);
 
-            _produtos.Add(new ProdutoPrecoItem
+            var produto = new ProdutoPrecoItem
             {
                 ProductId = item.ProductId,
                 Descricao = $"{item.Bebida} - {item.Tamanho} - {item.Material}",
@@ -147,7 +162,12 @@ public partial class TabelaPrecosViewModel : ObservableObject
                 ValorCaixa = valorCaixa,
                 ValorAtacadoCaixa = valorAtacadoCaixa,
                 QuantidadeMinimaAtacado = minimoAtacado
-            });
+            };
+            
+            // Inicializa os valores originais para detectar edições posteriores
+            produto.InicializarValoresOriginais();
+            
+            _produtos.Add(produto);
         }
     }
 
@@ -167,6 +187,10 @@ public class ProdutoPrecoItem : ObservableObject
     public int ProductId { get; set; } = 0;
     public string Descricao { get; set; } = string.Empty;
 
+    // Armazena o valor de atacado original do banco para comparação
+    private decimal _valorAtacadoCaixaOriginal = 0;
+    private decimal _valorCaixaOriginal = 0;
+
     private decimal _valorCusto;
     public decimal ValorCusto
     {
@@ -176,7 +200,6 @@ public class ProdutoPrecoItem : ObservableObject
             if (SetProperty(ref _valorCusto, value))
             {
                 CalcularPorcentagensDeLucro();
-                AtualizarValorCaixa();
             }
         }
     }
@@ -190,7 +213,11 @@ public class ProdutoPrecoItem : ObservableObject
             if (SetProperty(ref _valorVenda, value))
             {
                 CalcularPorcentagensDeLucro();
-                AtualizarValorCaixa();
+                // Só atualiza o valor da caixa se não foi editado manualmente
+                if (!FoiEditadoManualmente(_valorCaixaOriginal, _valorCaixa))
+                {
+                    AtualizarValorCaixa();
+                }
             }
         }
     }
@@ -218,6 +245,11 @@ public class ProdutoPrecoItem : ObservableObject
             if (SetProperty(ref _valorCaixa, value))
             {
                 CalcularPorcentagensDeLucro();
+                // Se o valor de caixa muda, recalcula o atacado (a menos que tenha sido editado)
+                if (!FoiEditadoManualmente(_valorAtacadoCaixaOriginal, _valorAtacadoCaixa))
+                {
+                    AtualizarValorAtacado();
+                }
             }
         }
     }
@@ -235,11 +267,21 @@ public class ProdutoPrecoItem : ObservableObject
         }
     }
 
-    private int _quantidadeMinimaAtacado = 20;
+    private int _quantidadeMinimaAtacado = 1;
     public int QuantidadeMinimaAtacado
     {
         get => _quantidadeMinimaAtacado;
-        set => SetProperty(ref _quantidadeMinimaAtacado, value);
+        set
+        {
+            if (SetProperty(ref _quantidadeMinimaAtacado, value))
+            {
+                // Se a quantidade mínima muda, recalcula o atacado (a menos que tenha sido editado)
+                if (!FoiEditadoManualmente(_valorAtacadoCaixaOriginal, _valorAtacadoCaixa))
+                {
+                    AtualizarValorAtacado();
+                }
+            }
+        }
     }
 
     private decimal _porcentagemLucro;
@@ -261,6 +303,19 @@ public class ProdutoPrecoItem : ObservableObject
     {
         get => _porcentagemLucroAtacado;
         private set => SetProperty(ref _porcentagemLucroAtacado, value);
+    }
+
+    /// <summary>
+    /// Detecta se um valor foi editado manualmente comparando com o original do banco
+    /// </summary>
+    private bool FoiEditadoManualmente(decimal valorOriginal, decimal valorAtual)
+    {
+        // Se o valor original é 0 (sem valor no banco), não foi editado manualmente
+        if (valorOriginal <= 0)
+            return false;
+
+        // Se o valor atual é diferente do original, foi editado
+        return Math.Abs(valorAtual - valorOriginal) > 0.01m;
     }
 
     /// <summary>
@@ -291,5 +346,28 @@ public class ProdutoPrecoItem : ObservableObject
         {
             ValorCaixa = ValorVenda * QuantidadeCaixa;
         }
+    }
+
+    /// <summary>
+    /// Atualiza o valor de atacado automaticamente baseado no Valor Caixa
+    /// Fórmula: Valor Caixa × Quantidade Mínima Atacado
+    /// Só atualiza se o usuário não editou manualmente o campo
+    /// </summary>
+    private void AtualizarValorAtacado()
+    {
+        if (_valorCaixa > 0 && _quantidadeMinimaAtacado > 0)
+        {
+            ValorAtacadoCaixa = _valorCaixa * _quantidadeMinimaAtacado;
+        }
+    }
+
+    /// <summary>
+    /// Inicializa os valores originais carregados do banco (para detectar edições posteriores)
+    /// Deve ser chamado após o carregamento inicial dos dados
+    /// </summary>
+    public void InicializarValoresOriginais()
+    {
+        _valorCaixaOriginal = _valorCaixa;
+        _valorAtacadoCaixaOriginal = _valorAtacadoCaixa;
     }
 }

@@ -1,0 +1,275 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Windows;
+
+namespace Adega_Oak.Features.Despesas;
+
+public partial class DespesaViewModel : ObservableObject
+{
+    private readonly DespesaRepository _despesaRepository;
+    private readonly SaldoRepository _saldoRepository;
+
+    [ObservableProperty]
+    private ObservableCollection<DespesaRepository.Despesa> despesas = new();
+
+    [ObservableProperty]
+    private decimal totalDespesasNaoPagas;
+
+    [ObservableProperty]
+    private decimal totalDespesasPagas;
+
+    [ObservableProperty]
+    private decimal saldoAtualizado;
+
+    [ObservableProperty]
+    private string descricao = string.Empty;
+
+    [ObservableProperty]
+    private decimal valor;
+
+    [ObservableProperty]
+    private DateTime dataDespesa = DateTime.Now;
+
+    [ObservableProperty]
+    private DespesaRepository.TipoDespesa tipoDespesaSelecionado = DespesaRepository.TipoDespesa.Outros;
+
+    [ObservableProperty]
+    private string notas = string.Empty;
+
+    [ObservableProperty]
+    private int mesSelecionado = DateTime.Now.Month;
+
+    [ObservableProperty]
+    private int anoSelecionado = DateTime.Now.Year;
+
+    [ObservableProperty]
+    private ObservableCollection<int> meses = new(Enumerable.Range(1, 12));
+
+    [ObservableProperty]
+    private ObservableCollection<int> anos = new(Enumerable.Range(DateTime.Now.Year - 5, 10));
+
+    [ObservableProperty]
+    private ObservableCollection<string> tiposDespesa = new();
+
+    [ObservableProperty]
+    private DespesaRepository.Despesa? despesaSelecionada;
+
+    [ObservableProperty]
+    private bool emEdicao;
+
+    public DespesaViewModel(DespesaRepository despesaRepository, SaldoRepository saldoRepository)
+    {
+        _despesaRepository = despesaRepository;
+        _saldoRepository = saldoRepository;
+        
+        InicializarTipos();
+        CarregarDespesas();
+        AtualizarTotais();
+        AtualizarSaldo();
+    }
+
+    private void InicializarTipos()
+    {
+        TiposDespesa.Clear();
+        foreach (TipoDespesa tipo in Enum.GetValues(typeof(TipoDespesa)))
+        {
+            TiposDespesa.Add(TipoDespesaHelper.GetDisplayName(tipo));
+        }
+    }
+
+    [RelayCommand]
+    public void CarregarDespesas()
+    {
+        var despesasCarregadas = _despesaRepository.CarregarTodasDespesas();
+        Despesas.Clear();
+        foreach (var despesa in despesasCarregadas.OrderByDescending(d => d.Data))
+        {
+            Despesas.Add(despesa);
+        }
+        AtualizarTotais();
+    }
+
+    [RelayCommand]
+    public void AdicionarDespesa()
+    {
+        if (string.IsNullOrWhiteSpace(Descricao) || Valor <= 0)
+        {
+            MessageBox.Show("Por favor, preencha todos os campos obrigatórios.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var despesa = new Despesa
+        {
+            Descricao = Descricao,
+            Valor = Valor,
+            Data = DataDespesa,
+            Tipo = TipoDespesaSelecionado,
+            Notas = Notas,
+            Pago = false,
+            CriadoEm = DateTime.Now
+        };
+
+        _despesaRepository.AdicionarDespesa(despesa);
+        LimparFormulario();
+        CarregarDespesas();
+        AtualizarSaldo();
+        MessageBox.Show("Despesa adicionada com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    [RelayCommand]
+    public void EditarDespesa()
+    {
+        if (DespesaSelecionada == null)
+        {
+            MessageBox.Show("Selecione uma despesa para editar.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        EmEdicao = true;
+        Descricao = DespesaSelecionada.Descricao;
+        Valor = DespesaSelecionada.Valor;
+        DataDespesa = DespesaSelecionada.Data;
+        TipoDespesaSelecionado = DespesaSelecionada.Tipo;
+        Notas = DespesaSelecionada.Notas ?? string.Empty;
+    }
+
+    [RelayCommand]
+    public void SalvarEdicao()
+    {
+        if (DespesaSelecionada == null)
+        {
+            MessageBox.Show("Nenhuma despesa selecionada.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        DespesaSelecionada.Descricao = Descricao;
+        DespesaSelecionada.Valor = Valor;
+        DespesaSelecionada.Data = DataDespesa;
+        DespesaSelecionada.Tipo = TipoDespesaSelecionado;
+        DespesaSelecionada.Notas = Notas;
+
+        _despesaRepository.AtualizarDespesa(DespesaSelecionada);
+        LimparFormulario();
+        CarregarDespesas();
+        AtualizarSaldo();
+        MessageBox.Show("Despesa atualizada com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    [RelayCommand]
+    public void CancelarEdicao()
+    {
+        EmEdicao = false;
+        LimparFormulario();
+    }
+
+    [RelayCommand]
+    public void DeletarDespesa()
+    {
+        if (DespesaSelecionada == null)
+        {
+            MessageBox.Show("Selecione uma despesa para excluir.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // Solicita senha
+        var dialog = new Adega_Oak.Views.PasswordDialog();
+        var result = dialog.ShowDialog();
+        if (result != true)
+            return;
+
+        var senha = dialog.Password;
+        if (senha != "ADEGA2024")
+        {
+            MessageBox.Show("Senha incorreta.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var resultadoConfirmacao = MessageBox.Show(
+            $"Tem certeza que deseja excluir a despesa '{DespesaSelecionada.Descricao}'?\n\nEsta ação não poderá ser desfeita.",
+            "Confirmar Exclusão",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question
+        );
+
+        if (resultadoConfirmacao == MessageBoxResult.Yes)
+        {
+            _despesaRepository.DeletarDespesa(DespesaSelecionada.Id);
+            CarregarDespesas();
+            AtualizarSaldo();
+            MessageBox.Show("Despesa excluída com sucesso.", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    [RelayCommand]
+    public void MarcarComoPago()
+    {
+        if (DespesaSelecionada == null)
+        {
+            MessageBox.Show("Selecione uma despesa.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        DespesaSelecionada.Pago = true;
+        DespesaSelecionada.DataPagamento = DateTime.Now;
+        _despesaRepository.AtualizarDespesa(DespesaSelecionada);
+        CarregarDespesas();
+        AtualizarSaldo();
+    }
+
+    [RelayCommand]
+    public void MarcarComoNaoPago()
+    {
+        if (DespesaSelecionada == null)
+        {
+            MessageBox.Show("Selecione uma despesa.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        DespesaSelecionada.Pago = false;
+        DespesaSelecionada.DataPagamento = null;
+        _despesaRepository.AtualizarDespesa(DespesaSelecionada);
+        CarregarDespesas();
+        AtualizarSaldo();
+    }
+
+    [RelayCommand]
+    public void FiltrarPorPeriodo()
+    {
+        var dataInicio = new DateTime(AnoSelecionado, MesSelecionado, 1);
+        var dataFim = dataInicio.AddMonths(1).AddDays(-1);
+
+        var despesasFiltradas = _despesaRepository.CarregarDespesasPorPeriodo(dataInicio, dataFim);
+        Despesas.Clear();
+        foreach (var despesa in despesasFiltradas.OrderByDescending(d => d.Data))
+        {
+            Despesas.Add(despesa);
+        }
+        AtualizarTotais();
+    }
+
+    private void AtualizarTotais()
+    {
+        TotalDespesasNaoPagas = Despesas.Where(d => !d.Pago).Sum(d => d.Valor);
+        TotalDespesasPagas = Despesas.Where(d => d.Pago).Sum(d => d.Valor);
+    }
+
+    private void AtualizarSaldo()
+    {
+        var saldo = _saldoRepository.ObterSaldoGeral();
+        var totalNaoPago = _despesaRepository.ObterTotalDespesasNaoPagas();
+        SaldoAtualizado = saldo.Saldo - totalNaoPago;
+    }
+
+    private void LimparFormulario()
+    {
+        Descricao = string.Empty;
+        Valor = 0;
+        DataDespesa = DateTime.Now;
+        TipoDespesaSelecionado = TipoDespesa.Outros;
+        Notas = string.Empty;
+        DespesaSelecionada = null;
+        EmEdicao = false;
+    }
+}

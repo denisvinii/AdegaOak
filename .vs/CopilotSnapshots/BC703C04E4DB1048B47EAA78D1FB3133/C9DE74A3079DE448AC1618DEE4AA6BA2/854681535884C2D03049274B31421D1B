@@ -1,0 +1,211 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+
+namespace Adega_Oak.Features.VendaCopao;
+
+public partial class VendaCopaoViewModel : ObservableObject
+{
+    private readonly CopaoRepository _copaoRepository;
+    private readonly MainRepository _mainRepository;
+
+    // Formulário - Vender Copão
+    [ObservableProperty]
+    private ObservableCollection<CopaoRepository.Copao> copoesDisponiveis = new();
+
+    [ObservableProperty]
+    private CopaoRepository.Copao? copaoSelecionado;
+
+    [ObservableProperty]
+    private int quantidadeCopoes = 1;
+
+    [ObservableProperty]
+    private decimal precoTotal = 0;
+
+    [ObservableProperty]
+    private string responsavelVenda = string.Empty;
+
+    [ObservableProperty]
+    private string? observacoes;
+
+    [ObservableProperty]
+    private string? mensagemErro;
+
+    [ObservableProperty]
+    private bool temErro = false;
+
+    // Histórico - Filtros
+    [ObservableProperty]
+    private int mesFiltro = DateTime.Now.Month;
+
+    [ObservableProperty]
+    private int anoFiltro = DateTime.Now.Year;
+
+    [ObservableProperty]
+    private ObservableCollection<int> meses = new(Enumerable.Range(1, 12));
+
+    [ObservableProperty]
+    private ObservableCollection<int> anos = new(Enumerable.Range(DateTime.Now.Year - 1, 5));
+
+    [ObservableProperty]
+    private ObservableCollection<CopaoRepository.CopaoVenda> historicoVendas = new();
+
+    [ObservableProperty]
+    private decimal totalVendidoPeriodo = 0;
+
+    // Lista de responsáveis
+    private ObservableCollection<string> _responsaveis = new();
+    public ObservableCollection<string> Responsaveis
+    {
+        get => _responsaveis;
+        set => SetProperty(ref _responsaveis, value);
+    }
+
+    private string? _responsavelFiltro;
+    public string? ResponsavelFiltro
+    {
+        get => _responsavelFiltro;
+        set
+        {
+            if (SetProperty(ref _responsavelFiltro, value))
+            {
+                ResponsavelVenda = value ?? string.Empty;
+            }
+        }
+    }
+
+    public VendaCopaoViewModel(CopaoRepository copaoRepository, MainRepository mainRepository)
+    {
+        _copaoRepository = copaoRepository;
+        _mainRepository = mainRepository;
+
+        CarregarCopoesDisponiveis();
+        CarregarResponsaveis();
+        CarregarHistoricoVendas();
+    }
+
+    [RelayCommand]
+    public void CarregarCopoesDisponiveis()
+    {
+        var copoes = _copaoRepository.CarregarCopoes(apenasAtivos: true);
+        CopoesDisponiveis.Clear();
+        foreach (var copao in copoes)
+        {
+            CopoesDisponiveis.Add(copao);
+        }
+        LimparFormulario();
+        TemErro = false;
+        MensagemErro = null;
+    }
+
+    [RelayCommand]
+    public void SelecionarCopao(CopaoRepository.Copao copao)
+    {
+        CopaoSelecionado = copao;
+        AtualizarPrecoTotal();
+        TemErro = false;
+        MensagemErro = null;
+    }
+
+    private void AtualizarPrecoTotal()
+    {
+        if (CopaoSelecionado == null)
+        {
+            PrecoTotal = 0;
+            return;
+        }
+
+        PrecoTotal = CopaoSelecionado.PrecoVenda * QuantidadeCopoes;
+    }
+
+    [RelayCommand]
+    public void CarregarResponsaveis()
+    {
+        var responsaveis = _mainRepository.CarregarResponsaveis();
+        Responsaveis = new ObservableCollection<string>(responsaveis);
+    }
+
+    [RelayCommand]
+    public void VenderCopao()
+    {
+        // Validações
+        if (CopaoSelecionado == null)
+        {
+            TemErro = true;
+            MensagemErro = "Selecione um copão";
+            return;
+        }
+
+        if (QuantidadeCopoes <= 0)
+        {
+            TemErro = true;
+            MensagemErro = "Quantidade deve ser maior que zero";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ResponsavelVenda))
+        {
+            TemErro = true;
+            MensagemErro = "Selecione um responsável";
+            return;
+        }
+
+        try
+        {
+            // Tenta vender (dentro disso já faz validação de estoque)
+            _copaoRepository.VenderCopao(
+                CopaoSelecionado.CopaoId,
+                QuantidadeCopoes,
+                ResponsavelVenda,
+                Observacoes);
+
+            System.Windows.MessageBox.Show(
+                $"Venda de {QuantidadeCopoes} copão(ões) registrada com sucesso!\nTotal: R$ {PrecoTotal:F2}",
+                "Sucesso",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+
+            // Limpa e recarrega
+            LimparFormulario();
+            CarregarHistoricoVendas();
+            TemErro = false;
+            MensagemErro = null;
+        }
+        catch (InvalidOperationException ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro na validação: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro ao registrar venda: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void CarregarHistoricoVendas()
+    {
+        var vendas = _copaoRepository.CarregarHistoricoVendas(MesFiltro, AnoFiltro);
+        HistoricoVendas.Clear();
+        foreach (var venda in vendas)
+        {
+            HistoricoVendas.Add(venda);
+        }
+
+        TotalVendidoPeriodo = _copaoRepository.ObterTotalVendidoPeriodo(MesFiltro, AnoFiltro);
+    }
+
+    private void LimparFormulario()
+    {
+        CopaoSelecionado = null;
+        QuantidadeCopoes = 1;
+        PrecoTotal = 0;
+        ResponsavelVenda = string.Empty;
+        ResponsavelFiltro = null;
+        Observacoes = null;
+    }
+}

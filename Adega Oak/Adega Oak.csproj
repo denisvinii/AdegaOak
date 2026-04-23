@@ -15,9 +15,13 @@
   
   <ItemGroup>
     <Compile Remove="Controls\**" />
+    <Compile Remove="Features\Drinks\**" />
     <EmbeddedResource Remove="Controls\**" />
+    <EmbeddedResource Remove="Features\Drinks\**" />
     <None Remove="Controls\**" />
+    <None Remove="Features\Drinks\**" />
     <Page Remove="Controls\**" />
+    <Page Remove="Features\Drinks\**" />
   </ItemGroup>
  
   <ItemGroup>
@@ -34,6 +38,9 @@
 
   <ItemGroup>
     <Content Include="AdegaOak.ico" />
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +50,10 @@
     <Resource Include="Themes\Light.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\VendaCopao\" />
   </ItemGroup>
 
 </Project>

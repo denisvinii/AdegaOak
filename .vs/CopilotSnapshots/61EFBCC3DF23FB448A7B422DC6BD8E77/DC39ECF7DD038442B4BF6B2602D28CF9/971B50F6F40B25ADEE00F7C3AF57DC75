@@ -1,0 +1,94 @@
+﻿using Adega_Oak.Repositories;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+
+namespace Adega_Oak.Features.Estoque;
+
+public partial class EstoqueViewModel : ObservableObject
+{
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly MainRepository _mainRepository;
+    private ObservableCollection<EstoqueRepository.EstoqueView> _todoEstoque = new();
+
+    [ObservableProperty]
+    private ObservableCollection<EstoqueRepository.EstoqueView> estoque = new();
+
+    [ObservableProperty]
+    private string filtro = string.Empty;
+
+    public EstoqueViewModel(EstoqueRepository estoqueRepository, MainRepository mainRepository)
+    {
+        _estoqueRepository = estoqueRepository;
+        _mainRepository = mainRepository;
+        CarregarEstoque();
+    }
+
+    [RelayCommand]
+    public void CarregarEstoque()
+    {
+        var estoqueAtualizado = _estoqueRepository.CarregarEstoqueCompleto();
+        _todoEstoque.Clear();
+        foreach (var item in estoqueAtualizado)
+        {
+            _todoEstoque.Add(item);
+        }
+        AplicarFiltro();
+    }
+
+    public IRelayCommand AtualizarCommand => new RelayCommand(CarregarEstoque);
+
+    [RelayCommand]
+    public void ExcluirProduto(EstoqueRepository.EstoqueView produto)
+    {
+        if (produto.Quantidade != 0)
+        {
+            System.Windows.MessageBox.Show("Só é possível excluir produtos com quantidade igual a 0.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            return;
+        }
+        // Solicita senha com PasswordBox
+        var dialog = new Adega_Oak.Views.PasswordDialog();
+        var result = dialog.ShowDialog();
+        if (result != true)
+            return;
+        var senha = dialog.Password;
+        if (senha != "ADEGA2024")
+        {
+            System.Windows.MessageBox.Show("Senha incorreta.", "Erro", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            return;
+        }
+        _mainRepository.ExcluirProduto(produto.ProductId);
+        CarregarEstoque();
+        System.Windows.MessageBox.Show("Produto excluído com sucesso.", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+    }
+
+    private void AplicarFiltro()
+    {
+        Estoque.Clear();
+
+        if (string.IsNullOrWhiteSpace(Filtro))
+        {
+            foreach (var item in _todoEstoque)
+            {
+                Estoque.Add(item);
+            }
+            return;
+        }
+
+        var filtroLower = Filtro.ToLower();
+        foreach (var item in _todoEstoque)
+        {
+            if (item.Bebida.ToLower().Contains(filtroLower) ||
+                item.Tamanho.ToLower().Contains(filtroLower) ||
+                item.Material.ToLower().Contains(filtroLower))
+            {
+                Estoque.Add(item);
+            }
+        }
+    }
+
+    partial void OnFiltroChanged(string value)
+    {
+        AplicarFiltro();
+    }
+}

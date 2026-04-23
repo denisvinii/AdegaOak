@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Adega_Oak.Features.Historico;
 
@@ -9,7 +10,11 @@ public partial class HistoricoViewModel : ObservableObject
 {
     #region Campos
     private readonly HistoricoRepository _historicoRepository;
+    private readonly MainRepository _mainRepository;
     private string _tipoVendaFiltro = "Todos";
+    private string _tipoMovimentacaoFiltro = "Todos";
+    private string _responsavelFiltro = "Todos";
+    private List<MainRepository.Movimentacao> _todosMovimentos = new();
     #endregion
 
     #region Propriedades
@@ -25,7 +30,7 @@ public partial class HistoricoViewModel : ObservableObject
     [ObservableProperty]
     private DateTime dataSelecionada = DateTime.Today;
 
-    // Novo: Filtro de tipo de venda
+    // Filtro de tipo de venda
     public string TipoVendaFiltro
     {
         get => _tipoVendaFiltro;
@@ -33,7 +38,33 @@ public partial class HistoricoViewModel : ObservableObject
         {
             if (SetProperty(ref _tipoVendaFiltro, value))
             {
-                CarregarHistorico();
+                AplicarFiltros();
+            }
+        }
+    }
+
+    // Novo: Filtro de tipo de movimentação (Entrada/Saída)
+    public string TipoMovimentacaoFiltro
+    {
+        get => _tipoMovimentacaoFiltro;
+        set
+        {
+            if (SetProperty(ref _tipoMovimentacaoFiltro, value))
+            {
+                AplicarFiltros();
+            }
+        }
+    }
+
+    // Novo: Filtro de responsável
+    public string ResponsavelFiltro
+    {
+        get => _responsavelFiltro;
+        set
+        {
+            if (SetProperty(ref _responsavelFiltro, value))
+            {
+                AplicarFiltros();
             }
         }
     }
@@ -44,13 +75,29 @@ public partial class HistoricoViewModel : ObservableObject
     [ObservableProperty]
     private decimal totalAtacadoDia = 0;
 
+    // Novo: Totais de entrada e saída
+    [ObservableProperty]
+    private decimal totalEntradas = 0;
+
+    [ObservableProperty]
+    private decimal totalSaidas = 0;
+
+    [ObservableProperty]
+    private decimal totalGeral = 0;
+
     public ObservableCollection<string> TiposVendaFiltro { get; } = new() { "Todos", "Varejo", "Atacado" };
+    public ObservableCollection<string> TiposMovimentacaoFiltro { get; } = new() { "Todos", "Entrada", "Saída" };
+    
+    [ObservableProperty]
+    private ObservableCollection<string> responsavelFiltroOpcoes = new();
     #endregion
 
     #region Construtor
-    public HistoricoViewModel(HistoricoRepository historicoRepository)
+    public HistoricoViewModel(HistoricoRepository historicoRepository, MainRepository mainRepository)
     {
         _historicoRepository = historicoRepository;
+        _mainRepository = mainRepository;
+        CarregarResponsaveis();
         CarregarHistorico();
     }
     #endregion
@@ -58,19 +105,71 @@ public partial class HistoricoViewModel : ObservableObject
     #region Métodos
     public void CarregarHistorico()
     {
-        var todosMovimentos = _historicoRepository.CarregarHistorico();
-        
-        // Aplicar filtro de tipo de venda
-        if (this.TipoVendaFiltro == "Varejo")
+        _todosMovimentos = _historicoRepository.CarregarHistorico();
+        AplicarFiltros();
+    }
+
+    private void AplicarFiltros()
+    {
+        var movimentosFiltrados = _todosMovimentos;
+
+        // Filtro de tipo de venda
+        if (TipoVendaFiltro == "Varejo")
         {
-            todosMovimentos = todosMovimentos.Where(m => m.TipoVenda == "Varejo" || string.IsNullOrEmpty(m.TipoVenda)).ToList();
+            movimentosFiltrados = movimentosFiltrados
+                .Where(m => m.TipoVenda == "Varejo" || string.IsNullOrEmpty(m.TipoVenda))
+                .ToList();
         }
-        else if (this.TipoVendaFiltro == "Atacado")
+        else if (TipoVendaFiltro == "Atacado")
         {
-            todosMovimentos = todosMovimentos.Where(m => m.TipoVenda == "Atacado").ToList();
+            movimentosFiltrados = movimentosFiltrados
+                .Where(m => m.TipoVenda == "Atacado")
+                .ToList();
         }
-        
-        Historico = new ObservableCollection<MainRepository.Movimentacao>(todosMovimentos);
+
+        // Filtro de tipo de movimentação (Entrada/Saída)
+        if (TipoMovimentacaoFiltro == "Entrada")
+        {
+            movimentosFiltrados = movimentosFiltrados
+                .Where(m => m.Tipo == "Entrada")
+                .ToList();
+        }
+        else if (TipoMovimentacaoFiltro == "Saída")
+        {
+            movimentosFiltrados = movimentosFiltrados
+                .Where(m => m.Tipo == "Saída")
+                .ToList();
+        }
+
+        // Filtro de responsável
+        if (ResponsavelFiltro != "Todos")
+        {
+            movimentosFiltrados = movimentosFiltrados
+                .Where(m => m.Responsavel == ResponsavelFiltro)
+                .ToList();
+        }
+
+        Historico = new ObservableCollection<MainRepository.Movimentacao>(movimentosFiltrados);
+        CalcularTotais();
+    }
+
+    private void CalcularTotais()
+    {
+        TotalEntradas = Historico
+            .Where(m => m.Tipo == "Entrada")
+            .Sum(m => m.ValorTotal);
+
+        TotalSaidas = Historico
+            .Where(m => m.Tipo == "Saída")
+            .Sum(m => m.ValorTotal);
+
+        TotalGeral = TotalEntradas + TotalSaidas;
+    }
+
+    private void CarregarResponsaveis()
+    {
+        var responsaveis = _mainRepository.CarregarResponsaveis();
+        ResponsavelFiltroOpcoes = new ObservableCollection<string>(new[] { "Todos" }.Concat(responsaveis));
     }
     #endregion
 
@@ -93,16 +192,14 @@ public partial class HistoricoViewModel : ObservableObject
         // Gera relatório diário para a data selecionada
         RelatorioDiario = _historicoRepository.GerarRelatorioDiario(DataSelecionada);
         
-        // Calcular totais por tipo de venda
+        // Calcular totais por tipo de venda usando os dados do relatório (não do Historico que pode estar filtrado)
         if (RelatorioDiario != null)
         {
-            var vendas = Historico.Where(m => m.Data.Date == DataSelecionada.Date && m.Tipo == "Saída").ToList();
-            
-            TotalVarejoDia = vendas
+            TotalVarejoDia = RelatorioDiario.Movimentacoes
                 .Where(m => m.TipoVenda == "Varejo" || string.IsNullOrEmpty(m.TipoVenda))
                 .Sum(m => m.ValorTotal);
             
-            TotalAtacadoDia = vendas
+            TotalAtacadoDia = RelatorioDiario.Movimentacoes
                 .Where(m => m.TipoVenda == "Atacado")
                 .Sum(m => m.ValorTotal);
         }

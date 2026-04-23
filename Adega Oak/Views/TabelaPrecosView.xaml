@@ -60,7 +60,7 @@
                          Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                          Margin="0,0,0,8"/>
                 
-                <TextBlock Text="Clique para editar - Enter confirma - Esc cancela"
+                <TextBlock Text=" Clique para editar - Enter confirma - Esc cancela "
                          Style="{StaticResource MaterialDesignCaptionTextBlock}"
                          Opacity="0.7"
                          Margin="0,0,0,12"/>
@@ -110,6 +110,8 @@
                                       CanUserDeleteRows="False"
                                       SelectedItem="{Binding ProdutoSelecionado}"
                                       PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                                      PreviewKeyDown="DataGrid_PreviewKeyDown"
+                                      CellEditEnding="DataGrid_CellEditEnding"
                                       Background="{DynamicResource MaterialDesignPaper}"
                                       RowHeight="45">
                                 <DataGrid.Columns>
@@ -184,6 +186,8 @@
                                       CanUserDeleteRows="False"
                                       SelectedItem="{Binding ProdutoSelecionado}"
                                       PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                                      PreviewKeyDown="DataGrid_PreviewKeyDown"
+                                      CellEditEnding="DataGrid_CellEditEnding"
                                       Background="{DynamicResource MaterialDesignPaper}"
                                       RowHeight="45">
                                 <DataGrid.Columns>
@@ -258,6 +262,7 @@
                                       CanUserDeleteRows="False"
                                       SelectedItem="{Binding ProdutoSelecionado}"
                                       PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                                      CellEditEnding="DataGrid_CellEditEnding"
                                       Background="{DynamicResource MaterialDesignPaper}"
                                       RowHeight="45">
                                 <DataGrid.Columns>

@@ -1,0 +1,1238 @@
+﻿using Adega_Oak.Features.Estoque;
+using Adega_Oak.Features.Historico;
+using Adega_Oak.Features.Saldo;
+using Adega_Oak.Features.TabelaPrecos;
+using Adega_Oak.Features.Despesas;
+using Adega_Oak.Features.Combos;
+using Adega_Oak.Features.VendaCombos;
+using Adega_Oak.Repositories;
+using Adega_Oak.Services;
+using Adega_Oak.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
+using System.Windows;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Adega_Oak.Features.MainWindow;
+
+public partial class MainWindowViewModel : ObservableObject
+{
+    #region Campos
+    private readonly MainRepository _mainRepository;
+    private readonly EstoqueViewModel _estoqueViewModel;
+    private readonly HistoricoViewModel _historicoViewModel;
+    private readonly DatabaseService _databaseService;
+    private readonly InicioView _inicioView;
+    private readonly EstoqueView _estoqueView;
+    private readonly HistoricoView _historicoView;
+    private readonly TabelaPrecosViewModel _tabelaPrecosViewModel;
+    private readonly TabelaPrecosView _tabelaPrecosView;
+    private readonly SaldoRepository _saldoRepository;
+    private readonly SaldoViewModel _saldoViewModel;
+    private readonly SaldoView _saldoView;
+    private readonly DespesaRepository _despesaRepository;
+    private readonly DespesaViewModel _despesaViewModel;
+    private readonly DespesasView _despesasView;
+    private readonly EstoqueRepository _estoqueRepository;
+    private readonly ComboRepository _comboRepository;
+    private readonly ComboViewModel _comboViewModel;
+    private readonly Views.ComboView _comboView;
+    private readonly VendaComboViewModel _vendaComboViewModel;
+    private readonly VendaComboView _vendaComboView;
+    #endregion
+
+    #region Propriedades
+    [ObservableProperty]
+    private ObservableCollection<ProdutoSelecionadoItem> produtosSelecionados = new();
+
+    [ObservableProperty]
+    private ObservableCollection<MainRepository.Produto> produtos = new();
+
+    [ObservableProperty]
+    private ObservableCollection<MainRepository.Produto> produtosFiltrados = new();
+
+    [ObservableProperty]
+    private MainRepository.Produto? produtoSelecionado;
+
+    [ObservableProperty]
+    private string quantidade = "";
+
+    [ObservableProperty]
+    private object? currentView;
+
+    [ObservableProperty]
+    private string tipoMovimentacao = "Saída";
+
+    [ObservableProperty]
+    private string? tipoSaida;
+
+    [ObservableProperty]
+    private bool isSaida;
+
+    // computed helper
+    public bool IsEntrada => !IsSaida;
+
+    [ObservableProperty]
+    private ObservableCollection<string> responsaveis = new();
+
+    [ObservableProperty]
+    private string? responsavelSelecionado;
+
+    [ObservableProperty]
+    private decimal valorTotalSelecionado;
+
+    [ObservableProperty]
+    private string novoProdutoBebida = "";
+
+    [ObservableProperty]
+    private string novoProdutoTamanho = "";
+
+    [ObservableProperty]
+    private string? novoProdutoMaterial = null;
+
+    [ObservableProperty]
+    private string valorUnitario = "0";
+
+    [ObservableProperty]
+    private string statusText = "Offline (usando local)";
+
+    [ObservableProperty]
+    private string? produtoFiltroTexto;
+
+    partial void OnProdutoFiltroTextoChanged(string? value)
+    {
+        // Quando o texto do filtro muda, atualizar ProdutosFiltrados
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            // Se vazio, mostrar todos
+            ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(Produtos);
+            return;
+        }
+
+        // Filtrar por descrição
+        var filtrados = Produtos
+            .Where(p => p.Descricao.Contains(value, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(filtrados);
+    }
+
+    public string? _tipoUnidadeSaida = "Unidade";
+    public string? TipoUnidadeSaida
+    {
+        get => _tipoUnidadeSaida;
+        set => SetProperty(ref _tipoUnidadeSaida, value);
+    }
+
+    public string? _tipoVendaSelecionado = "Varejo";
+    public string? TipoVendaSelecionado
+    {
+        get => _tipoVendaSelecionado;
+        set
+        {
+            if (SetProperty(ref _tipoVendaSelecionado, value))
+            {
+                OnTipoVendaChanged(value);
+            }
+        }
+    }
+
+    [ObservableProperty]
+    private bool ehAtacado = false;
+
+    [ObservableProperty]
+    private bool mostrarAlertaAtacado = false;
+
+    private bool _mostrarAlertaTotalCaixasAtacado = false;
+    public bool MostrarAlertaTotalCaixasAtacado
+    {
+        get => _mostrarAlertaTotalCaixasAtacado;
+        set => SetProperty(ref _mostrarAlertaTotalCaixasAtacado, value);
+    }
+
+    public ObservableCollection<string> TiposMovimentacao { get; } = new() { "Entrada", "Saída" };
+    public ObservableCollection<string> TiposSaida { get; } = new() { "Venda Local", "Entrega", "Consumo", "Quebra" };
+    public ObservableCollection<string> MateriaisPossiveis { get; } = new() { "Vidro", "Alumínio", "Pet", "Outros" };
+    public ObservableCollection<string> TiposUnidadeSaida { get; } = new() { "Unidade", "Caixa" };
+    public ObservableCollection<string> TiposVenda { get; } = new() { "Varejo", "Atacado" };
+
+    private readonly Dictionary<string, List<string>> tamanhosPorMaterial = new()
+    {
+        ["Vidro"] = new()
+        {
+            "237 ml", "250 ml","275 ml", "330 ml (long neck)", "375 ml", "600 ml", "700 ml", "750 ml", "900 ml", "1 litro", "1,5 litro (Magnum)"
+        },
+        ["Alumínio"] = new()
+        {
+            "220 ml", "250 ml","269 ml", "350 ml", "473 ml"
+        },
+        ["Pet"] = new()
+        {
+            "200 ml", "500 ml", "600 ml", "1 litro", "1,5 litro", "2 litros", "2,5 litros", "3 litros"
+        },
+        ["Outros"] = new()
+        {
+            "0g","200ml","500g", "1kg", "5kg", "10kg", "15kg", "20kg"
+        }
+    };
+
+    private ObservableCollection<string> tamanhosDisponiveis = new();
+    public ObservableCollection<string> TamanhosDisponiveis
+    {
+        get => tamanhosDisponiveis;
+        set => SetProperty(ref tamanhosDisponiveis, value);
+    }
+
+    // Selected product minimum and display controls
+    private int _selectedProdutoQuantidadeMinimaAtacado = 20;
+    public int SelectedProdutoQuantidadeMinimaAtacado
+    {
+        get => _selectedProdutoQuantidadeMinimaAtacado;
+        set => SetProperty(ref _selectedProdutoQuantidadeMinimaAtacado, value);
+    }
+
+    // Fix typo in SelectedProdutoMinimoAtacadoText
+    public string SelectedProdutoMinimoAtacadoText => SelectedProdutoQuantidadeMinimaAtacado > 0 ? $"Mínimo {SelectedProdutoQuantidadeMinimaAtacado} unidades" : string.Empty;
+
+    private bool _selectedProdutoMostrarMinimo = false;
+    public bool SelectedProdutoMostrarMinimo
+    {
+        get => _selectedProdutoMostrarMinimo;
+        set => SetProperty(ref _selectedProdutoMostrarMinimo, value);
+    }
+
+    // Computed total boxes selected for atacado across ProdutosSelecionados
+    public int TotalBoxesSelectedAtacado => ProdutosSelecionados.Where(p => p.TipoVenda == "Atacado").Sum(p => p.QuantidadeCaixas);
+    #endregion
+
+    #region Inicialização
+    public MainWindowViewModel(
+        MainRepository mainRepository,
+        EstoqueViewModel estoqueViewModel,
+        HistoricoViewModel historicoViewModel,
+        SaldoRepository saldoRepository,
+        DatabaseService databaseService,
+        TabelaPrecosViewModel tabelaPrecosViewModel)
+    {
+        _mainRepository = mainRepository;
+        _estoqueViewModel = estoqueViewModel;
+        _historicoViewModel = historicoViewModel;
+        _saldoRepository = saldoRepository;
+        _saldoViewModel = new SaldoViewModel(_saldoRepository);
+        _saldoView = new SaldoView { DataContext = _saldoViewModel };
+        _databaseService = databaseService;
+        _tabelaPrecosViewModel = tabelaPrecosViewModel;
+        _despesaRepository = new DespesaRepository(databaseService);
+        _despesaViewModel = new DespesaViewModel(_despesaRepository, _saldoRepository, _mainRepository);
+        _despesasView = new DespesasView { DataContext = _despesaViewModel };
+        _estoqueRepository = new EstoqueRepository(databaseService);
+        _comboRepository = new ComboRepository(databaseService);
+        _comboViewModel = new ComboViewModel(_comboRepository, _estoqueRepository, _mainRepository);
+        _comboView = new Views.ComboView { DataContext = _comboViewModel };
+        _vendaComboViewModel = new VendaComboViewModel(_comboRepository, _mainRepository);
+        _vendaComboView = new VendaComboView { DataContext = _vendaComboViewModel };
+        _inicioView = new InicioView { DataContext = this };
+        _estoqueView = new EstoqueView { DataContext = _estoqueViewModel };
+        _historicoView = new HistoricoView { DataContext = _historicoViewModel };
+        _tabelaPrecosView = new TabelaPrecosView { DataContext = _tabelaPrecosViewModel };
+        CurrentView = _inicioView;
+
+        CarregarProdutos();
+        CarregarResponsaveis();
+
+        // Inicializa como Saída
+        TipoMovimentacao = "Saída";
+        // Inicializa ProdutosFiltrados com produtos com estoque
+        OnTipoMovimentacaoChanged(TipoMovimentacao);
+
+        // Registra o handler para mudanças de status e atualiza o status inicial
+        _databaseService.StatusChanged += OnStatusChanged;
+        StatusText = _databaseService.StatusText;
+
+        // Força uma verificação inicial do status
+        _databaseService.IsOnline(true);
+    }
+    #endregion
+
+    #region Comandos
+    [RelayCommand]
+    private void CarregarProdutos()
+    {
+        Produtos = new ObservableCollection<MainRepository.Produto>(_mainRepository.CarregarProdutos());
+    }
+
+    private void CarregarResponsaveis()
+    {
+        Responsaveis = new ObservableCollection<string>(_mainRepository.CarregarResponsaveis());
+    }
+
+    [RelayCommand]
+    private void TrocarTipoVenda(string tipoVenda)
+    {
+        TipoVendaSelecionado = tipoVenda;
+    }
+
+    private async Task<MainRepository.Produto?> CriarNovoProduto()
+    {
+        if (string.IsNullOrWhiteSpace(NovoProdutoBebida))
+        {
+            MessageBox.Show("Por favor, informe o nome da bebida.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return null;
+        }
+        if (string.IsNullOrWhiteSpace(NovoProdutoTamanho))
+        {
+            MessageBox.Show("Por favor, selecione o tamanho.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return null;
+        }
+        if (string.IsNullOrWhiteSpace(NovoProdutoMaterial))
+        {
+            MessageBox.Show("Por favor, selecione o material.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return null;
+        }
+        if (!MateriaisPossiveis.Contains(NovoProdutoMaterial))
+        {
+            MessageBox.Show($"Material '{NovoProdutoMaterial}' não é permitido.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return null;
+        }
+        var novoProduto = await Task.Run(() => _mainRepository.AdicionarProduto(new MainRepository.Produto
+        {
+            Bebida = NovoProdutoBebida,
+            Tamanho = NovoProdutoTamanho,
+            Material = NovoProdutoMaterial
+        }));
+
+        if (novoProduto != null)
+        {
+            CarregarProdutos();
+            return novoProduto;
+        }
+
+        return null;
+    }
+
+    [RelayCommand]
+    private async Task AdicionarProdutoAsync()
+    {
+        if (!int.TryParse(Quantidade, out int qtd) || qtd <= 0)
+        {
+            MessageBox.Show("Por favor, informe uma quantidade válida.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (TipoMovimentacao == "Entrada" && (!decimal.TryParse(ValorUnitario, out decimal valor) || valor <= 0))
+        {
+            MessageBox.Show("Por favor, informe um valor unitário válido.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // VALIDAÇÕES DE CONSISTÊNCIA
+        // Validar mistura de tipos de venda
+        if (ProdutosSelecionados.Any())
+        {
+            var tipoVendaExistente = ProdutosSelecionados.First().TipoVenda;
+            if (tipoVendaExistente != TipoVendaSelecionado)
+            {
+                MessageBox.Show(
+                    $"Nao e permitido misturar produtos de {tipoVendaExistente} e {TipoVendaSelecionado}.\n\n" +
+                    $"Produtos na lista: {tipoVendaExistente}\n" +
+                    $"Tentando adicionar: {TipoVendaSelecionado}\n\n" +
+                    $"Limpe a lista para mudar o tipo de venda.",
+                    "Conflito de Tipo de Venda",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // NOTE: Removed restriction that prevented mixing 'Unidade' and 'Caixa'.
+            // Mixing is now allowed; atacado rules are enforced elsewhere.
+        }
+
+        MainRepository.Produto? produto = null;
+        decimal valorFinal = 0;
+        // quantidade minima em UNIDADE para atacado (preenchida mais abaixo quando em Saída)
+        int quantidadeMinimaAtacado = 20;
+        // caixas selecionadas (computada quando TipoUnidadeSaida == "Caixa")
+        int caixasSelecionadasLocal = 0;
+        // variáveis de produto/estoque/tabela de preços (declaradas aqui para uso posterior)
+        EstoqueRepository.EstoqueView? produtoEstoque = null;
+        ProdutoPrecoItem? produtoPreco = null;
+
+        // ENTRADA
+        if (TipoMovimentacao == "Entrada")
+        {
+            if (ProdutoSelecionado == null)
+            {
+                // Tenta criar novo produto se os campos estiverem preenchidos
+                produto = await CriarNovoProduto();
+                if (produto == null)
+                {
+                    MessageBox.Show("Por favor, preencha todos os campos do produto.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+            else
+            {
+                produto = ProdutoSelecionado;
+            }
+
+            // Em entrada, sempre usa o valor informado
+            valorFinal = decimal.Parse(ValorUnitario);
+        }
+        else // SAÍDA
+        {
+            if (ProdutoSelecionado == null)
+            {
+                MessageBox.Show("Por favor, selecione um produto.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            produto = ProdutoSelecionado;
+
+            produtoEstoque = _estoqueViewModel.Estoque
+                .FirstOrDefault(e => e.ProductId == produto.ProductId);
+
+            if (produtoEstoque == null || produtoEstoque.Quantidade <= 0)
+            {
+                MessageBox.Show("Este produto não possui estoque disponível.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(TipoSaida))
+            {
+                MessageBox.Show("Por favor, selecione o tipo de saída.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Busca o preço de venda configurado na tabela de preços, se não existir usa o valor de custo
+            produtoPreco = _tabelaPrecosViewModel.Produtos
+                .FirstOrDefault(p => p.Descricao == produto.Descricao);
+
+            // Obter quantidade mínima de atacado (EM CAIXAS)
+            quantidadeMinimaAtacado = produtoPreco?.QuantidadeMinimaAtacado ?? 20;
+
+            // Validação de ATACADO - Mínimo por produto (em CAIXAS)
+            if (EhAtacado && this.TipoUnidadeSaida == "Caixa")
+            {
+                // 'qtd' aqui é número de caixas informadas pelo usuário
+                int caixasSolicitadas = qtd;
+
+                if (caixasSolicitadas < quantidadeMinimaAtacado)
+                {
+                    MessageBox.Show($"Venda por ATACADO requer no mínimo {quantidadeMinimaAtacado} caixas para este produto. Quantidade informada: {qtd} caixas.", "Erro de Atacado", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Alerta se estoque para atacado é insuficiente
+                if (produtoEstoque != null)
+                {
+                    var unidadesPorCaixaEstoque = produtoEstoque.QuantidadeCaixa > 0 ? produtoEstoque.QuantidadeCaixa : 1;
+                    var quantidadeFinalAtacado = unidadesPorCaixaEstoque * caixasSolicitadas;
+                    var caixasDisponiveis = produtoEstoque.Quantidade / unidadesPorCaixaEstoque;
+
+                    if (produtoEstoque.Quantidade < quantidadeFinalAtacado)
+                    {
+                        var resultado = MessageBox.Show(
+                            $"?? AVISO DE ESTOQUE PARA ATACADO\n\n" +
+                            $"Quantidade solicitada: {caixasSolicitadas} caixas ({quantidadeFinalAtacado} unidades)\n" +
+                            $"Estoque disponível: {caixasDisponiveis:F0} caixas ({produtoEstoque.Quantidade} unidades)\n\n" +
+                            $"Deseja continuar com {produtoEstoque.Quantidade} unidades disponíveis?",
+                            "Estoque Insuficiente para Atacado",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Warning
+                        );
+
+                        if (resultado == MessageBoxResult.No)
+                            return;
+
+                        // Se clicou Sim, continua com quantidade disponível
+                        qtd = produtoEstoque.Quantidade / unidadesPorCaixaEstoque;
+                        if (qtd == 0)
+                        {
+                            MessageBox.Show("Estoque insuficiente para completar nem 1 caixa.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+
+                        // Ajusta caixasSolicitadas para refletir quantidade disponível
+                        caixasSolicitadas = qtd;
+                    }
+                }
+            }
+
+            // Tratamento para quando a unidade selecionada é Caixa
+            if (this.TipoUnidadeSaida == "Caixa")
+            {
+                // Número de caixas solicitadas pelo usuário (antes de converter para unidades)
+                int caixasSolicitadas = qtd;
+
+                // Preferir valores da tabela de estoque; se não existir, usar tabela de preços
+                int unidadesPorCaixa = 1;
+                decimal valorCaixa = 0m;
+                decimal valorAtacadoCaixa = 0m;
+
+                if (produtoEstoque != null)
+                {
+                    unidadesPorCaixa = produtoEstoque.QuantidadeCaixa > 0 ? produtoEstoque.QuantidadeCaixa : 1;
+                    valorCaixa = produtoEstoque.ValorCaixa;
+                    valorAtacadoCaixa = produtoEstoque.ValorAtacadoCaixa;
+                }
+
+                if (unidadesPorCaixa == 1 && produtoPreco != null)
+                {
+                    unidadesPorCaixa = produtoPreco.QuantidadeCaixa > 0 ? produtoPreco.QuantidadeCaixa : 1;
+                }
+
+                if (valorCaixa == 0m && produtoPreco != null)
+                {
+                    valorCaixa = produtoPreco.ValorCaixa;
+                }
+
+                if (valorAtacadoCaixa == 0m && produtoPreco != null)
+                {
+                    valorAtacadoCaixa = produtoPreco.ValorAtacadoCaixa;
+                }
+
+                // A quantidade final a descontar do estoque é caixas × unidades por caixa
+                var quantidadeFinal = unidadesPorCaixa * caixasSolicitadas;
+
+                // Valida se tem estoque suficiente
+                if (produtoEstoque != null && produtoEstoque.Quantidade < quantidadeFinal)
+                {
+                    MessageBox.Show($"Estoque insuficiente. Quantidade disponível: {produtoEstoque.Quantidade} unidades ({produtoEstoque.Quantidade / unidadesPorCaixa} caixas)", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Usa preço de atacado se disponível e for atacado, senão usa preço normal de caixa
+                decimal valorUnitarioCaixa;
+                if (EhAtacado && valorAtacadoCaixa > 0)
+                {
+                    valorUnitarioCaixa = valorAtacadoCaixa / unidadesPorCaixa;
+                }
+                else if (valorCaixa > 0)
+                {
+                    valorUnitarioCaixa = valorCaixa / unidadesPorCaixa;
+                }
+                else
+                {
+                    // Fallback para valor por unidade
+                    valorUnitarioCaixa = produtoPreco?.ValorVenda > 0 ? produtoPreco.ValorVenda : produto.Valor;
+                }
+
+                // Arredonda para 2 casas decimais para evitar valores com muitas repetições decimais
+                valorUnitarioCaixa = decimal.Round(valorUnitarioCaixa, 2, MidpointRounding.AwayFromZero);
+
+                // Ajusta variáveis para adicionar item: Quantidade em unidades, valor por unidade e caixas selecionadas
+                int quantidadeEmUnidades = quantidadeFinal;
+                qtd = quantidadeEmUnidades;
+                valorFinal = valorUnitarioCaixa;
+                caixasSelecionadasLocal = caixasSolicitadas;
+            }
+            else
+            {
+                // Valida se tem estoque suficiente em unidades
+                if (produtoEstoque == null || produtoEstoque.Quantidade < qtd)
+                {
+                    MessageBox.Show($"Estoque insuficiente. Quantidade disponível: {produtoEstoque?.Quantidade ?? 0}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                valorFinal = produtoPreco?.ValorVenda > 0
+                    ? produtoPreco.ValorVenda
+                    : produto.Valor;
+            }
+
+            // compute caixasSelecionadas based on produtoPreco and qtd (qtd at this point is units when TipoUnidadeSaida==Caixa)
+            // Declare here so available when adding to ProdutosSelecionados
+            if (this.TipoUnidadeSaida == "Caixa")
+            {
+                // If already set (from Caixa branch where caixasSolicitadas was used), keep it
+                if (caixasSelecionadasLocal == 0)
+                {
+                    if (produtoPreco != null && produtoPreco.QuantidadeCaixa > 0)
+                        caixasSelecionadasLocal = (int)System.Math.Ceiling((decimal)qtd / produtoPreco.QuantidadeCaixa);
+                    else if (produtoEstoque != null && produtoEstoque.QuantidadeCaixa > 0)
+                        caixasSelecionadasLocal = (int)System.Math.Ceiling((decimal)qtd / produtoEstoque.QuantidadeCaixa);
+                    else
+                        caixasSelecionadasLocal = qtd; // fallback (rare)
+                }
+            }
+        }
+
+        // Aplicar desconto (se ativo e válido) ANTES de adicionar o item à lista
+        if (IsSaida && SenhaDescontoCorreta && _descontoValor > 0)
+        {
+            var precoVenda = valorFinal;
+            var descontoCalculado = _descontoValor;
+            if (_descontoPercentual > 0)
+            {
+                descontoCalculado = decimal.Round(precoVenda * _descontoPercentual / 100m, 2);
+            }
+            var maxDesconto = precoVenda - (produto?.Valor ?? 0m);
+            if (descontoCalculado > maxDesconto) descontoCalculado = maxDesconto;
+            valorFinal = decimal.Round(precoVenda - descontoCalculado, 2);
+        }
+
+        // Safety: produto must not be null here
+        if (produto == null)
+        {
+            MessageBox.Show("Erro interno: produto inexistente.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        // ADICIONAR PRODUTO À LISTA (para Entrada e Saída)
+        // caixasSelecionadasLocal computed inside SAIDA branch when aplicable
+        ProdutosSelecionados.Add(new ProdutoSelecionadoItem
+        {
+            Descricao = produto.Descricao,
+            Quantidade = qtd,
+            Produto = produto,
+            TipoMovimentacao = TipoMovimentacao,
+            TipoSaida = IsSaida ? TipoSaida : null,
+            ValorUnitario = valorFinal,
+            UnidadeSelecionada = this.TipoUnidadeSaida,
+            TipoVenda = this.TipoVendaSelecionado, // Armazena o tipo de venda (Varejo/Atacado)
+            QuantidadeMinimaAtacado = quantidadeMinimaAtacado,
+            QuantidadeCaixas = this.TipoUnidadeSaida == "Caixa" ? caixasSelecionadasLocal : 0,
+            ValorCaixa = produtoPreco != null && produtoPreco.ValorCaixa > 0 ? produtoPreco.ValorCaixa : (produtoEstoque != null ? produtoEstoque.ValorCaixa : 0)
+        });
+
+        AtualizarValorTotal();
+        AtualizarMostrarAlertaAtacado();
+        LimparCamposProduto();
+
+        LimparDesconto();
+    }
+
+    [RelayCommand]
+    private void RemoverProduto(ProdutoSelecionadoItem item)
+    {
+        if (item != null)
+        {
+            ProdutosSelecionados.Remove(item);
+            AtualizarValorTotal();
+            AtualizarMostrarAlertaAtacado();
+        }
+    }
+
+    private void OnTipoVendaChanged(string? value)
+    {
+        EhAtacado = value == "Atacado";
+
+        // Quando seleciona ATACADO, força "Caixa"
+        if (EhAtacado && IsSaida)
+        {
+            TipoUnidadeSaida = "Caixa";
+        }
+        else if (!EhAtacado && IsSaida)
+        {
+            TipoUnidadeSaida = "Unidade";
+        }
+
+        // Atualiza indicador de mínimo atacado
+        SelectedProdutoMostrarMinimo = IsSaida && TipoVendaSelecionado == "Atacado" && ProdutoSelecionado != null;
+        if (ProdutoSelecionado != null)
+        {
+            var produtoPreco = _tabelaPrecosViewModel.Produtos
+                .FirstOrDefault(p => p.Descricao == ProdutoSelecionado.Descricao);
+            SelectedProdutoQuantidadeMinimaAtacado = produtoPreco?.QuantidadeMinimaAtacado ?? 20;
+            OnPropertyChanged(nameof(SelectedProdutoMinimoAtacadoText));
+        }
+    }
+
+    private void AtualizarMostrarAlertaAtacado()
+    {
+        // Mostra alerta se houver pelo menos um produto selecionado com tipo ATACADO
+        MostrarAlertaAtacado = ProdutosSelecionados.Any(p => p.TipoVenda == "Atacado");
+
+        // Atualiza também a propriedade MinimoAtacado para todos os produtos selecionados
+        foreach (var produto in ProdutosSelecionados)
+        {
+            if (produto.QuantidadeMinimaAtacado <= 0)
+                produto.QuantidadeMinimaAtacado = 20;
+        }
+
+        OnPropertyChanged(nameof(TotalBoxesSelectedAtacado));
+        MostrarAlertaTotalCaixasAtacado = ProdutosSelecionados.Any(p => p.TipoVenda == "Atacado") && TotalBoxesSelectedAtacado < 20;
+    }
+
+    [RelayCommand]
+    private void NavigateTo(string viewName)
+    {
+        CurrentView = viewName switch
+        {
+            "Inicio" => _inicioView,
+            "Estoque" => _estoqueView,
+            "Historico" => _historicoView,
+            "TabelaPrecos" => _tabelaPrecosView,
+            "Saldo" => _saldoView,
+            "Despesas" => _despesasView,
+            "Copoes" => _comboView,
+            "VendaCopao" => _vendaComboView,
+            _ => _inicioView
+        };
+        if (viewName == "TabelaPrecos")
+        {
+            _tabelaPrecosViewModel.CarregarTabelaPrecos(); // Atualiza tabela de preços ao navegar
+        }
+        else if (viewName == "Estoque")
+        {
+            _estoqueViewModel.CarregarEstoque(); // Atualiza estoque ao navegar
+        }
+        else if (viewName == "Historico")
+        {
+            _historicoViewModel.CarregarHistorico(); // Atualiza histórico ao navegar
+        }
+        else if (viewName == "Despesas")
+        {
+            _despesaViewModel.CarregarDespesas(); // Atualiza despesas ao navegar
+        }
+        else if (viewName == "VendaCopao")
+        {
+            _vendaComboViewModel.CarregarCombosDisponiveis(); // Atualiza combos ao navegar
+            _vendaComboViewModel.CarregarHistoricoVendas(); // Atualiza histórico de vendas
+        }
+        else if (viewName == "Copoes")
+        {
+            _comboViewModel.CarregarCopoesCommand.Execute(null);
+        }
+    }
+
+    partial void OnTipoMovimentacaoChanged(String value)
+    {
+        IsSaida = value == "Saída";
+        OnPropertyChanged(nameof(IsEntrada));
+
+        if (!IsSaida)
+        {
+            TipoSaida = null;
+            ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(Produtos);
+        }
+        else
+        {
+            var produtosComEstoque = Produtos.Where(p =>
+            {
+                var estoque = _estoqueViewModel.Estoque.FirstOrDefault(e => e.ProductId == p.ProductId);
+                return estoque?.Quantidade > 0;
+            });
+            ProdutosFiltrados = new ObservableCollection<MainRepository.Produto>(produtosComEstoque);
+        }
+        LimparCamposProduto();
+    }
+
+    private void ProdutosSelecionados_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        AtualizarValorTotal();
+    }
+
+    #endregion
+
+    #region Helpers
+    private void AtualizarValorTotal()
+    {
+        ValorTotalSelecionado = ProdutosSelecionados?
+            .Where(p => p.TipoMovimentacao == "Saída")
+            .Sum(p => p.ValorTotal) ?? 0m;
+    }
+
+    private void LimparCamposProduto()
+    {
+        ProdutoSelecionado = null;
+        Quantidade = "";
+        NovoProdutoBebida = "";
+        NovoProdutoTamanho = "";
+        NovoProdutoMaterial = null;
+        OnPropertyChanged(nameof(NovoProdutoMaterial));
+        TamanhosDisponiveis = new ObservableCollection<string>();
+        ValorUnitario = "0";
+        ProdutoFiltroTexto = null;
+    }
+    #endregion
+
+    // --- DESCONTO EM SAÍDA ---
+    // Estado do desconto
+    private bool descontoAtivo;
+    public bool DescontoAtivo
+    {
+        get => descontoAtivo;
+        set => SetProperty(ref descontoAtivo, value);
+    }
+
+    private string senhaDesconto = string.Empty;
+    public string SenhaDesconto
+    {
+        get => senhaDesconto;
+        set => SetProperty(ref senhaDesconto, value);
+    }
+
+    private bool senhaDescontoCorreta;
+    public bool SenhaDescontoCorreta
+    {
+        get => senhaDescontoCorreta;
+        set => SetProperty(ref senhaDescontoCorreta, value);
+    }
+
+    // Backing fields
+    private int _descontoPercentual = 0;
+    private decimal _descontoValor = 0m;
+
+    // Preview and cost
+    private decimal _valorFinalProduto = 0m;
+    public decimal ValorFinalProduto
+    {
+        get => _valorFinalProduto;
+        set { if (_valorFinalProduto != value) { _valorFinalProduto = value; OnPropertyChanged(); } }
+    }
+
+    private decimal _valorCustoProduto = 0m;
+    public decimal ValorCustoProduto
+    {
+        get => _valorCustoProduto;
+        set { if (_valorCustoProduto != value) { _valorCustoProduto = value; OnPropertyChanged(); } }
+    }
+
+    // Guard to avoid recursive updates
+    private bool _isUpdatingDesconto = false;
+
+    // Public properties exposed to the View
+    public int DescontoPercentual
+    {
+        get => _descontoPercentual;
+        set
+        {
+            if (_descontoPercentual != value)
+            {
+                if (SenhaDescontoCorreta && IsSaida)
+                    ApplyPercentChange(value);
+                else
+                {
+                    _descontoPercentual = value;
+                    OnPropertyChanged(nameof(DescontoPercentual));
+                }
+            }
+        }
+    }
+
+    public decimal DescontoValor
+    {
+        get => _descontoValor;
+        set
+        {
+            if (_descontoValor != value)
+            {
+                if (SenhaDescontoCorreta && IsSaida)
+                    ApplyValueChange(value);
+                else
+                {
+                    _descontoValor = value;
+                    OnPropertyChanged(nameof(DescontoValor));
+                }
+            }
+        }
+    }
+
+    // Text-backed bindings for the UI to avoid conversion problems
+    private string _descontoPercentualTexto = "0";
+    public string DescontoPercentualTexto
+    {
+        get => _descontoPercentualTexto;
+        set
+        {
+            if (_descontoPercentualTexto == value) return;
+            _descontoPercentualTexto = value;
+            OnPropertyChanged(nameof(DescontoPercentualTexto));
+
+            if (_isUpdatingDesconto) return;
+
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.CurrentCulture, out var parsed))
+            {
+                ApplyPercentChange(parsed);
+            }
+            else if (string.IsNullOrWhiteSpace(value))
+            {
+                ApplyPercentChange(0);
+            }
+        }
+    }
+
+    private string _descontoValorTexto = "0,00";
+    public string DescontoValorTexto
+    {
+        get => _descontoValorTexto;
+        set
+        {
+            if (_descontoValorTexto == value) return;
+            _descontoValorTexto = value;
+            OnPropertyChanged(nameof(DescontoValorTexto));
+
+            if (_isUpdatingDesconto) return;
+
+            // Try parsing with current culture, fallback to invariant
+            if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.CurrentCulture, out var parsed))
+            {
+                ApplyValueChange(parsed);
+            }
+            else if (decimal.TryParse(value?.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out parsed))
+            {
+                ApplyValueChange(parsed);
+            }
+            else if (string.IsNullOrWhiteSpace(value))
+            {
+                ApplyValueChange(0m);
+            }
+        }
+    }
+
+    private void ApplyPercentChange(int percent)
+    {
+        if (_isUpdatingDesconto) return;
+        try
+        {
+            _isUpdatingDesconto = true;
+            _descontoPercentual = percent;
+            OnPropertyChanged(nameof(DescontoPercentual));
+
+            var precoVenda = ObterPrecoVendaAtual();
+            var custo = _valorCustoProduto > 0m ? _valorCustoProduto : (ProdutoSelecionado?.Valor ?? 0m);
+
+            if (precoVenda <= 0m)
+            {
+                _descontoValor = 0m;
+                ValorFinalProduto = 0m;
+            }
+            else
+            {
+                var calculado = decimal.Round(precoVenda * _descontoPercentual / 100m, 2);
+                var maxDesconto = precoVenda - custo;
+                if (maxDesconto < 0m) maxDesconto = 0m;
+                if (calculado > maxDesconto) calculado = maxDesconto;
+                if (calculado < 0m) calculado = 0m;
+                _descontoValor = calculado;
+                ValorFinalProduto = decimal.Round(precoVenda - _descontoValor, 2);
+            }
+
+            // Sync text properties (culture aware)
+            _descontoPercentualTexto = _descontoPercentual.ToString(CultureInfo.CurrentCulture);
+            OnPropertyChanged(nameof(DescontoPercentualTexto));
+            _descontoValorTexto = _descontoValor.ToString("N2", CultureInfo.CurrentCulture);
+            OnPropertyChanged(nameof(DescontoValorTexto));
+
+            OnPropertyChanged(nameof(DescontoValor));
+            OnPropertyChanged(nameof(ValorFinalProduto));
+        }
+        finally { _isUpdatingDesconto = false; }
+    }
+
+    private void ApplyValueChange(decimal valor)
+    {
+        if (_isUpdatingDesconto) return;
+        try
+        {
+            _isUpdatingDesconto = true;
+            _descontoValor = valor;
+            OnPropertyChanged(nameof(DescontoValor));
+
+            var precoVenda = ObterPrecoVendaAtual();
+            var custo = _valorCustoProduto > 0m ? _valorCustoProduto : (ProdutoSelecionado?.Valor ?? 0m);
+
+            if (precoVenda <= 0m)
+            {
+                _descontoPercentual = 0;
+                ValorFinalProduto = 0m;
+            }
+            else
+            {
+                var maxDesconto = precoVenda - custo;
+                if (maxDesconto < 0m) maxDesconto = 0m;
+                if (_descontoValor > maxDesconto) _descontoValor = maxDesconto;
+                if (_descontoValor < 0m) _descontoValor = 0m;
+                _descontoPercentual = (int)Math.Round(precoVenda > 0m ? 100m * _descontoValor / precoVenda : 0m);
+                ValorFinalProduto = decimal.Round(precoVenda - _descontoValor, 2);
+            }
+
+            // Sync text properties
+            _descontoPercentualTexto = _descontoPercentual.ToString(CultureInfo.CurrentCulture);
+            OnPropertyChanged(nameof(DescontoPercentualTexto));
+            _descontoValorTexto = _descontoValor.ToString("N2", CultureInfo.CurrentCulture);
+            OnPropertyChanged(nameof(DescontoValorTexto));
+
+            OnPropertyChanged(nameof(DescontoPercentual));
+            OnPropertyChanged(nameof(ValorFinalProduto));
+            OnPropertyChanged(nameof(DescontoValor));
+        }
+        finally { _isUpdatingDesconto = false; }
+    }
+
+    private void AtualizarDescontoValorInterno()
+    {
+        ApplyPercentChange(_descontoPercentual);
+    }
+
+    private void AtualizarDescontoPercentualInterno()
+    {
+        ApplyValueChange(_descontoValor);
+    }
+
+    private void AtualizarValorFinalProdutoInterno()
+    {
+        var precoVenda = ObterPrecoVendaAtual();
+        if (precoVenda <= 0m)
+        {
+            ValorFinalProduto = 0m;
+            OnPropertyChanged(nameof(ValorFinalProduto));
+            return;
+        }
+        var custo = _valorCustoProduto > 0m ? _valorCustoProduto : (ProdutoSelecionado?.Valor ?? 0m);
+        var maxDesconto = precoVenda - custo;
+        if (maxDesconto < 0m) maxDesconto = 0m;
+        var desconto = _descontoValor;
+        if (desconto > maxDesconto) desconto = maxDesconto;
+        if (desconto < 0m) desconto = 0m;
+        ValorFinalProduto = decimal.Round(precoVenda - desconto, 2);
+        OnPropertyChanged(nameof(ValorFinalProduto));
+    }
+
+    private decimal ObterPrecoVendaAtual()
+    {
+        var produtoPreco = _tabelaPrecosViewModel?.Produtos?.FirstOrDefault(p => p.Descricao == ProdutoSelecionado?.Descricao);
+        return produtoPreco != null && produtoPreco.ValorVenda > 0 ? produtoPreco.ValorVenda : ProdutoSelecionado?.Valor ?? 0m;
+    }
+
+    private void LimparDesconto()
+    {
+        DescontoAtivo = false;
+        SenhaDesconto = string.Empty;
+        SenhaDescontoCorreta = false;
+        _descontoPercentual = 0;
+        _descontoValor = 0m;
+        ValorFinalProduto = 0m;
+        ValorCustoProduto = 0m;
+
+        // Sync text fields as well
+        _descontoPercentualTexto = _descontoPercentual.ToString(CultureInfo.CurrentCulture);
+        OnPropertyChanged(nameof(DescontoPercentualTexto));
+        _descontoValorTexto = _descontoValor.ToString("N2", CultureInfo.CurrentCulture);
+        OnPropertyChanged(nameof(DescontoValorTexto));
+
+        OnPropertyChanged(nameof(DescontoPercentual));
+        OnPropertyChanged(nameof(DescontoValor));
+        OnPropertyChanged(nameof(ValorFinalProduto));
+        OnPropertyChanged(nameof(ValorCustoProduto));
+    }
+
+    // Called when DatabaseService raises StatusChanged
+    private void OnStatusChanged(bool online)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            StatusText = online ? "Online" : "Offline (usando local)";
+            OnPropertyChanged(nameof(StatusText));
+        });
+    }
+
+    [RelayCommand]
+    public void RegistrarMovimentacao()
+    {
+        if (ProdutosSelecionados.Count == 0)
+        {
+            MessageBox.Show("Adicione pelo menos um produto à lista.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(ResponsavelSelecionado))
+        {
+            MessageBox.Show("Selecione um responsável.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            foreach (var item in ProdutosSelecionados)
+            {
+                var mov = new MainRepository.Movimentacao
+                {
+                    Data = DateTime.Now,
+                    Tipo = item.TipoMovimentacao,
+                    TipoVenda = item.TipoVenda ?? "Varejo",
+                    ProductId = item.Produto.ProductId,
+                    ProdutoDescricao = item.Descricao,
+                    Quantidade = item.Quantidade,
+                    Responsavel = ResponsavelSelecionado,
+                    TipoSaida = item.TipoSaida,
+                    ValorUnitario = item.ValorUnitario
+                };
+
+                _mainRepository.RegistrarMovimentacao(mov);
+            }
+
+            MessageBox.Show($"{ProdutosSelecionados.Count} produto(s) registrado(s) com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            ProdutosSelecionados.Clear();
+            LimparCamposProduto();
+            LimparDesconto();
+            ResponsavelSelecionado = null;
+
+            _estoqueViewModel.CarregarEstoque();
+            _historicoViewModel.CarregarHistorico();
+            _tabelaPrecosViewModel.CarregarTabelaPrecos();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Erro ao registrar movimentação: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    [RelayCommand]
+    public void Limpar()
+    {
+        ProdutosSelecionados.Clear();
+        LimparCamposProduto();
+        LimparDesconto();
+        ResponsavelSelecionado = null;
+        ValorTotalSelecionado = 0;
+        TipoMovimentacao = "Saída";
+        OnTipoMovimentacaoChanged(TipoMovimentacao);
+    }
+}
+
+public class ProdutoSelecionadoItem : ObservableObject
+{
+    public MainRepository.Produto Produto { get; set; } = null!;
+    public string Descricao { get; set; } = "";
+
+    private int quantidade;
+    public int Quantidade
+    {
+        get => quantidade;
+        set
+        {
+            if (SetProperty(ref quantidade, value))
+                OnPropertyChanged(nameof(ValorTotal));
+        }
+    }
+
+    public string TipoMovimentacao { get; set; } = "";
+    public string? TipoSaida { get; set; }
+    public string? UnidadeSelecionada { get; set; } // "Unidade" ou "Caixa"
+
+    private decimal valorUnitario;
+    public decimal ValorUnitario
+    {
+        get => valorUnitario;
+        set
+        {
+            if (SetProperty(ref valorUnitario, value))
+                OnPropertyChanged(nameof(ValorTotal));
+        }
+    }
+
+    // Propriedades adicionais para referência
+    public int QuantidadeCaixas { get; set; } = 0; // Quantidade de caixas selecionadas (para referência)
+    public decimal ValorCaixa { get; set; } = 0; // Valor total da caixa (para referência)
+    public string? TipoVenda { get; set; } = "Varejo"; // "Varejo" ou "Atacado"
+
+    public int QuantidadeMinimaAtacado { get; set; } = 20; // mínimo em unidades
+
+    // ValorTotal sempre é calculado: Quantidade × ValorUnitario
+    public decimal ValorTotal
+    {
+        get
+        {
+            if (string.Equals(UnidadeSelecionada, "Caixa", StringComparison.OrdinalIgnoreCase))
+            {
+                return QuantidadeCaixas * ValorCaixa;
+            }
+            return Quantidade * ValorUnitario;
+        }
+    }
+}
+
+public partial class MainWindowViewModel
+{
+    #region Ajuste de Quantidade
+    [RelayCommand]
+    private void IncrementarQuantidade()
+    {
+        if (!int.TryParse(Quantidade, out int qtd))
+            qtd = 0;
+        qtd++;
+        Quantidade = qtd.ToString();
+    }
+
+    [RelayCommand]
+    private void DecrementarQuantidade()
+    {
+        if (!int.TryParse(Quantidade, out int qtd))
+            qtd = 0;
+        if (qtd > 1)
+            qtd--;
+        else
+            qtd = 1;
+        Quantidade = qtd.ToString();
+    }
+    #endregion
+
+    partial void OnNovoProdutoMaterialChanged(string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value) && tamanhosPorMaterial.ContainsKey(value))
+        {
+            TamanhosDisponiveis.Clear();
+            foreach (var tamanho in tamanhosPorMaterial[value])
+                TamanhosDisponiveis.Add(tamanho);
+            OnPropertyChanged(nameof(TamanhosDisponiveis));
+        }
+        else
+        {
+            TamanhosDisponiveis.Clear();
+            OnPropertyChanged(nameof(TamanhosDisponiveis));
+        }
+        NovoProdutoTamanho = "";
+    }
+
+    partial void OnProdutoSelecionadoChanged(MainRepository.Produto? value)
+    {
+        // Apenas atualiza o texto se foi realmente selecionado do combobox
+        // Evita loop de autocomplete
+        if (value != null)
+        {
+            // Atualiza o texto do filtro/autocomplete
+            if (!string.Equals(ProdutoFiltroTexto, value.Descricao, System.StringComparison.OrdinalIgnoreCase))
+                ProdutoFiltroTexto = value.Descricao;
+
+            // Atualiza os tamanhos disponíveis com base no material
+            if (!string.IsNullOrWhiteSpace(value.Material) && tamanhosPorMaterial.ContainsKey(value.Material))
+            {
+                TamanhosDisponiveis.Clear();
+                foreach (var tamanho in tamanhosPorMaterial[value.Material])
+                    TamanhosDisponiveis.Add(tamanho);
+                OnPropertyChanged(nameof(TamanhosDisponiveis));
+            }
+            else
+            {
+                TamanhosDisponiveis.Clear();
+            }
+
+            // Atualiza custo base sempre que um produto é selecionado
+            ValorCustoProduto = ProdutoSelecionado != null ? ProdutoSelecionado.Valor : 0m;
+
+            // Recalcula prévias/valores de desconto para refletir novo produto
+            // Atualiza DescontoValor a partir do percentual (se houver)
+            AtualizarDescontoValorInterno();
+            // Atualiza percentual a partir do valor (para manter consistência)
+            AtualizarDescontoPercentualInterno();
+            // Atualiza prévia do valor final
+            AtualizarValorFinalProdutoInterno();
+        }
+        else
+        {
+            // Limpa indicadores quando nada está selecionado
+            TamanhosDisponiveis.Clear();
+            ValorFinalProduto = 0;
+            ValorCustoProduto = 0;
+            DescontoPercentual = 0;
+            DescontoValor = 0;
+        }
+    }
+}

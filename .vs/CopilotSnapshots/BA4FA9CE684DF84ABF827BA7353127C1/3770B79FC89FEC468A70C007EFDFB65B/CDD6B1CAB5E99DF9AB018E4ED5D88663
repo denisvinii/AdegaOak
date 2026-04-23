@@ -1,0 +1,343 @@
+﻿using Adega_Oak.Features.Despesas;
+using Adega_Oak.Services;
+using System.Collections.ObjectModel;
+
+namespace Adega_Oak.Repositories;
+
+public class DespesaRepository
+{
+    private readonly DatabaseService _dbService;
+
+    public DespesaRepository(DatabaseService dbService)
+    {
+        _dbService = dbService;
+    }
+
+    public void AdicionarDespesa(Despesa despesa)
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                INSERT INTO despesas (descricao, valor, data, tipo, pago, data_pagamento, notas, criado_em)
+                VALUES (@descricao, @valor, @data, @tipo, @pago, @data_pagamento, @notas, @criado_em)";
+            
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@descricao";
+            param1.Value = despesa.Descricao;
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@valor";
+            param2.Value = despesa.Valor;
+            cmd.Parameters.Add(param2);
+
+            var param3 = cmd.CreateParameter();
+            param3.ParameterName = "@data";
+            param3.Value = despesa.Data;
+            cmd.Parameters.Add(param3);
+
+            var param4 = cmd.CreateParameter();
+            param4.ParameterName = "@tipo";
+            param4.Value = (int)despesa.Tipo;
+            cmd.Parameters.Add(param4);
+
+            var param5 = cmd.CreateParameter();
+            param5.ParameterName = "@pago";
+            param5.Value = despesa.Pago;
+            cmd.Parameters.Add(param5);
+
+            var param6 = cmd.CreateParameter();
+            param6.ParameterName = "@data_pagamento";
+            param6.Value = despesa.DataPagamento ?? (object)DBNull.Value;
+            cmd.Parameters.Add(param6);
+
+            var param7 = cmd.CreateParameter();
+            param7.ParameterName = "@notas";
+            param7.Value = despesa.Notas ?? string.Empty;
+            cmd.Parameters.Add(param7);
+
+            var param8 = cmd.CreateParameter();
+            param8.ParameterName = "@criado_em";
+            param8.Value = despesa.CriadoEm;
+            cmd.Parameters.Add(param8);
+            
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao adicionar despesa: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void AtualizarDespesa(Despesa despesa)
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                UPDATE despesas 
+                SET descricao = @descricao, valor = @valor, data = @data, tipo = @tipo, 
+                    pago = @pago, data_pagamento = @data_pagamento, notas = @notas
+                WHERE id = @id";
+            
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@id";
+            param1.Value = despesa.Id;
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@descricao";
+            param2.Value = despesa.Descricao;
+            cmd.Parameters.Add(param2);
+
+            var param3 = cmd.CreateParameter();
+            param3.ParameterName = "@valor";
+            param3.Value = despesa.Valor;
+            cmd.Parameters.Add(param3);
+
+            var param4 = cmd.CreateParameter();
+            param4.ParameterName = "@data";
+            param4.Value = despesa.Data;
+            cmd.Parameters.Add(param4);
+
+            var param5 = cmd.CreateParameter();
+            param5.ParameterName = "@tipo";
+            param5.Value = (int)despesa.Tipo;
+            cmd.Parameters.Add(param5);
+
+            var param6 = cmd.CreateParameter();
+            param6.ParameterName = "@pago";
+            param6.Value = despesa.Pago;
+            cmd.Parameters.Add(param6);
+
+            var param7 = cmd.CreateParameter();
+            param7.ParameterName = "@data_pagamento";
+            param7.Value = despesa.DataPagamento ?? (object)DBNull.Value;
+            cmd.Parameters.Add(param7);
+
+            var param8 = cmd.CreateParameter();
+            param8.ParameterName = "@notas";
+            param8.Value = despesa.Notas ?? string.Empty;
+            cmd.Parameters.Add(param8);
+            
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao atualizar despesa: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void DeletarDespesa(int id)
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM despesas WHERE id = @id";
+            
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@id";
+            param.Value = id;
+            cmd.Parameters.Add(param);
+            
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao deletar despesa: {ex.Message}");
+            throw;
+        }
+    }
+
+    public List<Despesa> CarregarTodasDespesas()
+    {
+        var despesas = new List<Despesa>();
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT id, descricao, valor, data, tipo, pago, data_pagamento, notas, criado_em
+                FROM despesas
+                ORDER BY data DESC";
+            
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                despesas.Add(new Despesa
+                {
+                    Id = reader.GetInt32(0),
+                    Descricao = reader.GetString(1),
+                    Valor = (decimal)reader.GetDouble(2),
+                    Data = reader.GetDateTime(3),
+                    Tipo = (TipoDespesa)reader.GetInt32(4),
+                    Pago = reader.GetBoolean(5),
+                    DataPagamento = reader.IsDBNull(6) ? null : reader.GetDateTime(6),
+                    Notas = reader.IsDBNull(7) ? null : reader.GetString(7),
+                    CriadoEm = reader.GetDateTime(8)
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar despesas: {ex.Message}");
+        }
+        return despesas;
+    }
+
+    public List<Despesa> CarregarDespesasPorPeriodo(DateTime dataInicio, DateTime dataFim)
+    {
+        var despesas = new List<Despesa>();
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT id, descricao, valor, data, tipo, pago, data_pagamento, notas, criado_em
+                FROM despesas
+                WHERE data BETWEEN @dataInicio AND @dataFim
+                ORDER BY data DESC";
+            
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@dataInicio";
+            param1.Value = dataInicio;
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@dataFim";
+            param2.Value = dataFim;
+            cmd.Parameters.Add(param2);
+            
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                despesas.Add(new Despesa
+                {
+                    Id = reader.GetInt32(0),
+                    Descricao = reader.GetString(1),
+                    Valor = (decimal)reader.GetDouble(2),
+                    Data = reader.GetDateTime(3),
+                    Tipo = (TipoDespesa)reader.GetInt32(4),
+                    Pago = reader.GetBoolean(5),
+                    DataPagamento = reader.IsDBNull(6) ? null : reader.GetDateTime(6),
+                    Notas = reader.IsDBNull(7) ? null : reader.GetString(7),
+                    CriadoEm = reader.GetDateTime(8)
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar despesas por período: {ex.Message}");
+        }
+        return despesas;
+    }
+
+    public List<Despesa> CarregarDespesasNaoPagas()
+    {
+        var despesas = new List<Despesa>();
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT id, descricao, valor, data, tipo, pago, data_pagamento, notas, criado_em
+                FROM despesas
+                WHERE pago = 0
+                ORDER BY data ASC";
+            
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                despesas.Add(new Despesa
+                {
+                    Id = reader.GetInt32(0),
+                    Descricao = reader.GetString(1),
+                    Valor = (decimal)reader.GetDouble(2),
+                    Data = reader.GetDateTime(3),
+                    Tipo = (TipoDespesa)reader.GetInt32(4),
+                    Pago = reader.GetBoolean(5),
+                    DataPagamento = reader.IsDBNull(6) ? null : reader.GetDateTime(6),
+                    Notas = reader.IsDBNull(7) ? null : reader.GetString(7),
+                    CriadoEm = reader.GetDateTime(8)
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar despesas não pagas: {ex.Message}");
+        }
+        return despesas;
+    }
+
+    public decimal ObterTotalDespesasNaoPagas()
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COALESCE(SUM(valor), 0) FROM despesas WHERE pago = 0";
+            
+            var result = cmd.ExecuteScalar();
+            return result != null ? Convert.ToDecimal(result) : 0m;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao obter total de despesas não pagas: {ex.Message}");
+            return 0m;
+        }
+    }
+
+    public decimal ObterTotalDespesasDoMes(int mes, int ano)
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT COALESCE(SUM(valor), 0) FROM despesas 
+                WHERE strftime('%m', data) = @mes AND strftime('%Y', data) = @ano";
+            
+            var param1 = cmd.CreateParameter();
+            param1.ParameterName = "@mes";
+            param1.Value = mes.ToString("D2");
+            cmd.Parameters.Add(param1);
+
+            var param2 = cmd.CreateParameter();
+            param2.ParameterName = "@ano";
+            param2.Value = ano.ToString();
+            cmd.Parameters.Add(param2);
+            
+            var result = cmd.ExecuteScalar();
+            return result != null ? Convert.ToDecimal(result) : 0m;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao obter total do mês: {ex.Message}");
+            return 0m;
+        }
+    }
+
+    public decimal ObterTotalDespesasPagas()
+    {
+        try
+        {
+            using var conn = _dbService.GetConnection();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COALESCE(SUM(valor), 0) FROM despesas WHERE pago = 1";
+            
+            var result = cmd.ExecuteScalar();
+            return result != null ? Convert.ToDecimal(result) : 0m;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao obter total de despesas pagas: {ex.Message}");
+            return 0m;
+        }
+    }
+}

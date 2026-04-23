@@ -20,6 +20,7 @@ public class HistoricoRepository(DatabaseService dbService)
                        COALESCE(valor_unitario, valor) as valor
                 FROM movimentacoes m
                 LEFT JOIN estoque e ON e.productid = m.productid
+
                 ORDER BY m.data DESC";
 
             using var reader = cmd.ExecuteReader();
@@ -60,6 +61,7 @@ public class HistoricoRepository(DatabaseService dbService)
                            COALESCE(e.valor_venda, 0) as valor
                     FROM movimentacoes m
                     LEFT JOIN estoque e ON e.productid = m.productid
+
                     ORDER BY m.data DESC";
 
                 using var reader = cmd.ExecuteReader();
@@ -196,11 +198,12 @@ public class HistoricoRepository(DatabaseService dbService)
 
         cmd.CommandText = @"
             SELECT m.data, m.tipo, m.productid, m.produto, m.quantidade, m.responsavel, m.saida,
-                   COALESCE(e.valor_venda, 0) as valor
+                   COALESCE(e.valor_venda, 0) as valor, COALESCE(m.tipo_venda, 'Varejo') as tipo_venda
             FROM movimentacoes m
             LEFT JOIN estoque e ON e.productid = m.productid
             WHERE date(m.data) = date(@data)
             AND m.tipo = 'Saída'
+            AND m.valor_unitario != 0
             ORDER BY m.data";
 
         if (conn is Microsoft.Data.Sqlite.SqliteConnection)
@@ -225,6 +228,7 @@ public class HistoricoRepository(DatabaseService dbService)
                 var valor = reader.GetDecimal(7);
                 var quantidade = reader.GetInt32(4);
                 var valorTotal = valor * quantidade;
+                var tipoVenda = reader.GetString(8);
 
                 var mov = new MainRepository.Movimentacao
                 {
@@ -237,7 +241,8 @@ public class HistoricoRepository(DatabaseService dbService)
                     Responsavel = reader.GetString(5),
                     TipoSaida = reader.IsDBNull(6) ? null : reader.GetString(6),
                     ValorUnitario = valor,
-                    ValorTotal = valorTotal
+                    ValorTotal = valorTotal,
+                    TipoVenda = tipoVenda
                 };
 
                 relatorio.Movimentacoes.Add(mov);

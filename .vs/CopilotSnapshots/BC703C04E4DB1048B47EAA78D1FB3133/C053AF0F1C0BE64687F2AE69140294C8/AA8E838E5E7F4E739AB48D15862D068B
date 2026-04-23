@@ -1,0 +1,26 @@
+﻿using System.Windows;
+
+namespace Adega_Oak.Views;
+
+public partial class PasswordPromptWindow : Window
+{
+    public string? EnteredPassword { get; private set; }
+
+    public PasswordPromptWindow()
+    {
+        InitializeComponent();
+    }
+
+    private void OkBtn_Click(object sender, RoutedEventArgs e)
+    {
+        EnteredPassword = PasswordBox.Password;
+        DialogResult = true;
+        Close();
+    }
+
+    private void CancelBtn_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+}

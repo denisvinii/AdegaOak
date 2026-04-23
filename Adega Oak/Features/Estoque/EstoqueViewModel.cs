@@ -1,4 +1,4 @@
-ï»¿using Adega_Oak.Repositories;
+using Adega_Oak.Repositories;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -9,9 +9,22 @@ public partial class EstoqueViewModel : ObservableObject
 {
     private readonly EstoqueRepository _estoqueRepository;
     private readonly MainRepository _mainRepository;
+    private ObservableCollection<EstoqueRepository.EstoqueView> _todoEstoque = new();
+    private string _filtro = string.Empty;
 
-    [ObservableProperty]
-    private ObservableCollection<EstoqueRepository.EstoqueView> estoque = new();
+    public ObservableCollection<EstoqueRepository.EstoqueView> Estoque { get; } = new();
+
+    public string Filtro
+    {
+        get => _filtro;
+        set
+        {
+            if (SetProperty(ref _filtro, value))
+            {
+                AplicarFiltro();
+            }
+        }
+    }
 
     public EstoqueViewModel(EstoqueRepository estoqueRepository, MainRepository mainRepository)
     {
@@ -24,14 +37,14 @@ public partial class EstoqueViewModel : ObservableObject
     public void CarregarEstoque()
     {
         var estoqueAtualizado = _estoqueRepository.CarregarEstoqueCompleto();
-        Estoque.Clear();
+        _todoEstoque.Clear();
         foreach (var item in estoqueAtualizado)
         {
-            Estoque.Add(item);
+            _todoEstoque.Add(item);
         }
+        AplicarFiltro();
     }
 
-    // Adicionando o comando AtualizarCommand
     public IRelayCommand AtualizarCommand => new RelayCommand(CarregarEstoque);
 
     [RelayCommand]
@@ -39,7 +52,7 @@ public partial class EstoqueViewModel : ObservableObject
     {
         if (produto.Quantidade != 0)
         {
-            System.Windows.MessageBox.Show("SÃ³ Ã© possÃ­vel excluir produtos com quantidade igual a 0.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            System.Windows.MessageBox.Show("Só é possível excluir produtos com quantidade igual a 0.", "Aviso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             return;
         }
         // Solicita senha com PasswordBox
@@ -55,7 +68,31 @@ public partial class EstoqueViewModel : ObservableObject
         }
         _mainRepository.ExcluirProduto(produto.ProductId);
         CarregarEstoque();
-        System.Windows.MessageBox.Show("Produto excluÃ­do com sucesso.", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+        System.Windows.MessageBox.Show("Produto excluído com sucesso.", "Sucesso", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
     }
 
+    private void AplicarFiltro()
+    {
+        Estoque.Clear();
+
+        if (string.IsNullOrWhiteSpace(Filtro))
+        {
+            foreach (var item in _todoEstoque)
+            {
+                Estoque.Add(item);
+            }
+            return;
+        }
+
+        var filtroLower = Filtro.ToLower();
+        foreach (var item in _todoEstoque)
+        {
+            if ((item.Bebida?.ToLower().Contains(filtroLower) ?? false) ||
+                (item.Tamanho?.ToLower().Contains(filtroLower) ?? false) ||
+                (item.Material?.ToLower().Contains(filtroLower) ?? false))
+            {
+                Estoque.Add(item);
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Adega_Oak.Views.HistoricoView"
+<UserControl x:Class="Adega_Oak.Views.HistoricoView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -13,7 +13,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Cabeçalho com título e botão -->
         <Border Grid.Row="0"
                 Background="{DynamicResource MaterialDesignCardBackground}"
                 CornerRadius="8"
@@ -26,73 +25,142 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Histórico de Movimentações"
+                    <TextBlock Text="Historico de Movimentacoes"
                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                Foreground="{DynamicResource MaterialDesignBody}"/>
 
-                    <!-- Filtro de Tipo de Venda (NOVO) -->
-                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <StackPanel Orientation="Vertical" Margin="0,12,0,0">
                         <TextBlock Text="Filtrar por:" 
                                  Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                 VerticalAlignment="Center"
-                                 Margin="0,0,8,0"/>
+                                 Margin="0,0,0,8"/>
                         
-                        <ComboBox ItemsSource="{Binding TiposVendaFiltro}"
-                                 SelectedItem="{Binding TipoVendaFiltro}"
-                                 Width="150"
-                                 Style="{StaticResource MaterialDesignFilledComboBox}"
-                                 Foreground="{DynamicResource MaterialDesignBody}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                            <StackPanel Orientation="Vertical" Margin="0,0,20,0">
+                                <TextBlock Text="Tipo de Venda" 
+                                         FontSize="12" 
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                         Margin="0,0,0,4"/>
+                                <ComboBox ItemsSource="{Binding TiposVendaFiltro}"
+                                         SelectedItem="{Binding TipoVendaFiltro}"
+                                         Width="120"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Vertical" Margin="0,0,20,0">
+                                <TextBlock Text="Tipo de Movimentacao" 
+                                         FontSize="12" 
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                         Margin="0,0,0,4"/>
+                                <ComboBox ItemsSource="{Binding TiposMovimentacaoFiltro}"
+                                         SelectedItem="{Binding TipoMovimentacaoFiltro}"
+                                         Width="120"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Responsavel" 
+                                         FontSize="12" 
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                         Margin="0,0,0,4"/>
+                                <ComboBox ItemsSource="{Binding ResponsavelFiltroOpcoes}"
+                                         SelectedItem="{Binding ResponsavelFiltro}"
+                                         Width="150"
+                                         Style="{StaticResource MaterialDesignFilledComboBox}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
 
                 </StackPanel>
 
                 <Button Grid.Column="1"
                     Command="{Binding GerarRelatorioDiarioCommand}"
-                    Content="Gerar Relatório"
+                    Content="Gerar Relatorio"
                     Margin="15,0,0,0"
                     Padding="10,5"/>
             </Grid>
         </Border>
 
-        <!-- Lista de Movimentações -->
-        <DataGrid Grid.Row="1"
-                  ItemsSource="{Binding Historico}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  Margin="10"
-                  Effect="{DynamicResource MaterialDesignElevationShadow2}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Data" 
-                                    Binding="{Binding Data, StringFormat=dd/MM/yyyy HH:mm}" Width="Auto"/>
-                <DataGridTextColumn Header="Tipo" 
-                                    Binding="{Binding Tipo}" Width="Auto"/>
-                <DataGridTextColumn Header="Tipo de Venda" 
-                                    Binding="{Binding TipoVenda}" Width="Auto"
-                                    Visibility="Visible"/>
-                <DataGridTextColumn Header="Produto" 
-                                    Binding="{Binding ProdutoDescricao}" Width="Auto"/>
-                <DataGridTextColumn Header="Quantidade" 
-                                    Binding="{Binding Quantidade}" Width="Auto"/>
-                <DataGridTextColumn Header="Responsável" 
-                                    Binding="{Binding Responsavel}" Width="Auto"/>
-                <DataGridTextColumn Header="Tipo Saída" 
-                                    Binding="{Binding TipoSaida}" Width="Auto"/>
-                <DataGridTextColumn Header="Valor Total" 
-                                    Binding="{Binding ValorTotal, StringFormat=C2}" Width="Auto">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Tipo}" Value="Entrada">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Relatório do Dia -->
+            <DataGrid Grid.Row="0"
+                      ItemsSource="{Binding Historico}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      Margin="10"
+                      Effect="{DynamicResource MaterialDesignElevationShadow2}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Data" 
+                                        Binding="{Binding Data, StringFormat=dd/MM/yyyy HH:mm}" Width="Auto"/>
+                    <DataGridTextColumn Header="Tipo" 
+                                        Binding="{Binding Tipo}" Width="Auto"/>
+                    <DataGridTextColumn Header="Tipo de Venda" 
+                                        Binding="{Binding TipoVenda}" Width="Auto"
+                                        Visibility="Visible"/>
+                    <DataGridTextColumn Header="Produto" 
+                                        Binding="{Binding ProdutoDescricao}" Width="Auto"/>
+                    <DataGridTextColumn Header="Quantidade" 
+                                        Binding="{Binding Quantidade}" Width="Auto"/>
+                    <DataGridTextColumn Header="Responsavel" 
+                                        Binding="{Binding Responsavel}" Width="Auto"/>
+                    <DataGridTextColumn Header="Tipo Saida" 
+                                        Binding="{Binding TipoSaida}" Width="Auto"/>
+                    <DataGridTextColumn Header="Valor Total" 
+                                        Binding="{Binding ValorTotal, StringFormat=C2}" Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Border Grid.Row="1"
+                    Background="{DynamicResource MaterialDesignCardBackground}"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    BorderThickness="0,1,0,0"
+                    Padding="20,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="Totais:" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0">
+                        <TextBlock Text="Entradas: " FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalEntradas, StringFormat=C2}" 
+                                  FontWeight="Bold" 
+                                  Foreground="Green"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="20,0">
+                        <TextBlock Text="Saidas: " FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalSaidas, StringFormat=C2}" 
+                                  FontWeight="Bold" 
+                                  Foreground="Red"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Separator Grid.Column="3" Width="1" Margin="20,0" Background="{DynamicResource MaterialDesignDivider}"/>
+
+                    <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="20,0">
+                        <TextBlock Text="Total Geral: " FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalGeral, StringFormat=C2}" 
+                                  FontWeight="Bold" 
+                                  FontSize="14"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
         <Border Grid.Row="1" 
                 Visibility="{Binding RelatorioDiario, Converter={StaticResource NullToVisibilityConverter}}"
                 Background="#80000000"
@@ -112,21 +180,20 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Cabeçalho com título e botão fechar -->
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         
-                        <TextBlock Text="{Binding RelatorioDiario.Data, StringFormat='Relatório do dia {0:dd/MM/yyyy}'}"
+                        <TextBlock Text="{Binding RelatorioDiario.Data, StringFormat='Relatorio do dia {0:dd/MM/yyyy}'}"
                                   FontSize="18"
                                   FontWeight="Bold"
                                   Margin="0,0,0,10"/>
                         
                         <Button Grid.Column="1"
                                 Command="{Binding FecharRelatorioCommand}"
-                                Content="✕"
+                                Content="X"
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Padding="5"
@@ -141,7 +208,7 @@
                                     Margin="10,0,0,0"/>
                         </StackPanel>
                         
-                        <TextBlock Text="Movimentações de Saída" 
+                        <TextBlock Text="Movimentacoes de Saida" 
                                    FontWeight="Bold" 
                                    FontSize="16" 
                                    Margin="0,0,0,10"/>
@@ -157,7 +224,7 @@
                                                   Binding="{Binding ProdutoDescricao}" Width="Auto"/>
                                 <DataGridTextColumn Header="Quantidade" 
                                                   Binding="{Binding Quantidade}" Width="Auto"/>
-                                <DataGridTextColumn Header="Tipo Saída" 
+                                <DataGridTextColumn Header="Tipo Saida" 
                                                   Binding="{Binding TipoSaida}" Width="Auto"/>
                                 <DataGridTextColumn Header="Valor Unit." Width="Auto" Binding="{Binding ValorUnitario, StringFormat=C2}">
                                     <DataGridTextColumn.CellStyle>
@@ -185,11 +252,10 @@
                         </DataGrid>
                         
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-                            <TextBlock Text="Total de Saídas: " FontWeight="Bold"/>
+                            <TextBlock Text="Total de Saidas: " FontWeight="Bold"/>
                             <TextBlock Text="{Binding RelatorioDiario.TotalSaidas, StringFormat=C2}" FontWeight="Bold"/>
                         </StackPanel>
 
-                        <!-- Totais por Tipo de Venda (NOVO) -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                             <TextBlock Text="Varejo: " FontWeight="Bold" Foreground="Green" Margin="20,0,5,0"/>
                             <TextBlock Text="{Binding TotalVarejoDia, StringFormat=C2}" FontWeight="Bold" Foreground="Green"/>

@@ -1,5 +1,9 @@
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\appsettings.json
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.exe
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.deps.json
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.runtimeconfig.json
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.pdb
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\CommunityToolkit.Mvvm.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\MaterialDesignColors.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\MaterialDesignThemes.Wpf.dll
@@ -7,23 +11,22 @@ C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Json.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.FileProviders.Physical.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.FileSystemGlobbing.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Npgsql.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\SQLitePCLRaw.batteries_v2.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\SQLitePCLRaw.core.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\SQLitePCLRaw.provider.e_sqlite3.dll
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\System.Text.Json.dll
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\win-x64\native\e_sqlite3.dll
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Json.dll
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Extensions.FileSystemGlobbing.dll
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\System.IO.Pipelines.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\System.Text.Encodings.Web.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\System.Text.Json.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\browser-wasm\nativeassets\net8.0\e_sqlite3.a
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\linux-arm\native\libe_sqlite3.so
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\linux-arm64\native\libe_sqlite3.so
@@ -43,12 +46,18 @@ C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\osx-x64\native\libe_sqlite3.dylib
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\win-arm\native\e_sqlite3.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\win-arm64\native\e_sqlite3.dll
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Adega Oak.csproj.AssemblyReference.cache
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\ComboView.baml
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\DespesasView.baml
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\HistoricoView.baml
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\PasswordDialog.baml
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\SaldoView.baml
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\VendaComboView.baml
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\ComboView.g.cs
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\DespesasView.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\EstoqueView.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\HistoricoView.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\InicioView.g.cs
@@ -56,6 +65,7 @@ C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\PasswordDialog.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\SaldoView.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\TabelaPrecosView.g.cs
+C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Views\VendaComboView.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\App.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Adega Oak_Content.g.cs
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
@@ -75,8 +85,5 @@ C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Adega Oak.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\refint\Adega Oak.dll
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Adega Oak.pdb
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.deps.json
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.runtimeconfig.json
-C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\bin\Debug\net8.0-windows\Adega Oak.pdb
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\Adega Oak.genruntimeconfig.cache
 C:\Users\vinic\OneDrive\Documentos\Adega Oak Melhores versões até agora\Adega_Oak Clean Code (Window) (em processo melhorando)\Adega Oak\obj\Debug\net8.0-windows\ref\Adega Oak.dll

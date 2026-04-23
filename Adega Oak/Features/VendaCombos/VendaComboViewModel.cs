@@ -1,0 +1,242 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Adega_Oak.Repositories;
+
+namespace Adega_Oak.Features.VendaCombos;
+
+public partial class VendaComboViewModel : ObservableObject
+{
+    private readonly ComboRepository _comboRepository;
+    private readonly MainRepository _mainRepository;
+
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.Combo> combosDisponiveis = new();
+
+    [ObservableProperty]
+    private ComboRepository.Combo? comboSelecionado;
+
+    [ObservableProperty]
+    private int quantidadeCombo = 1;
+
+    [ObservableProperty]
+    private decimal precoTotal = 0;
+
+    [ObservableProperty]
+    private string responsavelVenda = string.Empty;
+
+    [ObservableProperty]
+    private string? observacoes;
+
+    [ObservableProperty]
+    private string? mensagemErro;
+
+    [ObservableProperty]
+    private bool temErro = false;
+
+    [ObservableProperty]
+    private int mesFiltro = DateTime.Now.Month;
+
+    [ObservableProperty]
+    private int anoFiltro = DateTime.Now.Year;
+
+    [ObservableProperty]
+    private ObservableCollection<int> meses = new(Enumerable.Range(1, 12));
+
+    [ObservableProperty]
+    private ObservableCollection<int> anos = new(Enumerable.Range(DateTime.Now.Year - 1, 5));
+
+    [ObservableProperty]
+    private ObservableCollection<ComboRepository.ComboVenda> historicoVendas = new();
+
+    [ObservableProperty]
+    private decimal totalVendidoPeriodo = 0;
+
+    private ObservableCollection<string> _responsaveis = new();
+    public ObservableCollection<string> Responsaveis
+    {
+        get => _responsaveis;
+        set => SetProperty(ref _responsaveis, value);
+    }
+
+    private string? _responsavelFiltro;
+    public string? ResponsavelFiltro
+    {
+        get => _responsavelFiltro;
+        set
+        {
+            if (SetProperty(ref _responsavelFiltro, value))
+            {
+                ResponsavelVenda = value ?? string.Empty;
+            }
+        }
+    }
+
+    private bool _precoTotalManual = false;
+    private bool _ignorePrecoTotalChange = false;
+
+    public VendaComboViewModel(ComboRepository comboRepository, MainRepository mainRepository)
+    {
+        _comboRepository = comboRepository;
+        _mainRepository = mainRepository;
+
+        PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(QuantidadeCombo) || e.PropertyName == nameof(ComboSelecionado))
+            {
+                AtualizarPrecoTotal();
+            }
+            else if (e.PropertyName == nameof(PrecoTotal) && !_ignorePrecoTotalChange)
+            {
+                _precoTotalManual = true;
+            }
+        };
+
+        CarregarCombosDisponiveis();
+        CarregarResponsaveis();
+        CarregarHistoricoVendas();
+    }
+
+    [RelayCommand]
+    public void CarregarCombosDisponiveis()
+    {
+        // Carrega tanto Combos quanto Copões para permitir venda de ambos na mesma tela
+        var combos = _comboRepository.CarregarCombos(apenasAtivos: true);
+        var copoes = _comboRepository.CarregarCopoes(apenasAtivos: true);
+
+        var todos = combos.Concat(copoes)
+            .GroupBy(c => c.ComboId) // evita duplicados caso algum método retorne sobreposição
+            .Select(g => g.First())
+            .OrderBy(c => c.Nome)
+            .ToList();
+
+        CombosDisponiveis.Clear();
+        foreach (var combo in todos)
+        {
+            CombosDisponiveis.Add(combo);
+        }
+
+        LimparFormulario();
+        TemErro = false;
+        MensagemErro = null;
+    }
+
+    [RelayCommand]
+    public void SelecionarCombo(ComboRepository.Combo combo)
+    {
+        ComboSelecionado = combo;
+        _precoTotalManual = false;
+        AtualizarPrecoTotal();
+        TemErro = false;
+        MensagemErro = null;
+    }
+
+    private void AtualizarPrecoTotal()
+    {
+        if (ComboSelecionado == null)
+        {
+            SetPrecoTotalProgrammatic(0);
+            return;
+        }
+
+        var calculado = ComboSelecionado.PrecoVenda * QuantidadeCombo;
+        if (!_precoTotalManual)
+        {
+            SetPrecoTotalProgrammatic(calculado);
+        }
+    }
+
+    private void SetPrecoTotalProgrammatic(decimal value)
+    {
+        _ignorePrecoTotalChange = true;
+        PrecoTotal = value;
+        _ignorePrecoTotalChange = false;
+    }
+
+    [RelayCommand]
+    public void CarregarResponsaveis()
+    {
+        var responsaveis = _mainRepository.CarregarResponsaveis();
+        Responsaveis = new ObservableCollection<string>(responsaveis);
+    }
+
+    [RelayCommand]
+    public void VenderCombo()
+    {
+        if (ComboSelecionado == null)
+        {
+            TemErro = true;
+            MensagemErro = "Selecione um combo";
+            return;
+        }
+
+        if (QuantidadeCombo <= 0)
+        {
+            TemErro = true;
+            MensagemErro = "Quantidade deve ser maior que zero";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ResponsavelVenda))
+        {
+            TemErro = true;
+            MensagemErro = "Selecione um responsável";
+            return;
+        }
+
+        try
+        {
+            _comboRepository.VenderCombo(
+                ComboSelecionado.ComboId,
+                QuantidadeCombo,
+                ResponsavelVenda,
+                Observacoes,
+                ComboRepository.TipoMovimentoCombo.Normal);
+
+            System.Windows.MessageBox.Show(
+                $"Venda de {QuantidadeCombo} combo(s) registrada com sucesso!\nTotal: R$ {PrecoTotal:F2}",
+                "Sucesso",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+
+            LimparFormulario();
+            CarregarHistoricoVendas();
+            TemErro = false;
+            MensagemErro = null;
+        }
+        catch (InvalidOperationException ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro na validação: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            TemErro = true;
+            MensagemErro = $"Erro ao registrar venda: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void CarregarHistoricoVendas()
+    {
+        var vendas = _comboRepository.CarregarHistoricoVendas(MesFiltro, AnoFiltro);
+        HistoricoVendas.Clear();
+        foreach (var venda in vendas)
+        {
+            HistoricoVendas.Add(venda);
+        }
+
+        TotalVendidoPeriodo = _comboRepository.ObterTotalVendidoPeriodo(MesFiltro, AnoFiltro);
+    }
+
+    private void LimparFormulario()
+    {
+        ComboSelecionado = null;
+        QuantidadeCombo = 1;
+        PrecoTotal = 0;
+        ResponsavelVenda = string.Empty;
+        Observacoes = null;
+        _precoTotalManual = false;
+    }
+}
