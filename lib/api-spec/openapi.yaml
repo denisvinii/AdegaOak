@@ -1,36 +1,828 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Adega Oak — Liquor Store Management API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: estoque
+  - name: movimentacoes
+  - name: precos
+  - name: combos
+  - name: vendas
+  - name: despesas
+  - name: dashboard
+  - name: funcionarios
+  - name: auth
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
-      summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+
+  /estoque:
+    get:
+      operationId: listEstoque
+      tags: [estoque]
+      summary: List inventory with computed quantity
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: low
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                type: array
+                items: { $ref: "#/components/schemas/EstoqueItem" }
+    post:
+      operationId: createProduct
+      tags: [estoque]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EstoqueItem" }
+
+  /estoque/{productid}:
+    get:
+      operationId: getProduct
+      tags: [estoque]
+      parameters:
+        - in: path
+          name: productid
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EstoqueItem" }
+    patch:
+      operationId: updateProduct
+      tags: [estoque]
+      parameters:
+        - in: path
+          name: productid
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EstoqueItem" }
+    delete:
+      operationId: deleteProduct
+      tags: [estoque]
+      parameters:
+        - in: path
+          name: productid
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Deleted }
+
+  /movimentacoes:
+    get:
+      operationId: listMovimentacoes
+      tags: [movimentacoes]
+      summary: Inventory & sales history
+      parameters:
+        - in: query
+          name: tipo
+          schema: { type: string, enum: [Entrada, "Saída", All] }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+        - in: query
+          name: productid
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 200 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Movimentacao" }
+    post:
+      operationId: createMovimentacao
+      tags: [movimentacoes]
+      summary: Register entry (purchase) or exit (sale)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MovimentacaoInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Movimentacao" }
+
+  /movimentacoes/{id}:
+    delete:
+      operationId: deleteMovimentacao
+      tags: [movimentacoes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Deleted }
+
+  /precos:
+    get:
+      operationId: listPrecos
+      tags: [precos]
+      summary: Price table (lighter view of estoque)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PrecoItem" }
+    patch:
+      operationId: bulkUpdatePrecos
+      tags: [precos]
+      summary: Update prices for many products at once
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PrecoBulkUpdate" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PrecoBulkUpdateResult" }
+
+  /combos:
+    get:
+      operationId: listCombos
+      tags: [combos]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Combo" }
+    post:
+      operationId: createCombo
+      tags: [combos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ComboInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Combo" }
+
+  /combos/{combo_id}:
+    get:
+      operationId: getCombo
+      tags: [combos]
+      parameters:
+        - in: path
+          name: combo_id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Combo" }
+    patch:
+      operationId: updateCombo
+      tags: [combos]
+      parameters:
+        - in: path
+          name: combo_id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ComboInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Combo" }
+    delete:
+      operationId: deleteCombo
+      tags: [combos]
+      parameters:
+        - in: path
+          name: combo_id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Deleted }
+
+  /vendas/combo:
+    post:
+      operationId: sellCombo
+      tags: [vendas]
+      summary: Register a combo sale (debits stock for components when applicable)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ComboVendaInput" }
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ComboVenda" }
+
+  /vendas/combo/list:
+    get:
+      operationId: listComboVendas
+      tags: [vendas]
+      parameters:
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ComboVenda" }
+
+  /despesas:
+    get:
+      operationId: listDespesas
+      tags: [despesas]
+      parameters:
+        - in: query
+          name: pago
+          schema: { type: boolean }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Despesa" }
+    post:
+      operationId: createDespesa
+      tags: [despesas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DespesaInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Despesa" }
+
+  /despesas/{id}:
+    patch:
+      operationId: updateDespesa
+      tags: [despesas]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DespesaInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Despesa" }
+    delete:
+      operationId: deleteDespesa
+      tags: [despesas]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Deleted }
+
+  /dashboard/saldo:
+    get:
+      operationId: getSaldo
+      tags: [dashboard]
+      summary: Balance — sales total, purchases total, profit, and capital
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SaldoSummary" }
+
+  /dashboard/overview:
+    get:
+      operationId: getDashboardOverview
+      tags: [dashboard]
+      summary: KPIs — today, week, month, low-stock count, expense totals
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardOverview" }
+
+  /dashboard/sales-trend:
+    get:
+      operationId: getSalesTrend
+      tags: [dashboard]
+      summary: Daily sales for last N days
+      parameters:
+        - in: query
+          name: days
+          schema: { type: integer, default: 30 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SalesTrendPoint" }
+
+  /dashboard/top-products:
+    get:
+      operationId: getTopProducts
+      tags: [dashboard]
+      summary: Best selling products in given window
+      parameters:
+        - in: query
+          name: days
+          schema: { type: integer, default: 30 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TopProduct" }
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ActivityItem" }
+
+  /funcionarios:
+    get:
+      operationId: listFuncionarios
+      tags: [funcionarios]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Funcionario" }
+    post:
+      operationId: createFuncionario
+      tags: [funcionarios]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FuncionarioInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Funcionario" }
+
+  /funcionarios/{id}:
+    delete:
+      operationId: deleteFuncionario
+      tags: [funcionarios]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: Deleted }
+
+  /auth/verify-discount:
+    post:
+      operationId: verifyDiscountPassword
+      tags: [auth]
+      summary: Validate the discount/manager password before applying a discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DiscountPasswordInput" }
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DiscountPasswordResult" }
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
 
+    EstoqueItem:
+      type: object
+      required: [productid, bebida, tamanho, material, valor, valor_venda, quantidade_caixa, valor_caixa, valor_atacado_caixa, estoque_minimo, quantidade_minima_atacado, quantidade]
+      properties:
+        productid: { type: integer }
+        bebida: { type: string }
+        tamanho: { type: string }
+        material: { type: string }
+        valor: { type: number }
+        valor_venda: { type: number }
+        quantidade_caixa: { type: integer }
+        valor_caixa: { type: number }
+        valor_atacado_caixa: { type: number }
+        estoque_minimo: { type: integer }
+        quantidade_minima_atacado: { type: integer }
+        quantidade: { type: integer, description: "Computed current stock" }
+        ativo: { type: boolean }
+
+    ProductInput:
+      type: object
+      required: [bebida, tamanho, material, valor, valor_venda]
+      properties:
+        bebida: { type: string, minLength: 1 }
+        tamanho: { type: string, minLength: 1 }
+        material: { type: string, minLength: 1 }
+        valor: { type: number, minimum: 0 }
+        valor_venda: { type: number, minimum: 0 }
+        quantidade_caixa: { type: integer, minimum: 1, default: 1 }
+        valor_caixa: { type: number, minimum: 0, default: 0 }
+        valor_atacado_caixa: { type: number, minimum: 0, default: 0 }
+        estoque_minimo: { type: integer, minimum: 0, default: 0 }
+        quantidade_minima_atacado: { type: integer, minimum: 1, default: 20 }
+
+    Movimentacao:
+      type: object
+      required: [id, data, tipo, productid, produto, quantidade, responsavel, valor_unitario]
+      properties:
+        id: { type: integer }
+        data: { type: string, format: date-time }
+        tipo: { type: string, enum: [Entrada, "Saída"] }
+        tipo_venda: { type: string, enum: [Varejo, Atacado], nullable: true }
+        productid: { type: integer }
+        produto: { type: string }
+        quantidade: { type: integer }
+        responsavel: { type: string }
+        saida:
+          type: string
+          nullable: true
+        valor_unitario: { type: number }
+        valor_total: { type: number }
+        observacoes:
+          type: string
+          nullable: true
+
+    MovimentacaoInput:
+      type: object
+      required: [tipo, productid, quantidade, responsavel, valor_unitario]
+      properties:
+        tipo: { type: string, enum: [Entrada, "Saída"] }
+        tipo_venda: { type: string, enum: [Varejo, Atacado], default: Varejo }
+        productid: { type: integer }
+        quantidade: { type: integer, minimum: 1 }
+        responsavel: { type: string, minLength: 1 }
+        saida:
+          type: string
+          nullable: true
+        valor_unitario: { type: number, minimum: 0 }
+        observacoes:
+          type: string
+          nullable: true
+
+    PrecoItem:
+      type: object
+      required: [productid, bebida, tamanho, material, valor, valor_venda, valor_caixa, valor_atacado_caixa, quantidade_caixa]
+      properties:
+        productid: { type: integer }
+        bebida: { type: string }
+        tamanho: { type: string }
+        material: { type: string }
+        valor: { type: number }
+        valor_venda: { type: number }
+        valor_caixa: { type: number }
+        valor_atacado_caixa: { type: number }
+        quantidade_caixa: { type: integer }
+        margem_percentual: { type: number }
+
+    PrecoUpdate:
+      type: object
+      required: [productid]
+      properties:
+        productid: { type: integer }
+        valor: { type: number, minimum: 0 }
+        valor_venda: { type: number, minimum: 0 }
+        valor_caixa: { type: number, minimum: 0 }
+        valor_atacado_caixa: { type: number, minimum: 0 }
+
+    Combo:
+      type: object
+      required: [combo_id, nome, preco_venda, ativo, composicao]
+      properties:
+        combo_id: { type: integer }
+        nome: { type: string }
+        descricao:
+          type: string
+          nullable: true
+        preco_venda: { type: number }
+        ativo: { type: boolean }
+        data_criacao: { type: string, format: date-time }
+        composicao:
+          type: array
+          items: { $ref: "#/components/schemas/ComboComponent" }
+        custo_total: { type: number, description: "Sum of component costs" }
+
+    ComboComponent:
+      type: object
+      required: [product_id, quantidade, unidade]
+      properties:
+        composicao_id: { type: integer }
+        product_id: { type: integer }
+        produto: { type: string }
+        quantidade: { type: number }
+        unidade: { type: string }
+        debita_estoque: { type: boolean }
+
+    ComboInput:
+      type: object
+      required: [nome, preco_venda, composicao]
+      properties:
+        nome: { type: string, minLength: 1 }
+        descricao:
+          type: string
+          nullable: true
+        preco_venda: { type: number, minimum: 0 }
+        ativo: { type: boolean, default: true }
+        composicao:
+          type: array
+          items:
+            type: object
+            required: [product_id, quantidade, unidade]
+            properties:
+              product_id: { type: integer }
+              quantidade: { type: number, minimum: 0.0001 }
+              unidade: { type: string }
+              debita_estoque: { type: boolean, default: true }
+
+    ComboVenda:
+      type: object
+      required: [venda_id, combo_id, quantidade, preco_unitario, preco_total, data_venda]
+      properties:
+        venda_id: { type: integer }
+        combo_id: { type: integer }
+        nome:
+          type: string
+          nullable: true
+        quantidade: { type: integer }
+        preco_unitario: { type: number }
+        preco_total: { type: number }
+        data_venda: { type: string, format: date-time }
+        responsavel:
+          type: string
+          nullable: true
+        observacoes:
+          type: string
+          nullable: true
+        tipo_movimento: { type: string }
+
+    ComboVendaInput:
+      type: object
+      required: [combo_id, quantidade, responsavel]
+      properties:
+        combo_id: { type: integer }
+        quantidade: { type: integer, minimum: 1 }
+        preco_unitario:
+          type: number
+          minimum: 0
+          nullable: true
+          description: "Optional override; otherwise uses combo's preco_venda"
+        responsavel: { type: string }
+        observacoes:
+          type: string
+          nullable: true
+
+    Despesa:
+      type: object
+      required: [id, descricao, valor, data, tipo, pago]
+      properties:
+        id: { type: integer }
+        descricao: { type: string }
+        valor: { type: number }
+        data: { type: string, format: date-time }
+        tipo: { type: integer, description: "0=Operacional,1=Fornecedor,2=Salário,3=Outros" }
+        pago: { type: boolean }
+        data_pagamento:
+          type: string
+          format: date-time
+          nullable: true
+        notas:
+          type: string
+          nullable: true
+
+    DespesaInput:
+      type: object
+      required: [descricao, valor, data, tipo]
+      properties:
+        descricao: { type: string, minLength: 1 }
+        valor: { type: number, minimum: 0 }
+        data: { type: string, format: date-time }
+        tipo: { type: integer, minimum: 0, maximum: 3 }
+        pago: { type: boolean, default: false }
+        data_pagamento:
+          type: string
+          format: date-time
+          nullable: true
+        notas:
+          type: string
+          nullable: true
+
+    SaldoSummary:
+      type: object
+      required: [total_entradas, total_saidas, saldo, investido_admin, capital_empresa, lucro]
+      properties:
+        total_entradas: { type: number, description: "Soma de todas as entradas (compras)" }
+        total_saidas: { type: number, description: "Soma de todas as saídas (vendas)" }
+        saldo: { type: number, description: "saidas - entradas (não-admin)" }
+        investido_admin: { type: number }
+        capital_empresa: { type: number }
+        lucro: { type: number, description: "Lucro estimado: saídas - (qtd * valor de custo)" }
+        margem_percentual: { type: number }
+
+    DashboardOverview:
+      type: object
+      required: [vendas_hoje, vendas_semana, vendas_mes, total_produtos, produtos_baixo_estoque, despesas_pendentes, despesas_pagas_mes, valor_estoque]
+      properties:
+        vendas_hoje: { type: number }
+        vendas_semana: { type: number }
+        vendas_mes: { type: number }
+        total_produtos: { type: integer }
+        produtos_baixo_estoque: { type: integer }
+        despesas_pendentes: { type: number }
+        despesas_pagas_mes: { type: number }
+        valor_estoque: { type: number, description: "Valor total do estoque atual ao custo" }
+
+    SalesTrendPoint:
+      type: object
+      required: [date, vendas, lucro, transacoes]
+      properties:
+        date: { type: string, format: date }
+        vendas: { type: number }
+        lucro: { type: number }
+        transacoes: { type: integer }
+
+    TopProduct:
+      type: object
+      required: [productid, produto, quantidade_vendida, receita]
+      properties:
+        productid: { type: integer }
+        produto: { type: string }
+        quantidade_vendida: { type: integer }
+        receita: { type: number }
+
+    ActivityItem:
+      type: object
+      required: [id, kind, title, subtitle, amount, when]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [venda, entrada, despesa, combo] }
+        title: { type: string }
+        subtitle: { type: string }
+        amount: { type: number }
+        when: { type: string, format: date-time }
+
+    Funcionario:
+      type: object
+      required: [id, username]
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        ativo: { type: boolean }
+
+    FuncionarioInput:
+      type: object
+      required: [username]
+      properties:
+        username: { type: string, minLength: 2, maxLength: 50 }
+
+    PrecoBulkUpdate:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/PrecoUpdate" }
+
+    PrecoBulkUpdateResult:
+      type: object
+      required: [updated]
+      properties:
+        updated: { type: integer }
+
+    DiscountPasswordInput:
+      type: object
+      required: [password]
+      properties:
+        password: { type: string }
+
+    DiscountPasswordResult:
+      type: object
+      required: [valid]
+      properties:
+        valid: { type: boolean }
