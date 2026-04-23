@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Adega Oak — Gestão"
+version = "1.0.0"
+id = "artifacts/adegaoak"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22360
+
+[services.development]
+run = "pnpm --filter @workspace/adegaoak run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/adegaoak", "run", "build" ]
+publicDir = "artifacts/adegaoak/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22360"
+BASE_PATH = "/"
