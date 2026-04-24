@@ -38,3 +38,32 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - A coluna `quantidade_caixa` em `estoque` é editável diretamente na Tabela de Preços (lote, junto com Custo / Venda Varejo / Valor Caixa / Atacado/Caixa).
 - Senha do gerente vem de `ADMIN_DESCONTO_SENHA` (default `ADEGA2024`) e libera desconto manual em Movimentações e preço customizado em Venda de Combos.
 - README.md na raiz traz instruções completas para `git clone` + setup local.
+
+### Onde mora cada regra de negócio (backend Node + Express)
+
+Toda a lógica de servidor está em `artifacts/api-server/src/routes/`, um arquivo por domínio. Para mudar uma regra basta editar o arquivo, salvar e reiniciar o workflow `artifacts/api-server: API Server`.
+
+| Domínio                                           | Arquivo                                            |
+|---------------------------------------------------|----------------------------------------------------|
+| Estoque (CRUD, cálculo de quantidade)             | `routes/estoque.ts`                                |
+| Movimentações + expansão de Atacado               | `routes/movimentacoes.ts`                          |
+| Tabela de Preços (bulk update)                    | `routes/precos.ts`                                 |
+| Combos (CRUD + composição)                        | `routes/combos.ts`                                 |
+| Venda de combo (gera Saídas automáticas)          | `routes/vendas.ts`                                 |
+| Despesas                                          | `routes/despesas.ts`                               |
+| Funcionários                                      | `routes/funcionarios.ts`                           |
+| Senha do gerente / desconto                       | `routes/auth.ts`                                   |
+| Dashboard / Saldo / KPIs                          | `routes/dashboard.ts`                              |
+| Pool Postgres                                     | `lib/db/src/index.ts`                              |
+| Contrato OpenAPI (fonte da verdade)               | `lib/api-spec/openapi.yaml`                        |
+
+Para mudanças que afetam o contrato REST (campos novos, endpoints novos): editar `openapi.yaml` → rodar `pnpm --filter @workspace/api-spec run codegen` → regera hooks React em `lib/api-client-react`.
+
+### Cálculo de margens (Tabela de Preços)
+
+São exibidas **três margens por produto**, todas relativas a `valor` (custo unitário):
+- **Margem Varejo** = `(valor_venda − valor) / valor`
+- **Margem Caixa (un.)** = `((valor_caixa / quantidade_caixa) − valor) / valor`
+- **Margem Atacado (un.)** = `((valor_atacado_caixa / quantidade_caixa) − valor) / valor`
+
+Cores: vermelho (< 0), âmbar (< 10%), verde (≥ 10%).
