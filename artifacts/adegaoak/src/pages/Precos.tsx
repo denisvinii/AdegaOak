@@ -74,26 +74,36 @@ export default function Precos() {
               <TableHead className="text-right">Venda Varejo</TableHead>
               <TableHead className="text-right">Valor Caixa</TableHead>
               <TableHead className="text-right">Atacado Caixa</TableHead>
-              <TableHead className="text-right">Margem</TableHead>
+              <TableHead className="text-right">Margem Varejo</TableHead>
+              <TableHead className="text-right">Margem Caixa (un.)</TableHead>
+              <TableHead className="text-right">Margem Atacado (un.)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
             ) : precos?.map((p) => {
               const e = edits[p.productid] ?? {};
               const valor = e.valor ?? p.valor;
               const valor_venda = e.valor_venda ?? p.valor_venda;
-              const margem = valor > 0 ? ((valor_venda - valor) / valor) * 100 : 0;
+              const valor_caixa = e.valor_caixa ?? p.valor_caixa;
+              const valor_atacado_caixa = e.valor_atacado_caixa ?? p.valor_atacado_caixa;
+              const qcaixa = Math.max(1, e.quantidade_caixa ?? p.quantidade_caixa);
+              const margem = (preco: number) => valor > 0 ? ((preco - valor) / valor) * 100 : 0;
+              const margemVarejo = margem(valor_venda);
+              const margemCaixa = margem(valor_caixa / qcaixa);
+              const margemAtacado = margem(valor_atacado_caixa / qcaixa);
               return (
                 <TableRow key={p.productid}>
                   <TableCell className="font-medium">{p.bebida} <span className="text-muted-foreground">{p.tamanho}</span></TableCell>
                   <TableCell><PriceCell integer min={1} value={e.quantidade_caixa ?? p.quantidade_caixa} onChange={(v) => setEdit(p.productid, "quantidade_caixa", v)} /></TableCell>
                   <TableCell><PriceCell value={valor} onChange={(v) => setEdit(p.productid, "valor", v)} /></TableCell>
                   <TableCell><PriceCell value={valor_venda} onChange={(v) => setEdit(p.productid, "valor_venda", v)} /></TableCell>
-                  <TableCell><PriceCell value={e.valor_caixa ?? p.valor_caixa} onChange={(v) => setEdit(p.productid, "valor_caixa", v)} /></TableCell>
-                  <TableCell><PriceCell value={e.valor_atacado_caixa ?? p.valor_atacado_caixa} onChange={(v) => setEdit(p.productid, "valor_atacado_caixa", v)} /></TableCell>
-                  <TableCell className={`text-right font-semibold ${margem < 10 ? "text-amber-600" : margem < 0 ? "text-rose-600" : "text-emerald-600"}`}>{margem.toFixed(1)}%</TableCell>
+                  <TableCell><PriceCell value={valor_caixa} onChange={(v) => setEdit(p.productid, "valor_caixa", v)} /></TableCell>
+                  <TableCell><PriceCell value={valor_atacado_caixa} onChange={(v) => setEdit(p.productid, "valor_atacado_caixa", v)} /></TableCell>
+                  <MarginCell value={margemVarejo} />
+                  <MarginCell value={margemCaixa} />
+                  <MarginCell value={margemAtacado} />
                 </TableRow>
               );
             })}
@@ -103,6 +113,11 @@ export default function Precos() {
       <p className="text-xs text-muted-foreground">Valor exibido em R$ (ex.: 12,50). A coluna “Un. por Caixa” é usada para debitar o estoque correto em vendas Atacado. As alterações ficam pendentes até clicar em Salvar.</p>
     </div>
   );
+}
+
+function MarginCell({ value }: { value: number }) {
+  const tone = value < 0 ? "text-rose-600" : value < 10 ? "text-amber-600" : "text-emerald-600";
+  return <TableCell className={`text-right font-semibold ${tone}`}>{Number.isFinite(value) ? value.toFixed(1) : "0.0"}%</TableCell>;
 }
 
 function PriceCell({ value, onChange, integer, min }: { value: number; onChange: (v: number) => void; integer?: boolean; min?: number }) {
