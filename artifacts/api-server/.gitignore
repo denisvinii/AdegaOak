@@ -1,0 +1,6 @@
+bin/
+obj/
+*.user
+appsettings.Development.json
+_legacy-ts/dist
+_legacy-ts/node_modules
