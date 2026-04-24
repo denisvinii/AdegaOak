@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
-type Edits = Record<number, { valor?: number; valor_venda?: number; valor_caixa?: number; valor_atacado_caixa?: number }>;
+type Edits = Record<number, { valor?: number; valor_venda?: number; valor_caixa?: number; valor_atacado_caixa?: number; quantidade_caixa?: number }>;
 
 export default function Precos() {
   const qc = useQueryClient();
@@ -32,7 +32,7 @@ export default function Precos() {
     const items = dirty.map(([id, fields]) => {
       const orig = precos.find((p) => p.productid === Number(id));
       const out: any = { productid: Number(id) };
-      for (const k of ["valor","valor_venda","valor_caixa","valor_atacado_caixa"] as const) {
+      for (const k of ["valor","valor_venda","valor_caixa","valor_atacado_caixa","quantidade_caixa"] as const) {
         if (fields[k] !== undefined && fields[k] !== (orig as any)?.[k]) out[k] = fields[k];
       }
       return out;
@@ -69,6 +69,7 @@ export default function Precos() {
           <TableHeader>
             <TableRow>
               <TableHead>Produto</TableHead>
+              <TableHead className="text-right">Un. por Caixa</TableHead>
               <TableHead className="text-right">Custo</TableHead>
               <TableHead className="text-right">Venda Varejo</TableHead>
               <TableHead className="text-right">Valor Caixa</TableHead>
@@ -78,7 +79,7 @@ export default function Precos() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Carregando...</TableCell></TableRow>
             ) : precos?.map((p) => {
               const e = edits[p.productid] ?? {};
               const valor = e.valor ?? p.valor;
@@ -87,6 +88,7 @@ export default function Precos() {
               return (
                 <TableRow key={p.productid}>
                   <TableCell className="font-medium">{p.bebida} <span className="text-muted-foreground">{p.tamanho}</span></TableCell>
+                  <TableCell><PriceCell integer min={1} value={e.quantidade_caixa ?? p.quantidade_caixa} onChange={(v) => setEdit(p.productid, "quantidade_caixa", v)} /></TableCell>
                   <TableCell><PriceCell value={valor} onChange={(v) => setEdit(p.productid, "valor", v)} /></TableCell>
                   <TableCell><PriceCell value={valor_venda} onChange={(v) => setEdit(p.productid, "valor_venda", v)} /></TableCell>
                   <TableCell><PriceCell value={e.valor_caixa ?? p.valor_caixa} onChange={(v) => setEdit(p.productid, "valor_caixa", v)} /></TableCell>
@@ -98,17 +100,23 @@ export default function Precos() {
           </TableBody>
         </Table>
       </div>
-      <p className="text-xs text-muted-foreground">Valor exibido em R$ (ex.: 12,50). As alterações ficam pendentes até clicar em Salvar.</p>
+      <p className="text-xs text-muted-foreground">Valor exibido em R$ (ex.: 12,50). A coluna “Un. por Caixa” é usada para debitar o estoque correto em vendas Atacado. As alterações ficam pendentes até clicar em Salvar.</p>
     </div>
   );
 }
 
-function PriceCell({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+function PriceCell({ value, onChange, integer, min }: { value: number; onChange: (v: number) => void; integer?: boolean; min?: number }) {
   return (
     <div className="flex justify-end">
       <Input
-        type="number" step="0.01" value={Number.isFinite(value) ? value : 0}
-        onChange={(e) => onChange(Number(e.target.value))}
+        type="number"
+        step={integer ? "1" : "0.01"}
+        min={min}
+        value={Number.isFinite(value) ? value : 0}
+        onChange={(e) => {
+          const n = integer ? Math.max(min ?? 0, Math.trunc(Number(e.target.value))) : Number(e.target.value);
+          onChange(n);
+        }}
         className="h-8 w-28 text-right"
       />
     </div>

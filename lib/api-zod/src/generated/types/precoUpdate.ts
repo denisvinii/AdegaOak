@@ -16,4 +16,6 @@ export interface PrecoUpdate {
   valor_caixa?: number;
   /** @minimum 0 */
   valor_atacado_caixa?: number;
+  /** @minimum 1 */
+  quantidade_caixa?: number;
 }

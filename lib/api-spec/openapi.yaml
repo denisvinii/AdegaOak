@@ -611,6 +611,7 @@ components:
         valor_venda: { type: number, minimum: 0 }
         valor_caixa: { type: number, minimum: 0 }
         valor_atacado_caixa: { type: number, minimum: 0 }
+        quantidade_caixa: { type: integer, minimum: 1 }
 
     Combo:
       type: object

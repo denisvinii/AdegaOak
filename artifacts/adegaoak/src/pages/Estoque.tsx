@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   useListEstoque, useCreateProduct, useUpdateProduct, useDeleteProduct,
   useListMovimentacoes,
-  getListEstoqueQueryKey, getGetDashboardOverviewQueryKey,
+  getListEstoqueQueryKey, getGetDashboardOverviewQueryKey, getListMovimentacoesQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatCurrency, formatDateTime } from "@/lib/format";
@@ -35,9 +35,10 @@ export default function Estoque() {
 
   const editing = items?.find((p) => p.productid === editId);
   const drawerItem = items?.find((p) => p.productid === drawerId);
+  const drawerParams = { productid: drawerId ?? undefined, limit: 25 };
   const { data: drawerMovs } = useListMovimentacoes(
-    { productid: drawerId ?? undefined, limit: 25 },
-    { query: { enabled: drawerId != null } },
+    drawerParams,
+    { query: { enabled: drawerId != null, queryKey: getListMovimentacoesQueryKey(drawerParams) } },
   );
 
   const invalidateAll = () => {

@@ -37,18 +37,34 @@ router.post("/movimentacoes", async (req, res, next) => {
     const tipo = b.tipo;
     const tipo_venda = b.tipo_venda ?? "Varejo";
     const productid = Number(b.productid);
-    const quantidade = Number(b.quantidade);
+    let quantidade = Number(b.quantidade);
     const responsavel = String(b.responsavel ?? "");
-    const valor_unitario = Number(b.valor_unitario);
+    let valor_unitario = Number(b.valor_unitario);
     const saida = b.saida ?? null;
-    const observacoes = b.observacoes ?? null;
+    let observacoes = b.observacoes ?? null;
 
     if (!["Entrada","Saída"].includes(tipo)) return res.status(400).json({ error: "tipo inválido" });
     if (!Number.isFinite(productid) || quantidade <= 0) return res.status(400).json({ error: "produto/quantidade inválidos" });
 
-    const prod = await pool.query(`SELECT bebida, tamanho FROM estoque WHERE productid = $1`, [productid]);
+    const prod = await pool.query(
+      `SELECT bebida, tamanho, quantidade_caixa FROM estoque WHERE productid = $1`,
+      [productid],
+    );
     if (!prod.rows[0]) return res.status(404).json({ error: "Produto não encontrado" });
     const produto = `${prod.rows[0].bebida} ${prod.rows[0].tamanho}`.trim();
+    const qcaixa = Number(prod.rows[0].quantidade_caixa) || 1;
+
+    // Atacado: o usuário informa CAIXAS e VALOR POR CAIXA. O estoque é mantido
+    // em unidades individuais, então expandimos para `quantidade × quantidade_caixa`
+    // e ajustamos o valor unitário para que o total bruto (qtd × valor_unit) permaneça igual.
+    if (tipo === "Saída" && tipo_venda === "Atacado" && qcaixa > 1) {
+      const caixas = quantidade;
+      const totalBruto = quantidade * valor_unitario;
+      quantidade = caixas * qcaixa;
+      valor_unitario = quantidade > 0 ? totalBruto / quantidade : 0;
+      const tag = `Atacado: ${caixas} caixa(s) × ${qcaixa} un.`;
+      observacoes = observacoes ? `${tag} — ${observacoes}` : tag;
+    }
 
     const r = await pool.query(
       `INSERT INTO movimentacoes

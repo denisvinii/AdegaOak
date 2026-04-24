@@ -262,11 +262,16 @@ function MovimentacaoDialog({
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Quantidade</Label>
+                <Label>{isSale && tipoVenda === "Atacado" ? "Caixas" : "Quantidade"}</Label>
                 <Input type="number" min={1} value={quantidade} onChange={(e) => setQuantidade(Number(e.target.value) || 1)} />
+                {isSale && tipoVenda === "Atacado" && product && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Debita {quantidade * (product.quantidade_caixa || 1)} unid. do estoque ({product.quantidade_caixa} un./caixa)
+                  </p>
+                )}
               </div>
               <div>
-                <Label>Valor unitário (R$)</Label>
+                <Label>{isSale && tipoVenda === "Atacado" ? "Valor por caixa (R$)" : "Valor unitário (R$)"}</Label>
                 <Input type="number" step="0.01" value={valorUnit} onChange={(e) => setValorUnit(Number(e.target.value))} />
               </div>
             </div>

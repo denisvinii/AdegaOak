@@ -270,6 +270,7 @@ export const BulkUpdatePrecosBody = zod.object({
         .number()
         .min(bulkUpdatePrecosBodyItemsItemValorAtacadoCaixaMin)
         .optional(),
+      quantidade_caixa: zod.number().min(1).optional(),
     }),
   ),
 });
