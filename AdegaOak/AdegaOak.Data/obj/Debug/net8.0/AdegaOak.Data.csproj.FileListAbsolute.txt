@@ -1,0 +1,16 @@
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\bin\Debug\net8.0\AdegaOak.Data.deps.json
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\bin\Debug\net8.0\AdegaOak.Data.dll
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\bin\Debug\net8.0\AdegaOak.Data.pdb
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\bin\Debug\net8.0\AdegaOak.Models.dll
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\bin\Debug\net8.0\AdegaOak.Models.pdb
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.csproj.AssemblyReference.cache
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.AssemblyInfoInputs.cache
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.AssemblyInfo.cs
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.csproj.CoreCompileInputs.cache
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.sourcelink.json
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.F8565CDD.Up2Date
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.dll
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\refint\AdegaOak.Data.dll
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\AdegaOak.Data.pdb
+C:\Projetos\AdegaOak-1\AdegaOak\AdegaOak.Data\obj\Debug\net8.0\ref\AdegaOak.Data.dll
