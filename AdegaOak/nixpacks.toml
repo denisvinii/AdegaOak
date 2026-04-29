@@ -1,7 +1,0 @@
-[phases.build]
-cmds = [
-  "dotnet publish AdegaOak.Api/AdegaOak.Api.csproj -c Release -o out"
-]
-
-[start]
-cmd = "dotnet out/AdegaOak.Api.dll"
