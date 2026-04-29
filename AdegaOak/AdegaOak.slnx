@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AdegaOak.Api/AdegaOak.Api.csproj" />
+  <Project Path="AdegaOak.Data/AdegaOak.Data.csproj" />
+  <Project Path="AdegaOak.Models/AdegaOak.Models.csproj" />
+  <Project Path="AdegaOak.Services/AdegaOak.Services.csproj" />
+</Solution>
