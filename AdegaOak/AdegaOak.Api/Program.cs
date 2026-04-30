@@ -106,7 +106,7 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         
         // Build Npgsql-compatible connection string
-        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;Timeout=30;Command Timeout=30";
         
         Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
         Console.WriteLine($"[DATABASE] Host: {host}");
@@ -325,7 +325,13 @@ var app = builder.Build();
 // Use forwarded headers from Railway proxy
 app.UseForwardedHeaders();
 
+// CRITICAL: Configure CORS BEFORE trying migrations
+// This ensures CORS headers are sent even if database fails
+app.UseCors("AllowFrontend");
+
 // Apply migrations automatically on startup
+// DISABLED: Tables already created manually in Supabase
+/*
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdegaOakDbContext>();
@@ -360,9 +366,15 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"[DATABASE] Inner: {ex.InnerException.Message}");
         }
         
-        throw;
+        Console.WriteLine("[DATABASE] ⚠️  WARNING: Application will start but database operations will fail!");
+        Console.WriteLine("[DATABASE] Please check your DATABASE_URL and Supabase connection.");
+        // Don't throw - let the app start so we can see CORS errors properly
     }
 }
+*/
+
+Console.WriteLine("[DATABASE] ⚠️  Migrations disabled - using existing Supabase tables");
+Console.WriteLine("[DATABASE] Make sure all tables are created manually in Supabase");
 
 if (app.Environment.IsDevelopment())
 {
@@ -375,8 +387,8 @@ else
     app.UseSwagger();
 }
 
-// CRITICAL: CORS must be applied BEFORE Authentication/Authorization
-app.UseCors("AllowFrontend");
+// CORS is already applied above (before migrations)
+// app.UseCors("AllowFrontend"); // REMOVED - already called above
 app.UseResponseCompression(); // Enable compression
 app.UseAuthentication();
 app.UseAuthorization();
