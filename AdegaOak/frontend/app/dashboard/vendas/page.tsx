@@ -4,70 +4,31 @@ import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { Plus, Trash2, ShoppingCart, Minus, DollarSign, CreditCard, Smartphone, AlertTriangle, Search, ChevronDown, ChevronUp, Clock, X } from 'lucide-react';
 import Modal from '@/components/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
+import LoadingButton from '@/components/LoadingButton';
+import { useToast } from '@/components/Toast';
 import { useAuthStore } from '@/store/authStore';
-
-interface Produto {
-  id: number;
-  bebida: string;
-  tamanho: string;
-  material: string;
-  descricao: string;
-  valorVenda: number;
-  valorAtacadoCaixa: number;
-  quantidadePorCaixa: number;
-  ativo: boolean;
-}
-
-interface EstoqueProduto {
-  produtoId: number;
-  quantidade: number;
-}
-
-interface ItemCarrinho {
-  produto: Produto;
-  quantidade: number;
-  tipoVenda: 'Varejo' | 'Atacado';
-  valorUnitario: number;
-  valorTotal: number;
-}
-
-interface ItemVenda {
-  produtoId: number;
-  produtoDescricao: string;
-  quantidade: number;
-  valorUnitario: number;
-  valorTotal: number;
-  tipoVenda: string;
-}
-
-interface Venda {
-  id: number;
-  data: string;
-  usuarioId: number;
-  responsavel: string;
-  valorTotal: number;
-  valorDinheiro: number;
-  valorCartao: number;
-  valorPix: number;
-  observacao: string | null;
-  itens: ItemVenda[];
-}
+import type { ProdutoDto, EstoqueProduto } from '@/types/produto';
+import type { VendaDto, ItemCarrinho } from '@/types/venda';
 
 export default function VendasPage() {
   const { isAdmin } = useAuthStore();
-  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const toast = useToast();
+  const [produtos, setProdutos] = useState<ProdutoDto[]>([]);
   const [estoque, setEstoque] = useState<EstoqueProduto[]>([]);
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
-  const [vendasHoje, setVendasHoje] = useState<Venda[]>([]);
+  const [vendasHoje, setVendasHoje] = useState<VendaDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalProdutoOpen, setModalProdutoOpen] = useState(false);
   const [modalPagamentoOpen, setModalPagamentoOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [busca, setBusca] = useState('');
   const [historicoAberto, setHistoricoAberto] = useState(false);
+  const [confirmCancelarId, setConfirmCancelarId] = useState<number | null>(null);
+  const [cancelando, setCancelando] = useState(false);
   
   // Dados do produto sendo adicionado
-  const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(null);
+  const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoDto | null>(null);
   const [quantidade, setQuantidade] = useState(1);
   const [tipoVenda, setTipoVenda] = useState<'Varejo' | 'Atacado'>('Varejo');
   
@@ -85,12 +46,12 @@ export default function VendasPage() {
   const carregarDados = async () => {
     try {
       const [produtosRes, estoqueRes, vendasRes] = await Promise.all([
-        api.get('/produtos'),
-        api.get('/produtos/estoque'),
-        api.get('/vendas/hoje')
+        api.get<ProdutoDto[]>('/produtos'),
+        api.get<EstoqueProduto[]>('/produtos/estoque'),
+        api.get<VendaDto[]>('/vendas/hoje')
       ]);
       
-      const produtosAtivos = produtosRes.data.filter((p: Produto) => p.ativo);
+      const produtosAtivos = produtosRes.data.filter((p) => p.ativo);
       
       setProdutos(produtosAtivos);
       setEstoque(estoqueRes.data);
@@ -108,7 +69,7 @@ export default function VendasPage() {
   };
 
   // Verifica se o produto ignora controle de estoque (Copo é apenas venda, sem entrada)
-  const ignoraEstoque = (produto: Produto): boolean => {
+  const ignoraEstoque = (produto: ProdutoDto): boolean => {
     return produto.material.toLowerCase() === 'copo';
   };
 
@@ -120,7 +81,7 @@ export default function VendasPage() {
   // Mostra os 2 produtos mais recentes (últimos cadastrados)
   const produtosExibidos = busca === '' ? produtosFiltrados.slice(0, 2) : produtosFiltrados;
 
-  const abrirModalProduto = (produto: Produto) => {
+  const abrirModalProduto = (produto: ProdutoDto) => {
     // Copos não precisam de estoque (são apenas venda)
     if (ignoraEstoque(produto)) {
       setProdutoSelecionado(produto);
@@ -133,7 +94,7 @@ export default function VendasPage() {
     // Para outros produtos, validar estoque
     const estoqueAtual = getEstoqueProduto(produto.id);
     if (estoqueAtual === 0) {
-      alert('Produto sem estoque disponível!');
+      toast.warning('Produto sem estoque disponível!');
       return;
     }
     
@@ -154,7 +115,7 @@ export default function VendasPage() {
         .reduce((acc, item) => acc + item.quantidade, 0);
 
       if (quantidadeNoCarrinho + quantidade > estoqueAtual) {
-        alert(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeNoCarrinho}`);
+        toast.warning(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeNoCarrinho}`);
         return;
       }
     }
@@ -204,7 +165,7 @@ export default function VendasPage() {
         .reduce((acc, item) => acc + item.quantidade, 0);
 
       if (novaQuantidade + quantidadeOutrosItens > estoqueAtual) {
-        alert(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeOutrosItens}`);
+        toast.warning(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeOutrosItens}`);
         return;
       }
     }
@@ -220,7 +181,7 @@ export default function VendasPage() {
 
   const abrirModalPagamento = () => {
     if (carrinho.length === 0) {
-      alert('Adicione produtos ao carrinho primeiro!');
+      toast.warning('Adicione produtos ao carrinho primeiro!');
       return;
     }
     
@@ -247,7 +208,7 @@ export default function VendasPage() {
     const totalPago = parseFloat(valorDinheiro || '0') + parseFloat(valorCartao || '0') + parseFloat(valorPix || '0');
     
     if (Math.abs(totalPago - valorTotalCarrinho) > 0.01) {
-      alert(`O valor pago (R$ ${totalPago.toFixed(2)}) não corresponde ao total da venda (R$ ${valorTotalCarrinho.toFixed(2)})`);
+      toast.error(`O valor pago (R$ ${totalPago.toFixed(2)}) não corresponde ao total da venda (R$ ${valorTotalCarrinho.toFixed(2)})`);
       return;
     }
 
@@ -266,7 +227,7 @@ export default function VendasPage() {
         observacao: observacao || null
       });
 
-      alert('Venda registrada com sucesso!');
+      toast.success('Venda registrada com sucesso!');
       setCarrinho([]);
       setModalPagamentoOpen(false);
       setValorDinheiro('');
@@ -274,10 +235,12 @@ export default function VendasPage() {
       setValorPix('');
       setValorRecebido('');
       setObservacao('');
-      carregarDados(); // Recarregar estoque e vendas do dia
-    } catch (error: any) {
-      console.error('Erro ao finalizar venda:', error);
-      alert(error.response?.data?.message || 'Erro ao finalizar venda');
+      carregarDados();
+    } catch (error: unknown) {
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Erro ao finalizar venda';
+      toast.error(msg);
     } finally {
       setSalvando(false);
     }
@@ -294,18 +257,21 @@ export default function VendasPage() {
     if (forma === 'pix') setValorPix(restante.toFixed(2));
   };
 
-  const cancelarVenda = async (vendaId: number) => {
-    if (!confirm('Tem certeza que deseja cancelar esta venda? Esta ação não pode ser desfeita.')) {
-      return;
-    }
-
+  const cancelarVenda = async () => {
+    if (confirmCancelarId === null) return;
+    setCancelando(true);
     try {
-      await api.delete(`/vendas/${vendaId}`);
-      alert('Venda cancelada com sucesso!');
-      carregarDados(); // Recarregar dados
-    } catch (error: any) {
-      console.error('Erro ao cancelar venda:', error);
-      alert(error.response?.data?.message || 'Erro ao cancelar venda');
+      await api.delete(`/vendas/${confirmCancelarId}`);
+      toast.success('Venda cancelada com sucesso!');
+      setConfirmCancelarId(null);
+      carregarDados();
+    } catch (error: unknown) {
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Erro ao cancelar venda';
+      toast.error(msg);
+    } finally {
+      setCancelando(false);
     }
   };
 
@@ -411,7 +377,7 @@ export default function VendasPage() {
                       </span>
                       {isAdmin() && (
                         <button
-                          onClick={() => cancelarVenda(venda.id)}
+                          onClick={() => setConfirmCancelarId(venda.id)}
                           className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition p-1"
                           title="Cancelar venda"
                         >
@@ -844,16 +810,31 @@ export default function VendasPage() {
             >
               Cancelar
             </button>
-            <button
+            <LoadingButton
               onClick={finalizarVenda}
-              disabled={salvando || Math.abs(calcularTroco()) > 0.01 && calcularTroco() < 0}
-              className="flex-1 px-3 md:px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition font-semibold text-sm md:text-base"
+              loading={salvando}
+              loadingText="Finalizando..."
+              disabled={Math.abs(calcularTroco()) > 0.01 && calcularTroco() < 0}
+              className="flex-1 px-3 md:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold text-sm md:text-base"
             >
-              {salvando ? 'Finalizando...' : 'Confirmar Venda'}
-            </button>
+              Confirmar Venda
+            </LoadingButton>
           </div>
         </div>
       </Modal>
+
+      {/* Modal Confirmar Cancelamento */}
+      <ConfirmModal
+        isOpen={confirmCancelarId !== null}
+        onClose={() => setConfirmCancelarId(null)}
+        onConfirm={cancelarVenda}
+        title="Cancelar Venda"
+        message="Tem certeza que deseja cancelar esta venda? O estoque será estornado e esta ação não pode ser desfeita."
+        confirmLabel="Sim, cancelar"
+        cancelLabel="Não, manter"
+        variant="danger"
+        loading={cancelando}
+      />
     </div>
   );
 }

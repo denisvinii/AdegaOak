@@ -3,7 +3,6 @@ using AdegaOak.Models.DTOs;
 using AdegaOak.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace AdegaOak.Api.Controllers;
 
 [Authorize]
@@ -16,6 +15,15 @@ public class VendasController(IVendaService vendaService) : ControllerBase
     {
         var vendas = await vendaService.GetAllAsync();
         return Ok(vendas);
+    }
+
+    [HttpGet("paged")]
+    public async Task<ActionResult<PagedResult<VendaDto>>> GetPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var result = await vendaService.GetPagedAsync(page, pageSize);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

@@ -110,28 +110,56 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             .AsNoTracking()
             .Include(v => v.Movimentacoes)
             .OrderByDescending(v => v.Data)
+            .Take(100)
             .ToListAsync();
 
-        return vendas.Select(v => new VendaDto(
-            v.Id,
-            v.Data,
-            v.UsuarioId,
-            v.Responsavel,
-            v.ValorTotal,
-            v.ValorDinheiro,
-            v.ValorCartao,
-            v.ValorPix,
-            v.Observacao,
-            v.Movimentacoes.Select(m => new ItemVendaDto(
-                m.ProdutoId,
-                m.ProdutoDescricao,
-                m.Quantidade,
-                m.ValorUnitario,
-                m.ValorUnitario * m.Quantidade,
-                m.TipoVenda
-            )).ToList()
-        )).ToList();
+        return vendas.Select(MapToDto).ToList();
     }
+
+    public async Task<PagedResult<VendaDto>> GetPagedAsync(int page, int pageSize)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var totalCount = await db.Vendas.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var vendas = await db.Vendas
+            .AsNoTracking()
+            .Include(v => v.Movimentacoes)
+            .OrderByDescending(v => v.Data)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<VendaDto>(
+            vendas.Select(MapToDto).ToList(),
+            totalCount,
+            page,
+            pageSize,
+            totalPages
+        );
+    }
+
+    private static VendaDto MapToDto(Venda v) => new(
+        v.Id,
+        v.Data,
+        v.UsuarioId,
+        v.Responsavel,
+        v.ValorTotal,
+        v.ValorDinheiro,
+        v.ValorCartao,
+        v.ValorPix,
+        v.Observacao,
+        v.Movimentacoes.Select(m => new ItemVendaDto(
+            m.ProdutoId,
+            m.ProdutoDescricao,
+            m.Quantidade,
+            m.ValorUnitario,
+            m.ValorUnitario * m.Quantidade,
+            m.TipoVenda
+        )).ToList()
+    );
 
     public async Task<VendaDto?> GetByIdAsync(int id)
     {
@@ -140,27 +168,7 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             .Include(v => v.Movimentacoes)
             .FirstOrDefaultAsync(v => v.Id == id);
 
-        if (venda == null) return null;
-
-        return new VendaDto(
-            venda.Id,
-            venda.Data,
-            venda.UsuarioId,
-            venda.Responsavel,
-            venda.ValorTotal,
-            venda.ValorDinheiro,
-            venda.ValorCartao,
-            venda.ValorPix,
-            venda.Observacao,
-            venda.Movimentacoes.Select(m => new ItemVendaDto(
-                m.ProdutoId,
-                m.ProdutoDescricao,
-                m.Quantidade,
-                m.ValorUnitario,
-                m.ValorUnitario * m.Quantidade,
-                m.TipoVenda
-            )).ToList()
-        );
+        return venda == null ? null : MapToDto(venda);
     }
 
     public async Task<VendaResumoDto> GetResumoAsync(DateTime? dataInicio, DateTime? dataFim)
@@ -208,25 +216,7 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             .OrderByDescending(v => v.Data)
             .ToListAsync();
 
-        return vendas.Select(v => new VendaDto(
-            v.Id,
-            v.Data,
-            v.UsuarioId,
-            v.Responsavel,
-            v.ValorTotal,
-            v.ValorDinheiro,
-            v.ValorCartao,
-            v.ValorPix,
-            v.Observacao,
-            v.Movimentacoes.Select(m => new ItemVendaDto(
-                m.ProdutoId,
-                m.ProdutoDescricao,
-                m.Quantidade,
-                m.ValorUnitario,
-                m.ValorUnitario * m.Quantidade,
-                m.TipoVenda
-            )).ToList()
-        )).ToList();
+        return vendas.Select(MapToDto).ToList();
     }
 
     public async Task CancelarVendaAsync(int id)

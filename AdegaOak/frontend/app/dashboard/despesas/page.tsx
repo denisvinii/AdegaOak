@@ -4,13 +4,24 @@ import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { Plus, DollarSign } from 'lucide-react';
 import Modal from '@/components/Modal';
+import ConfirmModal from '@/components/ConfirmModal';
+import LoadingButton from '@/components/LoadingButton';
+import { useToast } from '@/components/Toast';
+import type { DespesaDto, CreateDespesaRequest, TipoDespesa } from '@/types/despesa';
 
 export default function DespesasPage() {
-  const [despesas, setDespesas] = useState<any[]>([]);
+  const toast = useToast();
+  const [despesas, setDespesas] = useState<DespesaDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
+  const [togglingId, setTogglingId] = useState<number | null>(null);
+  const [formData, setFormData] = useState<{
+    descricao: string;
+    valor: string;
+    tipo: TipoDespesa;
+    pago: boolean;
+  }>({
     descricao: '',
     valor: '',
     tipo: 'Fixa',
@@ -23,64 +34,65 @@ export default function DespesasPage() {
 
   const loadDespesas = async () => {
     try {
-      const { data } = await api.get('/despesas');
+      const { data } = await api.get<DespesaDto[]>('/despesas');
       setDespesas(Array.isArray(data) ? data : []);
-    } catch (error: any) {
-      console.error('Erro ao carregar despesas:', error);
+    } catch {
+      toast.error('Erro ao carregar despesas');
       setDespesas([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
-
     try {
-      await api.post('/despesas', {
+      const payload: CreateDespesaRequest = {
         descricao: formData.descricao,
         valor: parseFloat(formData.valor),
         tipo: formData.tipo,
         pago: formData.pago,
-      });
-
-      setFormData({
-        descricao: '',
-        valor: '',
-        tipo: 'Fixa',
-        pago: false,
-      });
-
+      };
+      await api.post('/despesas', payload);
+      setFormData({ descricao: '', valor: '', tipo: 'Fixa', pago: false });
       setModalOpen(false);
       loadDespesas();
-      alert('Despesa cadastrada com sucesso!');
-    } catch (error: any) {
-      console.error('Erro ao cadastrar despesa:', error);
-      alert(error.response?.data?.message || 'Erro ao cadastrar despesa');
+      toast.success('Despesa cadastrada com sucesso!');
+    } catch (error: unknown) {
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Erro ao cadastrar despesa';
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
   };
 
   const togglePago = async (id: number, pago: boolean) => {
+    setTogglingId(id);
     try {
       await api.patch(`/despesas/${id}/pagar`, pago);
       loadDespesas();
-    } catch (error: any) {
-      console.error('Erro ao atualizar despesa:', error);
-      alert(error.response?.data?.message || 'Erro ao atualizar despesa');
+      toast.success(pago ? 'Despesa marcada como paga!' : 'Despesa marcada como pendente!');
+    } catch (error: unknown) {
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'Erro ao atualizar despesa';
+      toast.error(msg);
+    } finally {
+      setTogglingId(null);
     }
   };
 
-  const totalDespesas = (despesas || []).reduce((sum, d) => sum + (d?.valor || 0), 0);
-  const totalPagas = (despesas || []).filter((d) => d?.pago).reduce((sum, d) => sum + (d?.valor || 0), 0);
+  const totalDespesas = despesas.reduce((sum, d) => sum + d.valor, 0);
+  const totalPagas = despesas.filter((d) => d.pago).reduce((sum, d) => sum + d.valor, 0);
   const totalPendentes = totalDespesas - totalPagas;
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600" />
       </div>
     );
   }
@@ -98,7 +110,7 @@ export default function DespesasPage() {
           onClick={() => setModalOpen(true)}
           className="bg-amber-600 hover:bg-amber-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg flex items-center justify-center gap-2 transition text-sm md:text-base"
         >
-          <Plus size={18} className="md:w-5 md:h-5" />
+          <Plus size={18} />
           <span className="hidden sm:inline">Nova Despesa</span>
           <span className="sm:hidden">Nova</span>
         </button>
@@ -106,47 +118,28 @@ export default function DespesasPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Total Despesas</p>
-              <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mt-1 md:mt-2 truncate">
-                R$ {totalDespesas.toFixed(2)}
-              </p>
-            </div>
-            <div className="bg-blue-500 p-2 md:p-3 rounded-lg flex-shrink-0">
-              <DollarSign className="text-white" size={20} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Pagas</p>
-              <p className="text-xl md:text-2xl font-bold text-green-600 dark:text-green-400 mt-1 md:mt-2 truncate">
-                R$ {totalPagas.toFixed(2)}
-              </p>
-            </div>
-            <div className="bg-green-500 p-2 md:p-3 rounded-lg flex-shrink-0">
-              <DollarSign className="text-white" size={20} />
+        {[
+          { label: 'Total Despesas', value: totalDespesas, color: 'bg-blue-500', textColor: 'text-gray-900 dark:text-white' },
+          { label: 'Pagas', value: totalPagas, color: 'bg-green-500', textColor: 'text-green-600 dark:text-green-400' },
+          { label: 'Pendentes', value: totalPendentes, color: 'bg-red-500', textColor: 'text-red-600 dark:text-red-400' },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">{stat.label}</p>
+                <p className={`text-xl md:text-2xl font-bold mt-1 md:mt-2 truncate ${stat.textColor}`}>
+                  R$ {stat.value.toFixed(2)}
+                </p>
+              </div>
+              <div className={`${stat.color} p-2 md:p-3 rounded-lg flex-shrink-0`}>
+                <DollarSign className="text-white" size={20} />
+              </div>
             </div>
           </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Pendentes</p>
-              <p className="text-xl md:text-2xl font-bold text-red-600 dark:text-red-400 mt-1 md:mt-2 truncate">
-                R$ {totalPendentes.toFixed(2)}
-              </p>
-            </div>
-            <div className="bg-red-500 p-2 md:p-3 rounded-lg flex-shrink-0">
-              <DollarSign className="text-white" size={20} />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Table */}
@@ -155,71 +148,62 @@ export default function DespesasPage() {
           <table className="w-full min-w-[700px]">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Data
-                </th>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Descrição
-                </th>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Tipo
-                </th>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Valor
-                </th>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Ações
-                </th>
+                {['Data', 'Descrição', 'Tipo', 'Valor', 'Status', 'Ações'].map((h) => (
+                  <th
+                    key={h}
+                    className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {(despesas || []).map((despesa) => (
+              {despesas.map((despesa) => (
                 <tr key={despesa.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-900 dark:text-gray-100">
-                    {despesa?.data ? new Date(despesa.data).toLocaleDateString('pt-BR') : '-'}
+                    {new Date(despesa.data).toLocaleDateString('pt-BR')}
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-900 dark:text-gray-100">
-                    <span className="line-clamp-2">{despesa?.descricao || '-'}</span>
+                    <span className="line-clamp-2">{despesa.descricao}</span>
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                    {despesa?.tipo || '-'}
+                    {despesa.tipoNome ?? despesa.tipo}
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    R$ {(despesa?.valor || 0).toFixed(2)}
+                    R$ {despesa.valor.toFixed(2)}
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        despesa?.pago
+                        despesa.pago
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                           : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                       }`}
                     >
-                      {despesa?.pago ? 'Paga' : 'Pendente'}
+                      {despesa.pago ? 'Paga' : 'Pendente'}
                     </span>
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => togglePago(despesa?.id, !despesa?.pago)}
-                      className={`px-2 md:px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                        despesa?.pago
+                    <LoadingButton
+                      loading={togglingId === despesa.id}
+                      onClick={() => togglePago(despesa.id, !despesa.pago)}
+                      className={`px-2 md:px-3 py-1 text-xs font-semibold rounded-lg ${
+                        despesa.pago
                           ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200'
                           : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200'
                       }`}
                     >
-                      <span className="hidden sm:inline">{despesa?.pago ? 'Marcar Pendente' : 'Marcar Paga'}</span>
-                      <span className="sm:hidden">{despesa?.pago ? 'Pendente' : 'Pagar'}</span>
-                    </button>
+                      <span className="hidden sm:inline">{despesa.pago ? 'Marcar Pendente' : 'Marcar Paga'}</span>
+                      <span className="sm:hidden">{despesa.pago ? 'Pendente' : 'Pagar'}</span>
+                    </LoadingButton>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        {(despesas || []).length === 0 && (
+        {despesas.length === 0 && (
           <div className="text-center py-8 md:py-12 text-sm md:text-base text-gray-500 dark:text-gray-400">
             Nenhuma despesa cadastrada
           </div>
@@ -227,11 +211,7 @@ export default function DespesasPage() {
       </div>
 
       {/* Modal Nova Despesa */}
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Nova Despesa"
-      >
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Nova Despesa">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -270,7 +250,7 @@ export default function DespesasPage() {
             <select
               required
               value={formData.tipo}
-              onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, tipo: e.target.value as TipoDespesa })}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option value="Fixa">Fixa</option>
@@ -300,13 +280,14 @@ export default function DespesasPage() {
             >
               Cancelar
             </button>
-            <button
+            <LoadingButton
               type="submit"
-              disabled={saving}
-              className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-lg transition"
+              loading={saving}
+              loadingText="Salvando..."
+              className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg"
             >
-              {saving ? 'Salvando...' : 'Salvar'}
-            </button>
+              Salvar
+            </LoadingButton>
           </div>
         </form>
       </Modal>

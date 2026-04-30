@@ -112,6 +112,32 @@ namespace AdegaOak.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Vendas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Data = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UsuarioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Responsavel = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    ValorDinheiro = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    ValorCartao = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    ValorPix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Observacao = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vendas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vendas_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Movimentacoes",
                 columns: table => new
                 {
@@ -126,7 +152,8 @@ namespace AdegaOak.Data.Migrations
                     UsuarioId = table.Column<int>(type: "INTEGER", nullable: false),
                     Responsavel = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     TipoSaida = table.Column<string>(type: "TEXT", nullable: true),
-                    ValorUnitario = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    ValorUnitario = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    VendaId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -143,6 +170,12 @@ namespace AdegaOak.Data.Migrations
                         principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Movimentacoes_Vendas_VendaId",
+                        column: x => x.VendaId,
+                        principalTable: "Vendas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -249,6 +282,46 @@ namespace AdegaOak.Data.Migrations
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Movimentacoes_VendaId",
+                table: "Movimentacoes",
+                column: "VendaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimentacoes_Tipo_Data",
+                table: "Movimentacoes",
+                columns: new[] { "Tipo", "Data" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimentacoes_Data",
+                table: "Movimentacoes",
+                column: "Data");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_Ativo",
+                table: "Produtos",
+                column: "Ativo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Despesas_Data",
+                table: "Despesas",
+                column: "Data");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Despesas_Pago_Data",
+                table: "Despesas",
+                columns: new[] { "Pago", "Data" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendas_Data",
+                table: "Vendas",
+                column: "Data");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendas_UsuarioId",
+                table: "Vendas",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_Username",
                 table: "Usuarios",
                 column: "Username",
@@ -273,6 +346,7 @@ namespace AdegaOak.Data.Migrations
             migrationBuilder.DropTable(name: "Combos");
             migrationBuilder.DropTable(name: "Despesas");
             migrationBuilder.DropTable(name: "Movimentacoes");
+            migrationBuilder.DropTable(name: "Vendas");
             migrationBuilder.DropTable(name: "Produtos");
             migrationBuilder.DropTable(name: "Usuarios");
             migrationBuilder.DropTable(name: "SaldoConfigs");
