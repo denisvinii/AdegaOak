@@ -195,10 +195,10 @@ public class DashboardService(
 
     public async Task<RelatorioVendasDto> GetRelatorioVendasAsync(FiltrosRelatorioRequest filtros)
     {
-        var dataInicio = new DateTime(filtros.Ano, filtros.Mes ?? 1, 1);
+        var dataInicio = DateTime.SpecifyKind(new DateTime(filtros.Ano, filtros.Mes ?? 1, 1), DateTimeKind.Utc);
         var dataFim = filtros.Mes.HasValue 
-            ? new DateTime(filtros.Ano, filtros.Mes.Value, DateTime.DaysInMonth(filtros.Ano, filtros.Mes.Value), 23, 59, 59)
-            : new DateTime(filtros.Ano, 12, 31, 23, 59, 59);
+            ? DateTime.SpecifyKind(new DateTime(filtros.Ano, filtros.Mes.Value, DateTime.DaysInMonth(filtros.Ano, filtros.Mes.Value), 23, 59, 59), DateTimeKind.Utc)
+            : DateTime.SpecifyKind(new DateTime(filtros.Ano, 12, 31, 23, 59, 59), DateTimeKind.Utc);
 
         // Query base de vendas
         var query = db.Movimentacoes

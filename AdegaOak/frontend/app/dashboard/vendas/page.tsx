@@ -62,7 +62,9 @@ export default function VendasPage() {
         api.get('/produtos/estoque')
       ]);
       
-      setProdutos(produtosRes.data.filter((p: Produto) => p.ativo));
+      const produtosAtivos = produtosRes.data.filter((p: Produto) => p.ativo);
+      
+      setProdutos(produtosAtivos);
       setEstoque(estoqueRes.data);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);

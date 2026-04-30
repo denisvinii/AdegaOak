@@ -92,6 +92,7 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
             p.QuantidadeMinimaAtacado,
             quantidade,
             p.Valor * quantidade,
-            quantidade <= p.EstoqueMinimo - 1
+            quantidade <= p.EstoqueMinimo - 1,
+            p.Ativo
         );
 }

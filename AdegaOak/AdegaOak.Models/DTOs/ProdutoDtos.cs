@@ -15,7 +15,8 @@ public record ProdutoDto(
     int QuantidadeMinimaAtacado,
     int Quantidade,
     decimal ValorTotal,
-    bool EstoqueBaixo
+    bool EstoqueBaixo,
+    bool Ativo
 );
 
 public record CreateProdutoRequest(
