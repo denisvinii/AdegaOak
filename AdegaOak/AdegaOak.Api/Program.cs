@@ -26,12 +26,28 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=adegaoak.db";
 
-// If relative path, make it absolute based on app directory
+// In Railway/Docker, use /app/adegaoak.db
+// In development, use relative path
 if (connectionString.StartsWith("Data Source=") && !connectionString.Contains("/"))
 {
     var dbFile = connectionString.Replace("Data Source=", "").Trim();
-    var dbPath = Path.Combine("/app", dbFile);
-    connectionString = $"Data Source={dbPath}";
+    
+    // Check if running in container (Railway/Docker)
+    var isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
+                      Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT") != null;
+    
+    if (isContainer)
+    {
+        // Use /app directory in container
+        var dbPath = Path.Combine("/app", dbFile);
+        connectionString = $"Data Source={dbPath}";
+        Console.WriteLine($"[DATABASE] Container mode - using: {dbPath}");
+    }
+    else
+    {
+        // Use relative path in development
+        Console.WriteLine($"[DATABASE] Development mode - using: {dbFile}");
+    }
 }
 
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
@@ -173,19 +189,53 @@ app.UseForwardedHeaders();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdegaOakDbContext>();
-    // Ensure directory exists for SQLite file
-    var connStr = db.Database.GetConnectionString() ?? "";
-    var dbPath = connStr.Replace("Data Source=", "").Trim();
-    if (!string.IsNullOrEmpty(dbPath) && !Path.IsPathRooted(dbPath))
+    
+    try
     {
-        dbPath = Path.Combine(AppContext.BaseDirectory, dbPath);
+        // Ensure directory exists for SQLite file
+        var connStr = db.Database.GetConnectionString() ?? "";
+        var dbPath = connStr.Replace("Data Source=", "").Trim();
+        
+        Console.WriteLine($"[DATABASE] Connection string: {connStr}");
+        Console.WriteLine($"[DATABASE] Database path: {dbPath}");
+        
+        if (!string.IsNullOrEmpty(dbPath) && !Path.IsPathRooted(dbPath))
+        {
+            dbPath = Path.Combine(AppContext.BaseDirectory, dbPath);
+        }
+        
+        var dir = Path.GetDirectoryName(dbPath);
+        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+        {
+            Console.WriteLine($"[DATABASE] Creating directory: {dir}");
+            Directory.CreateDirectory(dir);
+        }
+        
+        // Check if database file exists
+        var dbFileExists = File.Exists(dbPath);
+        Console.WriteLine($"[DATABASE] Database file exists: {dbFileExists}");
+        
+        // Apply migrations
+        Console.WriteLine("[DATABASE] Applying migrations...");
+        db.Database.Migrate();
+        Console.WriteLine("[DATABASE] Migrations applied successfully");
+        
+        // Check if Usuarios table has data
+        var usuariosCount = db.Usuarios.Count();
+        Console.WriteLine($"[DATABASE] Usuarios count: {usuariosCount}");
+        
+        if (usuariosCount == 0)
+        {
+            Console.WriteLine("[DATABASE] ⚠️  WARNING: No users found in database!");
+            Console.WriteLine("[DATABASE] You need to create an admin user to login.");
+        }
     }
-    var dir = Path.GetDirectoryName(dbPath);
-    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+    catch (Exception ex)
     {
-        Directory.CreateDirectory(dir);
+        Console.WriteLine($"[DATABASE] ❌ ERROR during migration: {ex.Message}");
+        Console.WriteLine($"[DATABASE] Stack trace: {ex.StackTrace}");
+        throw;
     }
-    db.Database.Migrate();
 }
 
 if (app.Environment.IsDevelopment())
