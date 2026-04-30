@@ -20,24 +20,24 @@ public class DashboardService(
             .AsNoTracking()
             .Where(m => m.Tipo == "Entrada")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .SumAsync() ?? 0;
+            .SumAsync() ?? 0.0;
 
         var totalSaidas = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .SumAsync() ?? 0;
+            .SumAsync() ?? 0.0;
 
         var totalDespesasPagas = await db.Despesas
             .AsNoTracking()
             .Where(d => d.Pago)
             .Select(d => (double)d.Valor)
-            .SumAsync() ?? 0;
+            .SumAsync() ?? 0.0;
 
         var totalComboVendas = await db.ComboVendas
             .AsNoTracking()
             .Select(cv => (double)cv.PrecoTotal)
-            .SumAsync() ?? 0;
+            .SumAsync() ?? 0.0;
 
         var capitalEmpresa = (decimal)((totalSaidas - totalEntradas) + (double)config.CapitalAdmin - totalDespesasPagas + totalComboVendas);
         var saldo = (decimal)((totalSaidas - totalEntradas) - totalDespesasPagas + totalComboVendas);
@@ -174,8 +174,8 @@ public class DashboardService(
             estoqueBaixo,
             despesasPorTipo,
             vendasPorUsuario,
-            (decimal)(await receitaMesTask ?? 0),
-            (decimal)(await despesasMesTask ?? 0),
+            (decimal)(await receitaMesTask ?? 0.0),
+            (decimal)(await despesasMesTask ?? 0.0),
             await totalMovimentacoesMesTask
         );
     }
