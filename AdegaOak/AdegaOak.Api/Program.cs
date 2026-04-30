@@ -82,13 +82,24 @@ builder.Services.AddCors(options =>
         var allowedOriginsEnv = Environment.GetEnvironmentVariable("AllowedOrigins")
             ?? builder.Configuration["AllowedOrigins"];
 
-        var allowedOrigins = allowedOriginsEnv?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            ?? ["http://localhost:3000", "http://localhost:3001"];
-
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        if (!string.IsNullOrEmpty(allowedOriginsEnv))
+        {
+            var origins = allowedOriginsEnv.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            policy.WithOrigins(origins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // Fallback: allow all vercel.app and localhost origins
+            policy.SetIsOriginAllowed(origin =>
+                    origin.EndsWith(".vercel.app") ||
+                    origin.StartsWith("http://localhost"))
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
     });
 });
 
