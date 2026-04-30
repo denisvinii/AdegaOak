@@ -13,23 +13,52 @@ public class DashboardController(IDashboardService dashboardService) : Controlle
     [HttpGet("saldo")]
     public async Task<ActionResult<SaldoDto>> GetSaldo()
     {
-        var saldo = await dashboardService.GetSaldoAsync();
-        return Ok(saldo);
+        try
+        {
+            var saldo = await dashboardService.GetSaldoAsync();
+            return Ok(saldo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DASHBOARD] Error in GetSaldo: {ex.Message}");
+            return StatusCode(500, new { error = "Erro ao carregar saldo", details = ex.Message });
+        }
     }
 
     [Authorize(Roles = "admin")]
     [HttpPut("saldo/capital-admin")]
     public async Task<ActionResult<SaldoDto>> UpdateCapitalAdmin([FromBody] decimal valor)
     {
-        var saldo = await dashboardService.UpdateCapitalAdminAsync(valor);
-        return Ok(saldo);
+        try
+        {
+            var saldo = await dashboardService.UpdateCapitalAdminAsync(valor);
+            return Ok(saldo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DASHBOARD] Error in UpdateCapitalAdmin: {ex.Message}");
+            return StatusCode(500, new { error = "Erro ao atualizar capital", details = ex.Message });
+        }
     }
 
     [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<ActionResult<DashboardDto>> GetDashboard([FromBody] FiltrosDashboardRequest filtros)
     {
-        var dashboard = await dashboardService.GetDashboardAsync(filtros);
-        return Ok(dashboard);
+        try
+        {
+            var dashboard = await dashboardService.GetDashboardAsync(filtros);
+            return Ok(dashboard);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DASHBOARD] Error in GetDashboard: {ex.Message}");
+            Console.WriteLine($"[DASHBOARD] Stack trace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[DASHBOARD] Inner exception: {ex.InnerException.Message}");
+            }
+            return StatusCode(500, new { error = "Erro ao carregar dashboard", details = ex.Message });
+        }
     }
 }
