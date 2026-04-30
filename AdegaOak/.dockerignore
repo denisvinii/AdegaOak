@@ -1,0 +1,6 @@
+**/obj/
+**/bin/
+frontend/
+frontend/node_modules/
+**/.vs/
+**/*.user

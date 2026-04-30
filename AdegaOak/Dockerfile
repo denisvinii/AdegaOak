@@ -11,8 +11,11 @@ COPY AdegaOak.Services/AdegaOak.Services.csproj AdegaOak.Services/
 # Restore dependencies
 RUN dotnet restore AdegaOak.Api/AdegaOak.Api.csproj
 
-# Copy source code
-COPY . .
+# Copy source code (excludes obj/ and bin/ via .dockerignore)
+COPY AdegaOak.Api/ AdegaOak.Api/
+COPY AdegaOak.Data/ AdegaOak.Data/
+COPY AdegaOak.Models/ AdegaOak.Models/
+COPY AdegaOak.Services/ AdegaOak.Services/
 
 # Publish
 RUN dotnet publish AdegaOak.Api/AdegaOak.Api.csproj -c Release -o /app/out --no-restore
