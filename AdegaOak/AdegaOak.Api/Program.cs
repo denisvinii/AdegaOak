@@ -22,31 +22,39 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// Database — use absolute path for SQLite in Docker/Railway
+// Database — use volume path if available, otherwise use app directory
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=adegaoak.db";
 
-// In Railway/Docker, use /app/adegaoak.db
-// In development, use relative path
+// Check if running in Railway with volume
+var volumePath = Environment.GetEnvironmentVariable("RAILWAY_VOLUME_MOUNT_PATH");
+var isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
+                  Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT") != null;
+
 if (connectionString.StartsWith("Data Source=") && !connectionString.Contains("/"))
 {
     var dbFile = connectionString.Replace("Data Source=", "").Trim();
     
-    // Check if running in container (Railway/Docker)
-    var isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
-                      Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT") != null;
-    
-    if (isContainer)
+    if (!string.IsNullOrEmpty(volumePath))
     {
-        // Use /app directory in container
+        // Use Railway volume for persistence
+        var dbPath = Path.Combine(volumePath, dbFile);
+        connectionString = $"Data Source={dbPath}";
+        Console.WriteLine($"[DATABASE] Using Railway volume: {dbPath}");
+    }
+    else if (isContainer)
+    {
+        // Use /app directory in container (data will NOT persist between deploys)
         var dbPath = Path.Combine("/app", dbFile);
         connectionString = $"Data Source={dbPath}";
-        Console.WriteLine($"[DATABASE] Container mode - using: {dbPath}");
+        Console.WriteLine($"[DATABASE] Container mode (NO PERSISTENCE): {dbPath}");
+        Console.WriteLine($"[DATABASE] ⚠️  WARNING: Data will be lost on redeploy!");
+        Console.WriteLine($"[DATABASE] Configure a Railway Volume for data persistence.");
     }
     else
     {
         // Use relative path in development
-        Console.WriteLine($"[DATABASE] Development mode - using: {dbFile}");
+        Console.WriteLine($"[DATABASE] Development mode: {dbFile}");
     }
 }
 
@@ -239,40 +247,51 @@ using (var scope = app.Services.CreateScope())
             throw new Exception("Cannot connect to database after migration");
         }
         
-        // Check if Usuarios table has data
-        Console.WriteLine("[DATABASE] Counting users...");
-        var usuariosCount = db.Usuarios.Count();
-        Console.WriteLine($"[DATABASE] Usuarios count: {usuariosCount}");
-        
-        // Seed admin user if no users exist
-        if (usuariosCount == 0)
+        // Verify Usuarios table exists and check count
+        Console.WriteLine("[DATABASE] Checking if Usuarios table exists...");
+        int usuariosCount = 0;
+        try
         {
-            Console.WriteLine("[DATABASE] No users found. Creating default admin user...");
+            usuariosCount = db.Usuarios.Count();
+            Console.WriteLine($"[DATABASE] ✅ Usuarios table exists. Count: {usuariosCount}");
             
-            var adminPassword = "Admin@123";
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11);
-            
-            var adminUser = new AdegaOak.Models.Models.Usuario
+            if (usuariosCount > 0)
             {
-                Nome = "Administrador",
-                Username = "admin",
-                PasswordHash = passwordHash,
-                Role = "admin",
-                Ativo = true,
-                CriadoEm = DateTime.UtcNow
-            };
-            
-            db.Usuarios.Add(adminUser);
-            db.SaveChanges();
-            
-            Console.WriteLine("[DATABASE] ✅ Admin user created successfully!");
-            Console.WriteLine("[DATABASE]    Username: admin");
-            Console.WriteLine("[DATABASE]    Password: Admin@123");
-            Console.WriteLine("[DATABASE]    ⚠️  IMPORTANT: Change password after first login!");
+                Console.WriteLine("[DATABASE] ✅ Database initialized successfully with seed data");
+            }
+            else
+            {
+                Console.WriteLine("[DATABASE] ⚠️  WARNING: No users found in database!");
+                Console.WriteLine("[DATABASE] The migration should have created an admin user.");
+                Console.WriteLine("[DATABASE] Check if migrations were applied correctly.");
+            }
         }
-        else
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 1)
         {
-            Console.WriteLine("[DATABASE] ✅ Users found in database");
+            Console.WriteLine($"[DATABASE] ⚠️  Usuarios table does not exist! Error: {ex.Message}");
+            Console.WriteLine("[DATABASE] Migration may have failed. Attempting to create database schema...");
+            
+            try
+            {
+                // Force database creation with migrations
+                db.Database.EnsureDeleted();
+                db.Database.Migrate();
+                Console.WriteLine("[DATABASE] ✅ Database schema created successfully with migrations");
+                
+                // Verify table now exists and has seed data
+                usuariosCount = db.Usuarios.Count();
+                Console.WriteLine($"[DATABASE] Usuarios count after migration: {usuariosCount}");
+                
+                if (usuariosCount > 0)
+                {
+                    Console.WriteLine("[DATABASE] ✅ Admin user created by migration");
+                }
+            }
+            catch (Exception createEx)
+            {
+                Console.WriteLine($"[DATABASE] ❌ Failed to create database: {createEx.Message}");
+                throw;
+            }
         }
     }
     catch (Exception ex)
