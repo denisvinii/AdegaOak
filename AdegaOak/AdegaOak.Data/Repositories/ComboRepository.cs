@@ -1,4 +1,5 @@
 using AdegaOak.Models.Models;
+using AdegaOak.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AdegaOak.Data.Data;
 
@@ -51,6 +52,9 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
 
     public async Task<Combo> UpdateAsync(Combo combo)
     {
+        // Fix DateTime Kind for PostgreSQL (must be UTC)
+        combo.CriadoEm = combo.CriadoEm.ToUtc();
+        
         db.Combos.Update(combo);
         await db.SaveChangesAsync();
         return combo;

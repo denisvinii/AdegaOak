@@ -1,4 +1,5 @@
 using AdegaOak.Models.Models;
+using AdegaOak.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AdegaOak.Data.Data;
 
@@ -39,6 +40,11 @@ public class DespesaRepository(AdegaOakDbContext db) : IDespesaRepository
 
     public async Task<Despesa> UpdateAsync(Despesa despesa)
     {
+        // Fix DateTime Kind for PostgreSQL (must be UTC)
+        despesa.Data = despesa.Data.ToUtc();
+        despesa.CriadoEm = despesa.CriadoEm.ToUtc();
+        despesa.DataPagamento = despesa.DataPagamento.ToUtc();
+        
         db.Despesas.Update(despesa);
         await db.SaveChangesAsync();
         return despesa;
