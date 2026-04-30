@@ -21,6 +21,13 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
+        catch (Exception ex)
+        {
+            // Log the full error for debugging
+            Console.WriteLine($"[LOGIN ERROR] {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"[LOGIN ERROR] Stack: {ex.StackTrace}");
+            return StatusCode(500, new { message = ex.Message, type = ex.GetType().Name });
+        }
     }
 
     [Authorize(Roles = "admin")]

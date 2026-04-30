@@ -22,44 +22,57 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// Database — use volume path if available, otherwise use app directory
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=adegaoak.db";
+// Database configuration - PostgreSQL (Supabase) only
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Check if running in Railway with volume
-var volumePath = Environment.GetEnvironmentVariable("RAILWAY_VOLUME_MOUNT_PATH");
-var isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
-                  Environment.GetEnvironmentVariable("RAILWAY_ENVIRONMENT") != null;
-
-if (connectionString.StartsWith("Data Source=") && !connectionString.Contains("/"))
+if (string.IsNullOrEmpty(databaseUrl))
 {
-    var dbFile = connectionString.Replace("Data Source=", "").Trim();
-    
-    if (!string.IsNullOrEmpty(volumePath))
-    {
-        // Use Railway volume for persistence
-        var dbPath = Path.Combine(volumePath, dbFile);
-        connectionString = $"Data Source={dbPath}";
-        Console.WriteLine($"[DATABASE] Using Railway volume: {dbPath}");
-    }
-    else if (isContainer)
-    {
-        // Use /app directory in container (data will NOT persist between deploys)
-        var dbPath = Path.Combine("/app", dbFile);
-        connectionString = $"Data Source={dbPath}";
-        Console.WriteLine($"[DATABASE] Container mode (NO PERSISTENCE): {dbPath}");
-        Console.WriteLine($"[DATABASE] ⚠️  WARNING: Data will be lost on redeploy!");
-        Console.WriteLine($"[DATABASE] Configure a Railway Volume for data persistence.");
-    }
-    else
-    {
-        // Use relative path in development
-        Console.WriteLine($"[DATABASE] Development mode: {dbFile}");
-    }
+    throw new InvalidOperationException("DATABASE_URL environment variable is required");
 }
 
+Console.WriteLine("[DATABASE] Using PostgreSQL (Supabase)");
+Console.WriteLine($"[DATABASE] Connection: {MaskConnectionString(databaseUrl)}");
+
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(databaseUrl));
+
+// Helper function to mask sensitive connection string data
+static string MaskConnectionString(string connStr)
+{
+    if (string.IsNullOrEmpty(connStr)) return "null";
+    
+    var parts = connStr.Split(';');
+    var masked = new List<string>();
+    
+    foreach (var part in parts)
+    {
+        if (part.Contains("Password=", StringComparison.OrdinalIgnoreCase))
+        {
+            masked.Add("Password=***");
+        }
+        else if (part.Contains("://") && part.Contains("@"))
+        {
+            // Mask password in URL format: postgres://user:password@host
+            var atIndex = part.IndexOf('@');
+            var colonIndex = part.LastIndexOf(':', atIndex);
+            if (colonIndex > 0)
+            {
+                masked.Add(part.Substring(0, colonIndex + 1) + "***" + part.Substring(atIndex));
+            }
+            else
+            {
+                masked.Add(part);
+            }
+        }
+        else
+        {
+            masked.Add(part);
+        }
+    }
+    
+    return string.Join(";", masked);
+}
 
 // Repositories
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
@@ -191,144 +204,39 @@ var app = builder.Build();
 // Use forwarded headers from Railway proxy
 app.UseForwardedHeaders();
 
-// Migrate database and seed admin user if needed
+// Apply migrations automatically on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdegaOakDbContext>();
     
     try
     {
-        // Ensure directory exists for SQLite file
-        var connStr = db.Database.GetConnectionString() ?? "";
-        var dbPath = connStr.Replace("Data Source=", "").Trim();
-        
-        Console.WriteLine($"[DATABASE] Connection string: {connStr}");
-        Console.WriteLine($"[DATABASE] Database path: {dbPath}");
-        
-        if (!string.IsNullOrEmpty(dbPath) && !Path.IsPathRooted(dbPath))
-        {
-            dbPath = Path.Combine(AppContext.BaseDirectory, dbPath);
-            Console.WriteLine($"[DATABASE] Resolved path: {dbPath}");
-        }
-        
-        var dir = Path.GetDirectoryName(dbPath);
-        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-        {
-            Console.WriteLine($"[DATABASE] Creating directory: {dir}");
-            Directory.CreateDirectory(dir);
-        }
-        
-        // Check if database file exists
-        var dbFileExists = File.Exists(dbPath);
-        Console.WriteLine($"[DATABASE] Database file exists: {dbFileExists}");
-        
-        // Apply migrations - this will create the database and tables
         Console.WriteLine("[DATABASE] Applying migrations...");
-        try
-        {
-            db.Database.Migrate();
-            Console.WriteLine("[DATABASE] ✅ Migrations applied successfully");
-        }
-        catch (Exception migrationEx)
-        {
-            Console.WriteLine($"[DATABASE] ⚠️  Migration failed: {migrationEx.Message}");
-            Console.WriteLine("[DATABASE] Attempting to create database with EnsureCreated...");
-            db.Database.EnsureCreated();
-            Console.WriteLine("[DATABASE] ✅ Database created with EnsureCreated");
-        }
+        db.Database.Migrate();
+        Console.WriteLine("[DATABASE] ✅ Migrations applied successfully");
         
-        // Verify database is accessible
-        Console.WriteLine("[DATABASE] Verifying database connection...");
+        // Verify database connection
         var canConnect = db.Database.CanConnect();
-        Console.WriteLine($"[DATABASE] Can connect: {canConnect}");
+        Console.WriteLine($"[DATABASE] Connection verified: {canConnect}");
         
-        if (!canConnect)
-        {
-            throw new Exception("Cannot connect to database after migration");
-        }
+        // Check if admin user exists
+        var usuariosCount = db.Usuarios.Count();
+        Console.WriteLine($"[DATABASE] ✅ Users in database: {usuariosCount}");
         
-        // Verify Usuarios table exists and check count
-        Console.WriteLine("[DATABASE] Checking if Usuarios table exists...");
-        int usuariosCount = 0;
-        try
+        if (usuariosCount == 0)
         {
-            usuariosCount = db.Usuarios.Count();
-            Console.WriteLine($"[DATABASE] ✅ Usuarios table exists. Count: {usuariosCount}");
-            
-            if (usuariosCount > 0)
-            {
-                Console.WriteLine("[DATABASE] ✅ Database initialized successfully with seed data");
-            }
-            else
-            {
-                Console.WriteLine("[DATABASE] ⚠️  WARNING: No users found in database!");
-                Console.WriteLine("[DATABASE] The migration should have created an admin user.");
-                Console.WriteLine("[DATABASE] Check if migrations were applied correctly.");
-            }
-        }
-        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 1)
-        {
-            Console.WriteLine($"[DATABASE] ⚠️  Usuarios table does not exist! Error: {ex.Message}");
-            Console.WriteLine("[DATABASE] Migration may have failed. Attempting to create database schema...");
-            
-            try
-            {
-                // Try 1: Force database recreation with migrations
-                Console.WriteLine("[DATABASE] Attempt 1: EnsureDeleted + Migrate");
-                db.Database.EnsureDeleted();
-                
-                try
-                {
-                    db.Database.Migrate();
-                    Console.WriteLine("[DATABASE] ✅ Migrate succeeded");
-                }
-                catch (Exception migrateEx)
-                {
-                    Console.WriteLine($"[DATABASE] ⚠️  Migrate failed: {migrateEx.Message}");
-                    Console.WriteLine("[DATABASE] Attempt 2: Using EnsureCreated as fallback");
-                    db.Database.EnsureCreated();
-                    Console.WriteLine("[DATABASE] ✅ EnsureCreated succeeded");
-                }
-                
-                // Verify table now exists
-                Console.WriteLine("[DATABASE] Verifying Usuarios table exists...");
-                try
-                {
-                    usuariosCount = db.Usuarios.Count();
-                    Console.WriteLine($"[DATABASE] ✅ Usuarios count after creation: {usuariosCount}");
-                    
-                    if (usuariosCount > 0)
-                    {
-                        Console.WriteLine("[DATABASE] ✅ Admin user created by migration/seed");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[DATABASE] ⚠️  No users found after creation. Migration seed may have failed.");
-                    }
-                }
-                catch (Exception countEx)
-                {
-                    Console.WriteLine($"[DATABASE] ❌ Still cannot access Usuarios table: {countEx.Message}");
-                    throw;
-                }
-            }
-            catch (Exception createEx)
-            {
-                Console.WriteLine($"[DATABASE] ❌ Failed to create database: {createEx.Message}");
-                throw;
-            }
+            Console.WriteLine("[DATABASE] ⚠️  WARNING: No users found!");
+            Console.WriteLine("[DATABASE] Make sure migrations include seed data for admin user.");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[DATABASE] ❌ FATAL ERROR: {ex.Message}");
-        Console.WriteLine($"[DATABASE] Exception type: {ex.GetType().Name}");
-        Console.WriteLine($"[DATABASE] Stack trace: {ex.StackTrace}");
+        Console.WriteLine($"[DATABASE] ❌ ERROR: {ex.Message}");
+        Console.WriteLine($"[DATABASE] Type: {ex.GetType().Name}");
         
         if (ex.InnerException != null)
         {
-            Console.WriteLine($"[DATABASE] Inner exception: {ex.InnerException.Message}");
-            Console.WriteLine($"[DATABASE] Inner stack trace: {ex.InnerException.StackTrace}");
+            Console.WriteLine($"[DATABASE] Inner: {ex.InnerException.Message}");
         }
         
         throw;
