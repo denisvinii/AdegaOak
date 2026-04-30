@@ -99,18 +99,18 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
         var uri = new Uri(databaseUrl);
         
         var host = uri.Host;
-        var port = uri.Port;
+        var dbPort = uri.Port;
         var database = uri.AbsolutePath.TrimStart('/');
         var userInfo = uri.UserInfo.Split(':');
         var username = userInfo[0];
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         
         // Build Npgsql-compatible connection string
-        npgsqlConnectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
         
         Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
         Console.WriteLine($"[DATABASE] Host: {host}");
-        Console.WriteLine($"[DATABASE] Port: {port}");
+        Console.WriteLine($"[DATABASE] Port: {dbPort}");
         Console.WriteLine($"[DATABASE] Database: {database}");
         Console.WriteLine($"[DATABASE] Username: {username}");
     }
