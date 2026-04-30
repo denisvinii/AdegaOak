@@ -36,11 +36,86 @@ public class ProdutoService(
 
     public async Task<ProdutoDto> CreateAsync(CreateProdutoRequest request)
     {
+        // Validação 1: Produto duplicado
+        if (await produtoRepository.ProdutoExisteAsync(request.Bebida, request.Tamanho, request.Material))
+        {
+            throw new InvalidOperationException(
+                $"Produto '{request.Bebida} - {request.Tamanho} - {request.Material}' já existe no sistema.");
+        }
+
+        // Validação 2: Quantidade de caixa deve ser >= 1
+        if (request.QuantidadeCaixa < 1)
+        {
+            throw new InvalidOperationException("Quantidade de caixa deve ser no mínimo 1.");
+        }
+
+        // Validação 3: Valores devem ser positivos
+        if (request.Valor <= 0)
+        {
+            throw new InvalidOperationException("Valor de custo deve ser maior que zero.");
+        }
+
+        if (request.ValorVenda <= 0)
+        {
+            throw new InvalidOperationException("Valor de venda deve ser maior que zero.");
+        }
+
+        if (request.ValorCaixa <= 0)
+        {
+            throw new InvalidOperationException("Valor da caixa deve ser maior que zero.");
+        }
+
+        if (request.ValorAtacadoCaixa <= 0)
+        {
+            throw new InvalidOperationException("Valor de atacado deve ser maior que zero.");
+        }
+
+        // Validação 4: Margem mínima de 10% sobre o custo
+        var margemMinima = request.Valor * 1.10m;
+        if (request.ValorVenda < margemMinima)
+        {
+            throw new InvalidOperationException(
+                $"Valor de venda deve ser no mínimo R$ {margemMinima:F2} (10% acima do custo de R$ {request.Valor:F2}).");
+        }
+
+        // Validação 5: Valor da caixa deve ser maior que valor de venda unitário
+        if (request.ValorCaixa <= request.ValorVenda)
+        {
+            throw new InvalidOperationException(
+                $"Valor da caixa (R$ {request.ValorCaixa:F2}) deve ser maior que o valor de venda unitário (R$ {request.ValorVenda:F2}).");
+        }
+
+        // Validação 6: Valor de atacado deve ser maior que valor de venda unitário
+        if (request.ValorAtacadoCaixa <= request.ValorVenda)
+        {
+            throw new InvalidOperationException(
+                $"Valor de atacado (R$ {request.ValorAtacadoCaixa:F2}) deve ser maior que o valor de venda unitário (R$ {request.ValorVenda:F2}).");
+        }
+
+        // Validação 7: Valor de atacado deve ser menor que valor da caixa (desconto no atacado)
+        if (request.ValorAtacadoCaixa >= request.ValorCaixa)
+        {
+            throw new InvalidOperationException(
+                $"Valor de atacado (R$ {request.ValorAtacadoCaixa:F2}) deve ser menor que o valor da caixa (R$ {request.ValorCaixa:F2}) para oferecer desconto.");
+        }
+
+        // Validação 8: Estoque mínimo não pode ser negativo
+        if (request.EstoqueMinimo < 0)
+        {
+            throw new InvalidOperationException("Estoque mínimo não pode ser negativo.");
+        }
+
+        // Validação 9: Quantidade mínima para atacado deve ser >= 1
+        if (request.QuantidadeMinimaAtacado < 1)
+        {
+            throw new InvalidOperationException("Quantidade mínima para atacado deve ser no mínimo 1.");
+        }
+
         var produto = new Produto
         {
-            Bebida = request.Bebida,
-            Tamanho = request.Tamanho,
-            Material = request.Material,
+            Bebida = request.Bebida.Trim(),
+            Tamanho = request.Tamanho.Trim(),
+            Material = request.Material.Trim(),
             Valor = request.Valor,
             ValorVenda = request.ValorVenda,
             QuantidadeCaixa = request.QuantidadeCaixa,
@@ -63,12 +138,57 @@ public class ProdutoService(
         var produto = await produtoRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Produto {id} não encontrado.");
 
-        // Validate minimum margin (10%)
+        // Validação 1: Valores devem ser positivos
+        if (request.Valor <= 0)
+        {
+            throw new InvalidOperationException("Valor de custo deve ser maior que zero.");
+        }
+
+        if (request.ValorVenda <= 0)
+        {
+            throw new InvalidOperationException("Valor de venda deve ser maior que zero.");
+        }
+
+        if (request.ValorCaixa <= 0)
+        {
+            throw new InvalidOperationException("Valor da caixa deve ser maior que zero.");
+        }
+
+        if (request.ValorAtacadoCaixa <= 0)
+        {
+            throw new InvalidOperationException("Valor de atacado deve ser maior que zero.");
+        }
+
+        // Validação 2: Margem mínima de 10% sobre o custo
         var margemMinima = request.Valor * 1.10m;
         if (request.ValorVenda < margemMinima)
-            throw new InvalidOperationException($"Valor de venda deve ser no mínimo {margemMinima:C} (10% acima do custo).");
+        {
+            throw new InvalidOperationException(
+                $"Valor de venda deve ser no mínimo R$ {margemMinima:F2} (10% acima do custo de R$ {request.Valor:F2}).");
+        }
 
-        // Update cost value
+        // Validação 3: Valor da caixa deve ser maior que valor de venda unitário
+        if (request.ValorCaixa <= request.ValorVenda)
+        {
+            throw new InvalidOperationException(
+                $"Valor da caixa (R$ {request.ValorCaixa:F2}) deve ser maior que o valor de venda unitário (R$ {request.ValorVenda:F2}).");
+        }
+
+        // Validação 4: Valor de atacado deve ser maior que valor de venda unitário
+        if (request.ValorAtacadoCaixa <= request.ValorVenda)
+        {
+            throw new InvalidOperationException(
+                $"Valor de atacado (R$ {request.ValorAtacadoCaixa:F2}) deve ser maior que o valor de venda unitário (R$ {request.ValorVenda:F2}).");
+        }
+
+        // Validação 5: Valor de atacado deve ser menor que valor da caixa (desconto no atacado)
+        if (request.ValorAtacadoCaixa >= request.ValorCaixa)
+        {
+            throw new InvalidOperationException(
+                $"Valor de atacado (R$ {request.ValorAtacadoCaixa:F2}) deve ser menor que o valor da caixa (R$ {request.ValorCaixa:F2}) para oferecer desconto.");
+        }
+
+        // Update values
         produto.Valor = request.Valor;
         produto.ValorVenda = request.ValorVenda;
         produto.ValorCaixa = request.ValorCaixa;

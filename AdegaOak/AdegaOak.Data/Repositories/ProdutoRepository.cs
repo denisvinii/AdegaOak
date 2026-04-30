@@ -13,6 +13,7 @@ public interface IProdutoRepository
     Task<Produto> UpdateAsync(Produto produto);
     Task DeleteAsync(int id);
     Task<bool> ExistsAsync(int id);
+    Task<bool> ProdutoExisteAsync(string bebida, string tamanho, string material, int? excludeId = null);
     Task<int> GetQuantidadeAsync(int produtoId);
     Task<List<(Produto Produto, int Quantidade)>> GetEstoqueComQuantidadeAsync();
 }
@@ -88,6 +89,20 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<bool> ExistsAsync(int id) =>
         await db.Produtos.AnyAsync(p => p.Id == id && p.Ativo);
+
+    public async Task<bool> ProdutoExisteAsync(string bebida, string tamanho, string material, int? excludeId = null)
+    {
+        var query = db.Produtos.Where(p => 
+            p.Bebida == bebida && 
+            p.Tamanho == tamanho && 
+            p.Material == material && 
+            p.Ativo);
+        
+        if (excludeId.HasValue)
+            query = query.Where(p => p.Id != excludeId.Value);
+        
+        return await query.AnyAsync();
+    }
 
     public async Task<int> GetQuantidadeAsync(int produtoId)
     {
