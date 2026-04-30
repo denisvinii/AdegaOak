@@ -44,10 +44,13 @@ if (string.IsNullOrWhiteSpace(databaseUrl))
     Console.WriteLine("[DATABASE] Available environment variables:");
     foreach (System.Collections.DictionaryEntry env in Environment.GetEnvironmentVariables())
     {
-        if (env.Key.ToString().Contains("DATABASE", StringComparison.OrdinalIgnoreCase) ||
-            env.Key.ToString().Contains("CONNECTION", StringComparison.OrdinalIgnoreCase))
+        var key = env.Key?.ToString() ?? "";
+        var value = env.Value?.ToString() ?? "";
+        
+        if (key.Contains("DATABASE", StringComparison.OrdinalIgnoreCase) ||
+            key.Contains("CONNECTION", StringComparison.OrdinalIgnoreCase))
         {
-            Console.WriteLine($"[DATABASE]   {env.Key} = {env.Value}");
+            Console.WriteLine($"[DATABASE]   {key} = {value}");
         }
     }
     
@@ -106,10 +109,10 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
                 // Rebuild connection string with encoded password
                 var scheme = uri.Scheme;
                 var host = uri.Host;
-                var port = uri.Port;
+                var dbPort = uri.Port;
                 var database = uri.AbsolutePath.TrimStart('/');
                 
-                databaseUrl = $"{scheme}://{username}:{encodedPassword}@{host}:{port}/{database}";
+                databaseUrl = $"{scheme}://{username}:{encodedPassword}@{host}:{dbPort}/{database}";
                 Console.WriteLine("[DATABASE] ✅ Password encoded successfully");
             }
         }
