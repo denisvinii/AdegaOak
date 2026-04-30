@@ -273,18 +273,43 @@ using (var scope = app.Services.CreateScope())
             
             try
             {
-                // Force database creation with migrations
+                // Try 1: Force database recreation with migrations
+                Console.WriteLine("[DATABASE] Attempt 1: EnsureDeleted + Migrate");
                 db.Database.EnsureDeleted();
-                db.Database.Migrate();
-                Console.WriteLine("[DATABASE] ✅ Database schema created successfully with migrations");
                 
-                // Verify table now exists and has seed data
-                usuariosCount = db.Usuarios.Count();
-                Console.WriteLine($"[DATABASE] Usuarios count after migration: {usuariosCount}");
-                
-                if (usuariosCount > 0)
+                try
                 {
-                    Console.WriteLine("[DATABASE] ✅ Admin user created by migration");
+                    db.Database.Migrate();
+                    Console.WriteLine("[DATABASE] ✅ Migrate succeeded");
+                }
+                catch (Exception migrateEx)
+                {
+                    Console.WriteLine($"[DATABASE] ⚠️  Migrate failed: {migrateEx.Message}");
+                    Console.WriteLine("[DATABASE] Attempt 2: Using EnsureCreated as fallback");
+                    db.Database.EnsureCreated();
+                    Console.WriteLine("[DATABASE] ✅ EnsureCreated succeeded");
+                }
+                
+                // Verify table now exists
+                Console.WriteLine("[DATABASE] Verifying Usuarios table exists...");
+                try
+                {
+                    usuariosCount = db.Usuarios.Count();
+                    Console.WriteLine($"[DATABASE] ✅ Usuarios count after creation: {usuariosCount}");
+                    
+                    if (usuariosCount > 0)
+                    {
+                        Console.WriteLine("[DATABASE] ✅ Admin user created by migration/seed");
+                    }
+                    else
+                    {
+                        Console.WriteLine("[DATABASE] ⚠️  No users found after creation. Migration seed may have failed.");
+                    }
+                }
+                catch (Exception countEx)
+                {
+                    Console.WriteLine($"[DATABASE] ❌ Still cannot access Usuarios table: {countEx.Message}");
+                    throw;
                 }
             }
             catch (Exception createEx)
