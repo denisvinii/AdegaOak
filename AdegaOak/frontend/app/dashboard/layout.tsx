@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   FileText,
+  ShoppingCart,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -77,6 +78,7 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', adminOnly: true },
+    { href: '/dashboard/vendas', icon: ShoppingCart, label: 'Vendas' },
     { href: '/dashboard/estoque', icon: Package, label: 'Estoque' },
     { href: '/dashboard/movimentacoes', icon: TrendingUp, label: 'Movimentações' },
     { href: '/dashboard/despesas', icon: DollarSign, label: 'Despesas', adminOnly: true },
