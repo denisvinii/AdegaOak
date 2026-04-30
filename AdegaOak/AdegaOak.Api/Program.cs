@@ -200,6 +200,7 @@ using (var scope = app.Services.CreateScope())
         if (!string.IsNullOrEmpty(dbPath) && !Path.IsPathRooted(dbPath))
         {
             dbPath = Path.Combine(AppContext.BaseDirectory, dbPath);
+            Console.WriteLine($"[DATABASE] Resolved path: {dbPath}");
         }
         
         var dir = Path.GetDirectoryName(dbPath);
@@ -213,12 +214,33 @@ using (var scope = app.Services.CreateScope())
         var dbFileExists = File.Exists(dbPath);
         Console.WriteLine($"[DATABASE] Database file exists: {dbFileExists}");
         
-        // Apply migrations
+        // Apply migrations - this will create the database and tables
         Console.WriteLine("[DATABASE] Applying migrations...");
-        db.Database.Migrate();
-        Console.WriteLine("[DATABASE] Migrations applied successfully");
+        try
+        {
+            db.Database.Migrate();
+            Console.WriteLine("[DATABASE] ✅ Migrations applied successfully");
+        }
+        catch (Exception migrationEx)
+        {
+            Console.WriteLine($"[DATABASE] ⚠️  Migration failed: {migrationEx.Message}");
+            Console.WriteLine("[DATABASE] Attempting to create database with EnsureCreated...");
+            db.Database.EnsureCreated();
+            Console.WriteLine("[DATABASE] ✅ Database created with EnsureCreated");
+        }
+        
+        // Verify database is accessible
+        Console.WriteLine("[DATABASE] Verifying database connection...");
+        var canConnect = db.Database.CanConnect();
+        Console.WriteLine($"[DATABASE] Can connect: {canConnect}");
+        
+        if (!canConnect)
+        {
+            throw new Exception("Cannot connect to database after migration");
+        }
         
         // Check if Usuarios table has data
+        Console.WriteLine("[DATABASE] Counting users...");
         var usuariosCount = db.Usuarios.Count();
         Console.WriteLine($"[DATABASE] Usuarios count: {usuariosCount}");
         
@@ -255,8 +277,16 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[DATABASE] ❌ ERROR during migration: {ex.Message}");
+        Console.WriteLine($"[DATABASE] ❌ FATAL ERROR: {ex.Message}");
+        Console.WriteLine($"[DATABASE] Exception type: {ex.GetType().Name}");
         Console.WriteLine($"[DATABASE] Stack trace: {ex.StackTrace}");
+        
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"[DATABASE] Inner exception: {ex.InnerException.Message}");
+            Console.WriteLine($"[DATABASE] Inner stack trace: {ex.InnerException.StackTrace}");
+        }
+        
         throw;
     }
 }
