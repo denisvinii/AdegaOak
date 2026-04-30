@@ -26,7 +26,7 @@ WORKDIR /app
 
 COPY --from=build /app/out .
 
-# Railway injects PORT env var
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT:-5000}
+# ASPNETCORE_URLS is set at runtime by Railway via PORT env var
+# The app reads PORT directly in Program.cs
 
 ENTRYPOINT ["dotnet", "AdegaOak.Api.dll"]

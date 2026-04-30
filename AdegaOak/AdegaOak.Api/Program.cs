@@ -9,13 +9,22 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Railway provides PORT env var — bind to it
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+// Railway provides PORT env var — bind to it (Railway uses 8080 internally)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// Database — use PORT env var on Railway, fallback to local SQLite
+// Database — use absolute path for SQLite in Docker/Railway
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=adegaoak.db";
+
+// If relative path, make it absolute based on app directory
+if (connectionString.StartsWith("Data Source=") && !connectionString.Contains("/"))
+{
+    var dbFile = connectionString.Replace("Data Source=", "").Trim();
+    var dbPath = Path.Combine("/app", dbFile);
+    connectionString = $"Data Source={dbPath}";
+}
+
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
     options.UseSqlite(connectionString));
 
@@ -144,6 +153,18 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdegaOakDbContext>();
+    // Ensure directory exists for SQLite file
+    var connStr = db.Database.GetConnectionString() ?? "";
+    var dbPath = connStr.Replace("Data Source=", "").Trim();
+    if (!string.IsNullOrEmpty(dbPath) && !Path.IsPathRooted(dbPath))
+    {
+        dbPath = Path.Combine(AppContext.BaseDirectory, dbPath);
+    }
+    var dir = Path.GetDirectoryName(dbPath);
+    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+    {
+        Directory.CreateDirectory(dir);
+    }
     db.Database.Migrate();
 }
 
