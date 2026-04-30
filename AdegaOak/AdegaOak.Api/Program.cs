@@ -228,6 +228,7 @@ builder.Services.AddScoped<IMovimentacaoService, MovimentacaoService>();
 builder.Services.AddScoped<IDespesaService, DespesaService>();
 builder.Services.AddScoped<IComboService, ComboService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IVendaService, VendaService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]

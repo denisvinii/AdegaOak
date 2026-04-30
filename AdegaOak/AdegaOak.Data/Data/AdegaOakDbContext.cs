@@ -13,6 +13,7 @@ public class AdegaOakDbContext(DbContextOptions<AdegaOakDbContext> options) : Db
     public DbSet<ComboComposicao> ComboComposicoes => Set<ComboComposicao>();
     public DbSet<ComboVenda> ComboVendas => Set<ComboVenda>();
     public DbSet<SaldoConfig> SaldoConfigs => Set<SaldoConfig>();
+    public DbSet<Venda> Vendas => Set<Venda>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,12 +59,14 @@ public class AdegaOakDbContext(DbContextOptions<AdegaOakDbContext> options) : Db
             e.Ignore(m => m.ValorTotal); // computed property
             e.HasOne(m => m.Produto).WithMany(p => p.Movimentacoes).HasForeignKey(m => m.ProdutoId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(m => m.Usuario).WithMany(u => u.Movimentacoes).HasForeignKey(m => m.UsuarioId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(m => m.Venda).WithMany(v => v.Movimentacoes).HasForeignKey(m => m.VendaId).OnDelete(DeleteBehavior.SetNull);
             
             // Performance indexes for dashboard queries
             e.HasIndex(m => new { m.Tipo, m.Data }).HasDatabaseName("IX_Movimentacoes_Tipo_Data");
             e.HasIndex(m => m.Data).HasDatabaseName("IX_Movimentacoes_Data");
             e.HasIndex(m => m.ProdutoId).HasDatabaseName("IX_Movimentacoes_ProdutoId");
             e.HasIndex(m => m.UsuarioId).HasDatabaseName("IX_Movimentacoes_UsuarioId");
+            e.HasIndex(m => m.VendaId).HasDatabaseName("IX_Movimentacoes_VendaId");
         });
 
         // Despesa
@@ -113,6 +116,22 @@ public class AdegaOakDbContext(DbContextOptions<AdegaOakDbContext> options) : Db
         {
             e.HasKey(s => s.Id);
             e.Property(s => s.CapitalAdmin).HasColumnType("decimal(10,2)");
+        });
+
+        // Venda
+        modelBuilder.Entity<Venda>(e =>
+        {
+            e.HasKey(v => v.Id);
+            e.Property(v => v.Responsavel).IsRequired().HasMaxLength(100);
+            e.Property(v => v.ValorTotal).HasColumnType("decimal(10,2)");
+            e.Property(v => v.ValorDinheiro).HasColumnType("decimal(10,2)");
+            e.Property(v => v.ValorCartao).HasColumnType("decimal(10,2)");
+            e.Property(v => v.ValorPix).HasColumnType("decimal(10,2)");
+            e.HasOne(v => v.Usuario).WithMany().HasForeignKey(v => v.UsuarioId).OnDelete(DeleteBehavior.Restrict);
+            
+            // Performance indexes
+            e.HasIndex(v => v.Data).HasDatabaseName("IX_Vendas_Data");
+            e.HasIndex(v => v.UsuarioId).HasDatabaseName("IX_Vendas_UsuarioId");
         });
 
         // NOTE: Admin user is NOT seeded here.

@@ -14,8 +14,10 @@ public class Movimentacao
     public string? TipoSaida { get; set; }                 // Consumo, Vencimento, Avaria, Combo, etc.
     public decimal ValorUnitario { get; set; }
     public decimal ValorTotal => ValorUnitario * Quantidade;
+    public int? VendaId { get; set; }                      // Referência à venda
 
     // Navigation
     public Produto? Produto { get; set; }
     public Usuario? Usuario { get; set; }
+    public Venda? Venda { get; set; }
 }

@@ -1,0 +1,59 @@
+### Teste do endpoint de relatório de vendas
+
+# 1. Login como admin
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+# 2. Obter relatório de vendas do ano atual
+# Substitua {{token}} pelo token recebido no login
+POST http://localhost:5000/api/dashboard/relatorio-vendas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ano": 2026
+}
+
+###
+
+# 3. Obter relatório de vendas de um mês específico
+POST http://localhost:5000/api/dashboard/relatorio-vendas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ano": 2026,
+  "mes": 4
+}
+
+###
+
+# 4. Obter relatório de vendas de um usuário específico
+POST http://localhost:5000/api/dashboard/relatorio-vendas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ano": 2026,
+  "usuarioId": 1
+}
+
+###
+
+# 5. Obter relatório de vendas com todos os filtros
+POST http://localhost:5000/api/dashboard/relatorio-vendas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ano": 2026,
+  "mes": 4,
+  "usuarioId": 1
+}
