@@ -9,9 +9,15 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
+// Railway provides PORT env var — bind to it
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+// Database — use PORT env var on Railway, fallback to local SQLite
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Data Source=adegaoak.db";
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString));
 
 // Repositories
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
@@ -30,7 +36,9 @@ builder.Services.AddScoped<IComboService, ComboService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key não configurada");
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? builder.Configuration["JWT_KEY"]
+    ?? throw new InvalidOperationException("JWT Key não configurada");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -71,7 +79,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+        var allowedOriginsEnv = Environment.GetEnvironmentVariable("AllowedOrigins")
+            ?? builder.Configuration["AllowedOrigins"];
+
+        var allowedOrigins = allowedOriginsEnv?.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            ?? ["http://localhost:3000", "http://localhost:3001"];
+
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -126,6 +140,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    // Also expose Swagger in production for Railway health checks
+    app.UseSwagger();
 }
 
 app.UseResponseCompression(); // Enable compression
