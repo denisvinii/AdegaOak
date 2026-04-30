@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import StoreProvider from "@/components/StoreProvider";
 import { ToastProvider } from "@/components/Toast";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Adega Oak",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <StoreProvider>
           <ToastProvider>{children}</ToastProvider>
         </StoreProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
