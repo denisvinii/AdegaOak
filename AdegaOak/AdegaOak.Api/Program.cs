@@ -9,6 +9,15 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure forwarded headers for Railway proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+                               Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 // Railway provides PORT env var — bind to it (Railway uses 8080 internally)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
@@ -83,7 +92,7 @@ builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompress
     options.Level = System.IO.Compression.CompressionLevel.Fastest;
 });
 
-// CORS
+// CORS - CRITICAL: Must be configured before controllers
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -94,17 +103,25 @@ builder.Services.AddCors(options =>
         if (!string.IsNullOrEmpty(allowedOriginsEnv))
         {
             var origins = allowedOriginsEnv.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            Console.WriteLine($"[CORS] Configured origins from env: {string.Join(", ", origins)}");
             policy.WithOrigins(origins)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .AllowCredentials();
+                  .AllowCredentials()
+                  .SetIsOriginAllowed(_ => true); // Allow during preflight
         }
         else
         {
+            Console.WriteLine("[CORS] No AllowedOrigins env var found, using fallback pattern matching");
             // Fallback: allow all vercel.app and localhost origins
             policy.SetIsOriginAllowed(origin =>
-                    origin.EndsWith(".vercel.app") ||
-                    origin.StartsWith("http://localhost"))
+                {
+                    var allowed = origin.EndsWith(".vercel.app") || 
+                                  origin.StartsWith("http://localhost") ||
+                                  origin.StartsWith("https://localhost");
+                    Console.WriteLine($"[CORS] Origin check: {origin} -> {allowed}");
+                    return allowed;
+                })
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -147,6 +164,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Use forwarded headers from Railway proxy
+app.UseForwardedHeaders();
+
 // Migrate database only — no seeding.
 // The admin user must be inserted directly in the database.
 // See: Database/README_DATABASE.md for instructions.
@@ -179,10 +199,15 @@ else
     app.UseSwagger();
 }
 
-app.UseResponseCompression(); // Enable compression
+// CRITICAL: CORS must be applied BEFORE Authentication/Authorization
 app.UseCors("AllowFrontend");
+app.UseResponseCompression(); // Enable compression
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+Console.WriteLine("[STARTUP] Application started successfully");
+Console.WriteLine($"[STARTUP] Environment: {app.Environment.EnvironmentName}");
+Console.WriteLine($"[STARTUP] AllowedOrigins: {Environment.GetEnvironmentVariable("AllowedOrigins") ?? "Not set (using fallback)"}");
 
 app.Run();
