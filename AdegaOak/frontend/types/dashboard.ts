@@ -58,3 +58,12 @@ export interface FiltrosDashboardRequest {
   dataFim?: string;
   usuarioId?: number;
 }
+
+export interface ProdutoMargemDto {
+  produtoId: number;
+  descricao: string;
+  valor: number;
+  valorVenda: number;
+  margemLucro: number;
+  margemPercentual: number;
+}

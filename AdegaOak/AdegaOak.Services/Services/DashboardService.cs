@@ -90,18 +90,71 @@ public class DashboardService(
         var dataFim = filtros.DataFim ?? DateTime.UtcNow;
         var mesAtual = DateTime.UtcNow;
 
-        // Execute queries sequentially to avoid DbContext concurrency issues
-        var movimentacoesSaida = await db.Movimentacoes
+        // Vendas por dia (usando projeção)
+        var vendasPorDia = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .GroupBy(m => m.Data.Date)
+            .Select(g => new VendasPorDiaDto(
+                g.Key,
+                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)),
+                g.Sum(m => m.Quantidade)
+            ))
+            .OrderBy(v => v.Data)
             .ToListAsync();
 
-        var despesas = await db.Despesas
+        // Top produtos (usando projeção para melhor performance)
+        var topProdutos = await db.Movimentacoes
+            .AsNoTracking()
+            .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .GroupBy(m => new { m.ProdutoId, m.ProdutoDescricao })
+            .Select(g => new TopProdutoDto(
+                g.Key.ProdutoId,
+                g.Key.ProdutoDescricao,
+                g.Sum(m => m.Quantidade),
+                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade))
+            ))
+            .OrderByDescending(p => p.ValorTotal)
+            .Take(10)
+            .ToListAsync();
+
+        // Estoque baixo
+        var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
+        var estoqueBaixo = estoque
+            .Where(e => e.Quantidade <= e.Produto.EstoqueMinimo)
+            .Select(e => new EstoqueBaixoDto(
+                e.Produto.Id,
+                e.Produto.Descricao,
+                e.Quantidade,
+                e.Produto.EstoqueMinimo
+            ))
+            .ToList();
+
+        // Despesas por tipo (usando projeção)
+        var despesasPorTipo = await db.Despesas
             .AsNoTracking()
             .Where(d => d.Data >= dataInicio && d.Data <= dataFim)
+            .GroupBy(d => d.Tipo)
+            .Select(g => new DespesasPorTipoDto(
+                g.Key.ToString(),
+                (decimal)g.Sum(d => (double)d.Valor),
+                g.Count()
+            ))
             .ToListAsync();
 
-        var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
+        // Vendas por usuário (usando projeção)
+        var vendasPorUsuario = await db.Movimentacoes
+            .AsNoTracking()
+            .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .GroupBy(m => new { m.UsuarioId, m.Responsavel })
+            .Select(g => new VendasPorUsuarioDto(
+                g.Key.UsuarioId,
+                g.Key.Responsavel,
+                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)),
+                g.Sum(m => m.Quantidade)
+            ))
+            .OrderByDescending(v => v.Total)
+            .ToListAsync();
 
         var receitaMesList = await db.Movimentacoes
             .AsNoTracking()
@@ -123,62 +176,6 @@ public class DashboardService(
         
         var receitaMes = receitaMesList.Any() ? receitaMesList.Sum() : 0.0;
         var despesasMes = despesasMesList.Any() ? despesasMesList.Sum() : 0.0;
-
-        // Vendas por dia
-        var vendasPorDia = movimentacoesSaida
-            .GroupBy(m => m.Data.Date)
-            .Select(g => new VendasPorDiaDto(
-                g.Key, 
-                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)), 
-                g.Sum(m => m.Quantidade)))
-            .OrderBy(v => v.Data)
-            .ToList();
-
-        // Top produtos
-        var topProdutos = movimentacoesSaida
-            .GroupBy(m => new { m.ProdutoId, m.ProdutoDescricao })
-            .Select(g => new TopProdutoDto(
-                g.Key.ProdutoId,
-                g.Key.ProdutoDescricao,
-                g.Sum(m => m.Quantidade),
-                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade))
-            ))
-            .OrderByDescending(p => p.ValorTotal)
-            .Take(10)
-            .ToList();
-
-        // Estoque baixo
-        var estoqueBaixo = estoque
-            .Where(e => e.Quantidade <= e.Produto.EstoqueMinimo)
-            .Select(e => new EstoqueBaixoDto(
-                e.Produto.Id,
-                e.Produto.Descricao,
-                e.Quantidade,
-                e.Produto.EstoqueMinimo
-            ))
-            .ToList();
-
-        // Despesas por tipo
-        var despesasPorTipo = despesas
-            .GroupBy(d => d.Tipo)
-            .Select(g => new DespesasPorTipoDto(
-                g.Key.ToString(),
-                (decimal)g.Sum(d => (double)d.Valor),
-                g.Count()
-            ))
-            .ToList();
-
-        // Vendas por usuário
-        var vendasPorUsuario = movimentacoesSaida
-            .GroupBy(m => new { m.UsuarioId, m.Responsavel })
-            .Select(g => new VendasPorUsuarioDto(
-                g.Key.UsuarioId,
-                g.Key.Responsavel,
-                (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)),
-                g.Sum(m => m.Quantidade)
-            ))
-            .OrderByDescending(v => v.Total)
-            .ToList();
 
         return new DashboardDto(
             saldo,
@@ -337,5 +334,34 @@ public class DashboardService(
             12 => "Dezembro",
             _ => "Desconhecido"
         };
+    }
+
+    public async Task<List<ProdutoMargemDto>> GetProdutosPorMargemAsync(string ordenacao = "menor")
+    {
+        var produtos = await db.Produtos
+            .AsNoTracking()
+            .Where(p => p.Ativo && p.Valor > 0 && p.ValorVenda > 0)
+            .ToListAsync();
+
+        var produtosComMargem = produtos
+            .Select(p => new ProdutoMargemDto(
+                p.Id,
+                p.Descricao,
+                p.Valor,
+                p.ValorVenda,
+                p.ValorVenda - p.Valor,
+                p.Valor > 0 ? ((p.ValorVenda - p.Valor) / p.Valor) * 100 : 0
+            ))
+            .ToList();
+
+        // Ordenar conforme solicitado
+        var produtosOrdenados = ordenacao.ToLower() switch
+        {
+            "maior" => produtosComMargem.OrderByDescending(p => p.MargemPercentual).Take(10).ToList(),
+            "menor" => produtosComMargem.OrderBy(p => p.MargemPercentual).Take(10).ToList(),
+            _ => produtosComMargem.OrderBy(p => p.MargemPercentual).Take(10).ToList()
+        };
+
+        return produtosOrdenados;
     }
 }

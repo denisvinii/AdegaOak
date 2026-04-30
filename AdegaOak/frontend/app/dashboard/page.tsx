@@ -2,17 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { TrendingUp, TrendingDown, Package, DollarSign, AlertTriangle, RefreshCw } from 'lucide-react';
-import type { DashboardDto, FiltrosDashboardRequest } from '@/types/dashboard';
+import { TrendingUp, TrendingDown, Package, DollarSign, AlertTriangle, RefreshCw, Percent } from 'lucide-react';
+import type { DashboardDto, FiltrosDashboardRequest, ProdutoMargemDto } from '@/types/dashboard';
 
 export default function DashboardPage() {
   const [dashboard, setDashboard] = useState<DashboardDto | null>(null);
+  const [produtosMargem, setProdutosMargem] = useState<ProdutoMargemDto[]>([]);
+  const [filtroMargem, setFiltroMargem] = useState<'menor' | 'maior'>('menor');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboard();
+    loadProdutosMargem();
   }, []);
+
+  useEffect(() => {
+    loadProdutosMargem();
+  }, [filtroMargem]);
 
   const loadDashboard = async () => {
     try {
@@ -52,6 +59,15 @@ export default function DashboardPage() {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProdutosMargem = async () => {
+    try {
+      const { data } = await api.get<ProdutoMargemDto[]>(`/dashboard/produtos-margem?ordenacao=${filtroMargem}`);
+      setProdutosMargem(data);
+    } catch (err) {
+      console.error('Erro ao carregar produtos por margem:', err);
     }
   };
 
@@ -240,6 +256,106 @@ export default function DashboardPage() {
             </p>
             <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500">
               Comece registrando movimentações de saída
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Produtos por Margem */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
+          <div className="flex items-center gap-2">
+            <Percent className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={20} />
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
+              Produtos por Margem de Lucro
+            </h2>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFiltroMargem('menor')}
+              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition ${
+                filtroMargem === 'menor'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Menor Margem
+            </button>
+            <button
+              onClick={() => setFiltroMargem('maior')}
+              className={`px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition ${
+                filtroMargem === 'maior'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Maior Margem
+            </button>
+          </div>
+        </div>
+
+        {produtosMargem.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+            {produtosMargem.map((produto) => (
+              <div
+                key={produto.produtoId}
+                className={`p-3 md:p-4 rounded-lg border-2 transition-all hover:shadow-md ${
+                  produto.margemPercentual < 20
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                    : produto.margemPercentual < 40
+                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                    : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                }`}
+              >
+                <div className="mb-2">
+                  <p className="font-semibold text-xs md:text-sm text-gray-900 dark:text-white line-clamp-2 min-h-[2.5rem]">
+                    {produto.descricao}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-600 dark:text-gray-400">Custo:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      R$ {produto.valor.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-600 dark:text-gray-400">Venda:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      R$ {produto.valorVenda.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Margem:</span>
+                      <span
+                        className={`text-sm md:text-base font-bold ${
+                          produto.margemPercentual < 20
+                            ? 'text-red-600 dark:text-red-400'
+                            : produto.margemPercentual < 40
+                            ? 'text-yellow-600 dark:text-yellow-400'
+                            : 'text-green-600 dark:text-green-400'
+                        }`}
+                      >
+                        {produto.margemPercentual.toFixed(1)}%
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      +R$ {produto.margemLucro.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 md:py-12">
+            <Percent className="mx-auto text-gray-400 dark:text-gray-600 mb-4" size={40} />
+            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-2 font-medium">
+              Nenhum produto com margem calculada
+            </p>
+            <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500">
+              Cadastre produtos com valores de custo e venda
             </p>
           </div>
         )}

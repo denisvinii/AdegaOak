@@ -52,4 +52,32 @@ public class VendasController(IVendaService vendaService) : ControllerBase
         var resumo = await vendaService.GetResumoAsync(dataInicio, dataFim);
         return Ok(resumo);
     }
+
+    [HttpGet("hoje")]
+    public async Task<ActionResult<List<VendaDto>>> GetVendasHoje()
+    {
+        var hoje = DateTime.UtcNow.Date;
+        var amanha = hoje.AddDays(1);
+        var vendas = await vendaService.GetVendasPorPeriodoAsync(hoje, amanha);
+        return Ok(vendas);
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> CancelarVenda(int id)
+    {
+        try
+        {
+            await vendaService.CancelarVendaAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

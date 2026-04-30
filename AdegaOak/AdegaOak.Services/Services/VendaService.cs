@@ -41,40 +41,42 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             db.Vendas.Add(venda);
             await db.SaveChangesAsync();
 
-            // Criar as movimentações para cada item
-            var movimentacoes = new List<Movimentacao>();
-            
-            foreach (var item in request.Itens)
+            // Buscar todos os produtos de uma vez (otimização: evita N+1 queries)
+            var produtoIds = request.Itens.Select(i => i.ProdutoId).Distinct().ToList();
+            var produtos = await db.Produtos
+                .Where(p => produtoIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, p => p);
+
+            // Validar que todos os produtos existem
+            foreach (var produtoId in produtoIds)
             {
-                var produto = await db.Produtos.FindAsync(item.ProdutoId);
-                if (produto == null)
+                if (!produtos.ContainsKey(produtoId))
                 {
-                    throw new KeyNotFoundException($"Produto com ID {item.ProdutoId} não encontrado");
+                    throw new KeyNotFoundException($"Produto com ID {produtoId} não encontrado");
                 }
-
-                var movimentacao = new Movimentacao
-                {
-                    Data = venda.Data,
-                    Tipo = "Saída",
-                    TipoVenda = item.TipoVenda,
-                    ProdutoId = item.ProdutoId,
-                    ProdutoDescricao = produto.Descricao,
-                    Quantidade = item.Quantidade,
-                    UsuarioId = usuarioId,
-                    Responsavel = responsavel,
-                    ValorUnitario = item.ValorUnitario,
-                    VendaId = venda.Id
-                };
-
-                movimentacoes.Add(movimentacao);
             }
+
+            // Criar as movimentações para cada item
+            var movimentacoes = request.Itens.Select(item => new Movimentacao
+            {
+                Data = venda.Data,
+                Tipo = "Saída",
+                TipoVenda = item.TipoVenda,
+                ProdutoId = item.ProdutoId,
+                ProdutoDescricao = produtos[item.ProdutoId].Descricao,
+                Quantidade = item.Quantidade,
+                UsuarioId = usuarioId,
+                Responsavel = responsavel,
+                ValorUnitario = item.ValorUnitario,
+                VendaId = venda.Id
+            }).ToList();
 
             db.Movimentacoes.AddRange(movimentacoes);
             await db.SaveChangesAsync();
 
             await transaction.CommitAsync();
 
-            // Retornar o DTO
+            // Retornar o DTO (usando o dicionário de produtos já carregado)
             return new VendaDto(
                 venda.Id,
                 venda.Data,
@@ -87,7 +89,7 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
                 venda.Observacao,
                 request.Itens.Select(i => new ItemVendaDto(
                     i.ProdutoId,
-                    db.Produtos.Find(i.ProdutoId)?.Descricao ?? "",
+                    produtos[i.ProdutoId].Descricao,
                     i.Quantidade,
                     i.ValorUnitario,
                     i.Quantidade * i.ValorUnitario,
@@ -195,5 +197,88 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             (decimal)totalPix,
             formasPagamento
         );
+    }
+
+    public async Task<List<VendaDto>> GetVendasPorPeriodoAsync(DateTime dataInicio, DateTime dataFim)
+    {
+        var vendas = await db.Vendas
+            .AsNoTracking()
+            .Include(v => v.Movimentacoes)
+            .Where(v => v.Data >= dataInicio && v.Data < dataFim)
+            .OrderByDescending(v => v.Data)
+            .ToListAsync();
+
+        return vendas.Select(v => new VendaDto(
+            v.Id,
+            v.Data,
+            v.UsuarioId,
+            v.Responsavel,
+            v.ValorTotal,
+            v.ValorDinheiro,
+            v.ValorCartao,
+            v.ValorPix,
+            v.Observacao,
+            v.Movimentacoes.Select(m => new ItemVendaDto(
+                m.ProdutoId,
+                m.ProdutoDescricao,
+                m.Quantidade,
+                m.ValorUnitario,
+                m.ValorUnitario * m.Quantidade,
+                m.TipoVenda
+            )).ToList()
+        )).ToList();
+    }
+
+    public async Task CancelarVendaAsync(int id)
+    {
+        using var transaction = await db.Database.BeginTransactionAsync();
+        
+        try
+        {
+            var venda = await db.Vendas
+                .Include(v => v.Movimentacoes)
+                .FirstOrDefaultAsync(v => v.Id == id);
+
+            if (venda == null)
+            {
+                throw new KeyNotFoundException($"Venda com ID {id} não encontrada");
+            }
+
+            // Estornar as movimentações (criar movimentações de entrada para reverter as saídas)
+            var movimentacoesEstorno = new List<Movimentacao>();
+            
+            foreach (var movimentacao in venda.Movimentacoes)
+            {
+                var estorno = new Movimentacao
+                {
+                    Data = DateTime.UtcNow,
+                    Tipo = "Entrada",
+                    TipoVenda = movimentacao.TipoVenda,
+                    ProdutoId = movimentacao.ProdutoId,
+                    ProdutoDescricao = movimentacao.ProdutoDescricao,
+                    Quantidade = movimentacao.Quantidade,
+                    UsuarioId = movimentacao.UsuarioId,
+                    Responsavel = $"CANCELAMENTO - {movimentacao.Responsavel}",
+                    ValorUnitario = movimentacao.ValorUnitario,
+                    VendaId = null // Estorno não está vinculado à venda
+                };
+
+                movimentacoesEstorno.Add(estorno);
+            }
+
+            db.Movimentacoes.AddRange(movimentacoesEstorno);
+
+            // Remover a venda e suas movimentações originais
+            db.Movimentacoes.RemoveRange(venda.Movimentacoes);
+            db.Vendas.Remove(venda);
+
+            await db.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

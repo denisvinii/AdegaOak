@@ -82,4 +82,21 @@ public class DashboardController(IDashboardService dashboardService) : Controlle
             return StatusCode(500, new { error = "Erro ao carregar relatório de vendas", details = ex.Message });
         }
     }
+
+    [Authorize(Roles = "admin")]
+    [HttpGet("produtos-margem")]
+    public async Task<ActionResult<List<ProdutoMargemDto>>> GetProdutosPorMargem([FromQuery] string ordenacao = "menor")
+    {
+        try
+        {
+            var produtos = await dashboardService.GetProdutosPorMargemAsync(ordenacao);
+            return Ok(produtos);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DASHBOARD] Error in GetProdutosPorMargem: {ex.Message}");
+            Console.WriteLine($"[DASHBOARD] Stack trace: {ex.StackTrace}");
+            return StatusCode(500, new { error = "Erro ao carregar produtos por margem", details = ex.Message });
+        }
+    }
 }

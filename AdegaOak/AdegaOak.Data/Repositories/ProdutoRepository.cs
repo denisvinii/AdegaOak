@@ -1,4 +1,5 @@
 using AdegaOak.Models.Models;
+using AdegaOak.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AdegaOak.Data.Data;
 
@@ -50,10 +51,7 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
             }
             
             // Fix DateTime Kind for PostgreSQL (must be UTC)
-            if (produto.CriadoEm.Kind == DateTimeKind.Unspecified)
-            {
-                produto.CriadoEm = DateTime.SpecifyKind(produto.CriadoEm, DateTimeKind.Utc);
-            }
+            produto.CriadoEm = produto.CriadoEm.ToUtc();
             
             Console.WriteLine($"[REPOSITORY] Updating produto {produto.Id}");
             db.Produtos.Update(produto);
@@ -93,13 +91,14 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<int> GetQuantidadeAsync(int produtoId)
     {
-        var entradas = await db.Movimentacoes
-            .Where(m => m.ProdutoId == produtoId && m.Tipo == "Entrada")
-            .SumAsync(m => (int?)m.Quantidade) ?? 0;
+        var resultado = await db.Movimentacoes
+            .Where(m => m.ProdutoId == produtoId)
+            .GroupBy(m => m.Tipo)
+            .Select(g => new { Tipo = g.Key, Total = g.Sum(m => m.Quantidade) })
+            .ToListAsync();
 
-        var saidas = await db.Movimentacoes
-            .Where(m => m.ProdutoId == produtoId && m.Tipo == "Saída")
-            .SumAsync(m => (int?)m.Quantidade) ?? 0;
+        var entradas = resultado.FirstOrDefault(r => r.Tipo == "Entrada")?.Total ?? 0;
+        var saidas = resultado.FirstOrDefault(r => r.Tipo == "Saída")?.Total ?? 0;
 
         return entradas - saidas;
     }

@@ -8,4 +8,6 @@ public interface IVendaService
     Task<List<VendaDto>> GetAllAsync();
     Task<VendaDto?> GetByIdAsync(int id);
     Task<VendaResumoDto> GetResumoAsync(DateTime? dataInicio, DateTime? dataFim);
+    Task<List<VendaDto>> GetVendasPorPeriodoAsync(DateTime dataInicio, DateTime dataFim);
+    Task CancelarVendaAsync(int id);
 }

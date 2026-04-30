@@ -60,3 +60,12 @@ public record FiltrosRelatorioRequest(
     int? Mes,
     int? UsuarioId
 );
+
+public record ProdutoMargemDto(
+    int ProdutoId,
+    string Descricao,
+    decimal Valor,
+    decimal ValorVenda,
+    decimal MargemLucro,
+    decimal MargemPercentual
+);

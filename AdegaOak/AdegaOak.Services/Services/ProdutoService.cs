@@ -2,15 +2,27 @@ using AdegaOak.Data.Repositories;
 using AdegaOak.Models.DTOs;
 using AdegaOak.Models.Models;
 using AdegaOak.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace AdegaOak.Services.Services;
 
-public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoService
+public class ProdutoService(
+    IProdutoRepository produtoRepository,
+    IMemoryCache cache) : IProdutoService
 {
+    private const string CacheProdutosKey = "produtos_ativos";
+    private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(3); // Cache de 3 minutos
+
     public async Task<List<ProdutoDto>> GetAllAsync()
     {
-        var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
-        return estoque.Select(e => MapToDto(e.Produto, e.Quantidade)).ToList();
+        return await cache.GetOrCreateAsync(CacheProdutosKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = CacheExpiration;
+            entry.SetPriority(CacheItemPriority.Normal);
+            
+            var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
+            return estoque.Select(e => MapToDto(e.Produto, e.Quantidade)).ToList();
+        }) ?? new List<ProdutoDto>();
     }
 
     public async Task<ProdutoDto?> GetByIdAsync(int id)
@@ -39,6 +51,10 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
         };
 
         await produtoRepository.CreateAsync(produto);
+        
+        // Invalidar cache após criar produto
+        cache.Remove(CacheProdutosKey);
+        
         return MapToDto(produto, 0);
     }
 
@@ -61,6 +77,9 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
         try
         {
             await produtoRepository.UpdateAsync(produto);
+            
+            // Invalidar cache após atualizar produto
+            cache.Remove(CacheProdutosKey);
         }
         catch (Exception ex)
         {
@@ -83,6 +102,9 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
             throw new InvalidOperationException("Não é possível excluir produto com estoque.");
 
         await produtoRepository.DeleteAsync(id);
+        
+        // Invalidar cache após deletar produto
+        cache.Remove(CacheProdutosKey);
     }
 
     public async Task<List<EstoqueProdutoDto>> GetEstoqueAsync()

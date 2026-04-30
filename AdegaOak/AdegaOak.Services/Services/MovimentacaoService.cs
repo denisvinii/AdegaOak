@@ -15,6 +15,33 @@ public class MovimentacaoService(
         return movimentacoes.Select(MapToDto).ToList();
     }
 
+    public async Task<PagedResult<MovimentacaoDto>> GetPagedAsync(int page, int pageSize)
+    {
+        // Validar parâmetros
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 50;
+        if (pageSize > 100) pageSize = 100; // Limite máximo
+
+        var query = await movimentacaoRepository.GetAllAsync();
+        
+        var totalCount = query.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        
+        var items = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(MapToDto)
+            .ToList();
+
+        return new PagedResult<MovimentacaoDto>(
+            items,
+            totalCount,
+            page,
+            pageSize,
+            totalPages
+        );
+    }
+
     public async Task<MovimentacaoDto?> GetByIdAsync(int id)
     {
         var movimentacao = await movimentacaoRepository.GetByIdAsync(id);

@@ -317,6 +317,7 @@ export default function EstoquePage() {
               <option value="Lata">Lata</option>
               <option value="Long Neck">Long Neck</option>
               <option value="Barril">Barril</option>
+              <option value="Outros">Outros (Cigarro, Isqueiro, etc)</option>
             </select>
           </div>
 
@@ -340,6 +341,7 @@ export default function EstoquePage() {
                     <option value="350ml">350ml</option>
                     <option value="400ml">400ml</option>
                     <option value="500ml">500ml</option>
+                    <option value="500ml">770ml</option>
                   </>
                 )}
                 {formData.material === 'Garrafa' && (
@@ -372,6 +374,14 @@ export default function EstoquePage() {
                     <option value="20L">20L</option>
                     <option value="30L">30L</option>
                     <option value="50L">50L</option>
+                  </>
+                )}
+                {formData.material === 'Outros' && (
+                  <>
+                    <option value="0g">0g (Sem tamanho específico)</option>
+                    <option value="Unidade">Unidade</option>
+                    <option value="Maço">Maço</option>
+                    <option value="Caixa">Caixa</option>
                   </>
                 )}
               </select>
