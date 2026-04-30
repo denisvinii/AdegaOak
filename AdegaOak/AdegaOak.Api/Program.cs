@@ -23,14 +23,34 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Database configuration - PostgreSQL (Supabase) only
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine("[DATABASE] Reading DATABASE_URL environment variable...");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+Console.WriteLine($"[DATABASE] DATABASE_URL from env: {(string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS")}");
+
+if (string.IsNullOrWhiteSpace(databaseUrl))
+{
+    Console.WriteLine("[DATABASE] DATABASE_URL is empty, trying appsettings.json...");
+    databaseUrl = builder.Configuration.GetConnectionString("DefaultConnection");
+    Console.WriteLine($"[DATABASE] DefaultConnection from config: {(string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS")}");
+}
 
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
     Console.WriteLine("[DATABASE] ❌ ERROR: DATABASE_URL not configured!");
     Console.WriteLine("[DATABASE] Please configure DATABASE_URL environment variable with your Supabase connection string.");
     Console.WriteLine("[DATABASE] Example: postgresql://postgres.xxxxx:password@aws-0-us-east-1.pooler.supabase.com:6543/postgres");
+    
+    // List all environment variables for debugging
+    Console.WriteLine("[DATABASE] Available environment variables:");
+    foreach (System.Collections.DictionaryEntry env in Environment.GetEnvironmentVariables())
+    {
+        if (env.Key.ToString().Contains("DATABASE", StringComparison.OrdinalIgnoreCase) ||
+            env.Key.ToString().Contains("CONNECTION", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine($"[DATABASE]   {env.Key} = {env.Value}");
+        }
+    }
+    
     throw new InvalidOperationException(
         "DATABASE_URL environment variable is required. " +
         "Please configure it with your Supabase PostgreSQL connection string.");
