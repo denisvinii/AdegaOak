@@ -37,6 +37,15 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<Produto> UpdateAsync(Produto produto)
     {
+        // Detach any existing tracked entity with the same ID
+        var existingEntity = db.ChangeTracker.Entries<Produto>()
+            .FirstOrDefault(e => e.Entity.Id == produto.Id);
+        
+        if (existingEntity != null)
+        {
+            db.Entry(existingEntity.Entity).State = EntityState.Detached;
+        }
+        
         db.Produtos.Update(produto);
         await db.SaveChangesAsync();
         return produto;

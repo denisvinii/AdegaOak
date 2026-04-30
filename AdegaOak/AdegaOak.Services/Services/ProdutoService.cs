@@ -47,19 +47,31 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
         var produto = await produtoRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Produto {id} não encontrado.");
 
-        // Update cost value
-        produto.Valor = request.Valor;
-
         // Validate minimum margin (10%)
         var margemMinima = request.Valor * 1.10m;
         if (request.ValorVenda < margemMinima)
             throw new InvalidOperationException($"Valor de venda deve ser no mínimo {margemMinima:C} (10% acima do custo).");
 
+        // Update cost value
+        produto.Valor = request.Valor;
         produto.ValorVenda = request.ValorVenda;
         produto.ValorCaixa = request.ValorCaixa;
         produto.ValorAtacadoCaixa = request.ValorAtacadoCaixa;
 
-        await produtoRepository.UpdateAsync(produto);
+        try
+        {
+            await produtoRepository.UpdateAsync(produto);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[PRODUTO_SERVICE] Erro ao atualizar produto {id}: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[PRODUTO_SERVICE] Inner exception: {ex.InnerException.Message}");
+            }
+            throw;
+        }
+
         var quantidade = await produtoRepository.GetQuantidadeAsync(id);
         return MapToDto(produto, quantidade);
     }

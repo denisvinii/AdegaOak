@@ -342,6 +342,33 @@ app.UseForwardedHeaders();
 // This ensures CORS headers are sent even if database fails
 app.UseCors("AllowFrontend");
 
+// Add middleware to ensure CORS headers are always present, even on errors
+app.Use(async (context, next) =>
+{
+    // Add CORS headers manually as a fallback
+    var origin = context.Request.Headers["Origin"].ToString();
+    if (!string.IsNullOrEmpty(origin) && 
+        (origin.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase) || 
+         origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
+         origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase)))
+    {
+        context.Response.Headers.Add("Access-Control-Allow-Origin", origin);
+        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+        context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+        context.Response.Headers.Add("Access-Control-Expose-Headers", "*");
+    }
+    
+    // Handle preflight requests
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 200;
+        return;
+    }
+    
+    await next();
+});
+
 // Apply migrations automatically on startup
 // DISABLED: Tables already created manually in Supabase
 /*

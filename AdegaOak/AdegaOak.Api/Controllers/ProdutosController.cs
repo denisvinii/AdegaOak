@@ -38,16 +38,29 @@ public class ProdutosController(IProdutoService produtoService) : ControllerBase
     {
         try
         {
+            Console.WriteLine($"[PRODUTOS] Atualizando preços do produto {id}");
+            Console.WriteLine($"[PRODUTOS] Valores recebidos: Custo={request.Valor}, Venda={request.ValorVenda}, Caixa={request.ValorCaixa}, Atacado={request.ValorAtacadoCaixa}");
+            
             var produto = await produtoService.UpdatePrecosAsync(id, request);
+            
+            Console.WriteLine($"[PRODUTOS] Preços atualizados com sucesso para produto {id}");
             return Ok(produto);
         }
         catch (KeyNotFoundException ex)
         {
+            Console.WriteLine($"[PRODUTOS] Produto {id} não encontrado: {ex.Message}");
             return NotFound(new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            Console.WriteLine($"[PRODUTOS] Validação falhou para produto {id}: {ex.Message}");
             return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[PRODUTOS] Erro inesperado ao atualizar produto {id}: {ex.Message}");
+            Console.WriteLine($"[PRODUTOS] Stack trace: {ex.StackTrace}");
+            return StatusCode(500, new { message = "Erro interno ao atualizar preços", details = ex.Message });
         }
     }
 
