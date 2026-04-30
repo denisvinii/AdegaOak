@@ -17,48 +17,40 @@ public class DashboardService(
     {
         try
         {
-            // Execute queries sequentially to avoid DbContext concurrency issues
+            // Get config first
             var config = await saldoRepository.GetConfigAsync();
 
+            // Execute all queries sequentially to avoid DbContext concurrency issues
             var movimentacoesEntrada = await db.Movimentacoes
                 .AsNoTracking()
                 .Where(m => m.Tipo == "Entrada")
-                .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-                .ToListAsync();
+                .SumAsync(m => (double)(m.ValorUnitario * m.Quantidade));
 
             var movimentacoesSaida = await db.Movimentacoes
                 .AsNoTracking()
                 .Where(m => m.Tipo == "Saída")
-                .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-                .ToListAsync();
+                .SumAsync(m => (double)(m.ValorUnitario * m.Quantidade));
 
             var despesasPagas = await db.Despesas
                 .AsNoTracking()
                 .Where(d => d.Pago)
-                .Select(d => (double)d.Valor)
-                .ToListAsync();
+                .SumAsync(d => (double)d.Valor);
 
             var comboVendas = await db.ComboVendas
                 .AsNoTracking()
-                .Select(cv => (double)cv.PrecoTotal)
-                .ToListAsync();
+                .SumAsync(cv => (double)cv.PrecoTotal);
 
-            var totalEntradas = movimentacoesEntrada.Any() ? movimentacoesEntrada.Sum() : 0.0;
-            var totalSaidas = movimentacoesSaida.Any() ? movimentacoesSaida.Sum() : 0.0;
-            var totalDespesasPagas = despesasPagas.Any() ? despesasPagas.Sum() : 0.0;
-            var totalComboVendas = comboVendas.Any() ? comboVendas.Sum() : 0.0;
-
-            var capitalEmpresa = (decimal)((totalSaidas - totalEntradas) + (double)config.CapitalAdmin - totalDespesasPagas + totalComboVendas);
-            var saldo = (decimal)((totalSaidas - totalEntradas) - totalDespesasPagas + totalComboVendas);
+            var capitalEmpresa = (decimal)((movimentacoesSaida - movimentacoesEntrada) + (double)config.CapitalAdmin - despesasPagas + comboVendas);
+            var saldo = (decimal)((movimentacoesSaida - movimentacoesEntrada) - despesasPagas + comboVendas);
 
             return new SaldoDto(
                 capitalEmpresa,
                 config.CapitalAdmin,
                 saldo,
-                (decimal)totalEntradas,
-                (decimal)totalSaidas,
-                (decimal)totalDespesasPagas,
-                (decimal)totalComboVendas
+                (decimal)movimentacoesEntrada,
+                (decimal)movimentacoesSaida,
+                (decimal)despesasPagas,
+                (decimal)comboVendas
             );
         }
         catch (Exception ex)

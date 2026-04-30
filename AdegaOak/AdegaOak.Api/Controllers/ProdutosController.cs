@@ -28,8 +28,19 @@ public class ProdutosController(IProdutoService produtoService) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProdutoDto>> Create([FromBody] CreateProdutoRequest request)
     {
-        var produto = await produtoService.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = produto.Id }, produto);
+        try
+        {
+            var produto = await produtoService.CreateAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = produto.Id }, produto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Erro interno ao criar produto", details = ex.Message });
+        }
     }
 
     [Authorize(Roles = "admin")]
