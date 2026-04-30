@@ -90,10 +90,19 @@ public class DashboardService(
         var dataFim = filtros.DataFim ?? DateTime.UtcNow;
         var mesAtual = DateTime.UtcNow;
 
-        // Vendas por dia (usando projeção)
-        var vendasPorDia = await db.Movimentacoes
+        // Vendas por dia - Buscar dados e agrupar em memória (compatível com PostgreSQL)
+        var movimentacoesVendas = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .Select(m => new
+            {
+                m.Data,
+                m.ValorUnitario,
+                m.Quantidade
+            })
+            .ToListAsync();
+
+        var vendasPorDiaDto = movimentacoesVendas
             .GroupBy(m => m.Data.Date)
             .Select(g => new VendasPorDiaDto(
                 g.Key,
@@ -101,7 +110,7 @@ public class DashboardService(
                 g.Sum(m => m.Quantidade)
             ))
             .OrderBy(v => v.Data)
-            .ToListAsync();
+            .ToList();
 
         // Top produtos (usando projeção para melhor performance)
         var topProdutos = await db.Movimentacoes
@@ -179,7 +188,7 @@ public class DashboardService(
 
         return new DashboardDto(
             saldo,
-            vendasPorDia,
+            vendasPorDiaDto,
             topProdutos,
             estoqueBaixo,
             despesasPorTipo,
