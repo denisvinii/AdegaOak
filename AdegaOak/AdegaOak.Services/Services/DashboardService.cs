@@ -20,24 +20,28 @@ public class DashboardService(
             .AsNoTracking()
             .Where(m => m.Tipo == "Entrada")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .SumAsync() ?? 0.0;
+            .DefaultIfEmpty(0)
+            .SumAsync();
 
         var totalSaidas = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .SumAsync() ?? 0.0;
+            .DefaultIfEmpty(0)
+            .SumAsync();
 
         var totalDespesasPagas = await db.Despesas
             .AsNoTracking()
             .Where(d => d.Pago)
             .Select(d => (double)d.Valor)
-            .SumAsync() ?? 0.0;
+            .DefaultIfEmpty(0)
+            .SumAsync();
 
         var totalComboVendas = await db.ComboVendas
             .AsNoTracking()
             .Select(cv => (double)cv.PrecoTotal)
-            .SumAsync() ?? 0.0;
+            .DefaultIfEmpty(0)
+            .SumAsync();
 
         var capitalEmpresa = (decimal)((totalSaidas - totalEntradas) + (double)config.CapitalAdmin - totalDespesasPagas + totalComboVendas);
         var saldo = (decimal)((totalSaidas - totalEntradas) - totalDespesasPagas + totalComboVendas);
@@ -82,12 +86,14 @@ public class DashboardService(
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data.Month == mesAtual.Month && m.Data.Year == mesAtual.Year)
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
+            .DefaultIfEmpty(0)
             .SumAsync();
 
         var despesasMesTask = db.Despesas
             .AsNoTracking()
             .Where(d => d.Data.Month == mesAtual.Month && d.Data.Year == mesAtual.Year && d.Pago)
             .Select(d => (double)d.Valor)
+            .DefaultIfEmpty(0)
             .SumAsync();
 
         var totalMovimentacoesMesTask = db.Movimentacoes
@@ -174,8 +180,8 @@ public class DashboardService(
             estoqueBaixo,
             despesasPorTipo,
             vendasPorUsuario,
-            (decimal)(await receitaMesTask ?? 0.0),
-            (decimal)(await despesasMesTask ?? 0.0),
+            (decimal)await receitaMesTask,
+            (decimal)await despesasMesTask,
             await totalMovimentacoesMesTask
         );
     }
