@@ -37,18 +37,47 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<Produto> UpdateAsync(Produto produto)
     {
-        // Detach any existing tracked entity with the same ID
-        var existingEntity = db.ChangeTracker.Entries<Produto>()
-            .FirstOrDefault(e => e.Entity.Id == produto.Id);
-        
-        if (existingEntity != null)
+        try
         {
-            db.Entry(existingEntity.Entity).State = EntityState.Detached;
+            // Detach any existing tracked entity with the same ID
+            var existingEntity = db.ChangeTracker.Entries<Produto>()
+                .FirstOrDefault(e => e.Entity.Id == produto.Id);
+            
+            if (existingEntity != null)
+            {
+                Console.WriteLine($"[REPOSITORY] Detaching existing entity for produto {produto.Id}");
+                db.Entry(existingEntity.Entity).State = EntityState.Detached;
+            }
+            
+            // Fix DateTime Kind for PostgreSQL (must be UTC)
+            if (produto.CriadoEm.Kind == DateTimeKind.Unspecified)
+            {
+                produto.CriadoEm = DateTime.SpecifyKind(produto.CriadoEm, DateTimeKind.Utc);
+            }
+            
+            Console.WriteLine($"[REPOSITORY] Updating produto {produto.Id}");
+            db.Produtos.Update(produto);
+            
+            Console.WriteLine($"[REPOSITORY] Saving changes...");
+            await db.SaveChangesAsync();
+            
+            Console.WriteLine($"[REPOSITORY] Produto {produto.Id} updated successfully");
+            return produto;
         }
-        
-        db.Produtos.Update(produto);
-        await db.SaveChangesAsync();
-        return produto;
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine($"[REPOSITORY] DbUpdateException for produto {produto.Id}: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[REPOSITORY] Inner exception: {ex.InnerException.Message}");
+            }
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[REPOSITORY] Unexpected exception for produto {produto.Id}: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task DeleteAsync(int id)

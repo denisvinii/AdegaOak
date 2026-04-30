@@ -129,12 +129,20 @@ export default function EstoquePage() {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
+        fullError: error,
       });
       
       let errorMessage = 'Erro ao atualizar preços';
       
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
+      } else if (error.response?.data?.details) {
+        errorMessage = `${error.response.data.message || 'Erro'}: ${error.response.data.details}`;
+      } else if (error.response?.data) {
+        // Se data for uma string
+        errorMessage = typeof error.response.data === 'string' 
+          ? error.response.data 
+          : JSON.stringify(error.response.data);
       } else if (error.response?.status === 401) {
         errorMessage = 'Não autorizado. Faça login novamente.';
       } else if (error.response?.status === 403) {
