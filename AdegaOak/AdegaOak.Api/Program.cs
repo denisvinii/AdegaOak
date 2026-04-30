@@ -26,9 +26,27 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (string.IsNullOrEmpty(databaseUrl))
+if (string.IsNullOrWhiteSpace(databaseUrl))
 {
-    throw new InvalidOperationException("DATABASE_URL environment variable is required");
+    Console.WriteLine("[DATABASE] ❌ ERROR: DATABASE_URL not configured!");
+    Console.WriteLine("[DATABASE] Please configure DATABASE_URL environment variable with your Supabase connection string.");
+    Console.WriteLine("[DATABASE] Example: postgresql://postgres.xxxxx:password@aws-0-us-east-1.pooler.supabase.com:6543/postgres");
+    throw new InvalidOperationException(
+        "DATABASE_URL environment variable is required. " +
+        "Please configure it with your Supabase PostgreSQL connection string.");
+}
+
+// Validate connection string format
+if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgres://") && 
+    !databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
+{
+    Console.WriteLine("[DATABASE] ❌ ERROR: Invalid connection string format!");
+    Console.WriteLine($"[DATABASE] Current value: {databaseUrl}");
+    Console.WriteLine("[DATABASE] Expected format: postgresql://user:password@host:port/database");
+    Console.WriteLine("[DATABASE] Or: Host=host;Database=db;Username=user;Password=pass");
+    throw new InvalidOperationException(
+        "DATABASE_URL has invalid format. " +
+        "Expected PostgreSQL connection string starting with 'postgresql://' or 'Host='");
 }
 
 Console.WriteLine("[DATABASE] Using PostgreSQL (Supabase)");
