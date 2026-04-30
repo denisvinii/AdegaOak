@@ -230,13 +230,14 @@ using (var scope = app.Services.CreateScope())
             var adminPassword = "Admin@123";
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11);
             
-            var adminUser = new AdegaOak.Models.Entities.Usuario
+            var adminUser = new AdegaOak.Models.Models.Usuario
             {
+                Nome = "Administrador",
                 Username = "admin",
                 PasswordHash = passwordHash,
                 Role = "admin",
                 Ativo = true,
-                DataCriacao = DateTime.UtcNow
+                CriadoEm = DateTime.UtcNow
             };
             
             db.Usuarios.Add(adminUser);
