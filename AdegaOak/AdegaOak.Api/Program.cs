@@ -85,58 +85,47 @@ if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgre
         "Expected PostgreSQL connection string starting with 'postgresql://' or 'Host='");
 }
 
-// URL-encode special characters in password if using URI format
+Console.WriteLine("[DATABASE] Using PostgreSQL (Supabase)");
+Console.WriteLine($"[DATABASE] Connection: {MaskConnectionString(databaseUrl)}");
+
+// Convert URI format to Npgsql connection string format
+string npgsqlConnectionString = databaseUrl;
+
 if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
 {
     try
     {
+        Console.WriteLine("[DATABASE] Converting URI format to Npgsql format...");
         var uri = new Uri(databaseUrl);
-        var userInfo = uri.UserInfo;
         
-        if (!string.IsNullOrEmpty(userInfo) && userInfo.Contains(':'))
-        {
-            var parts = userInfo.Split(':', 2);
-            var username = parts[0];
-            var password = parts[1];
-            
-            // Check if password contains special characters that need encoding
-            if (password.Contains('#') || password.Contains('@') || password.Contains('&') || 
-                password.Contains('=') || password.Contains('+') || password.Contains(' '))
-            {
-                Console.WriteLine("[DATABASE] ⚠️  Password contains special characters, URL-encoding...");
-                var encodedPassword = Uri.EscapeDataString(password);
-                
-                // Rebuild connection string with encoded password
-                var scheme = uri.Scheme;
-                var host = uri.Host;
-                var dbPort = uri.Port;
-                var database = uri.AbsolutePath.TrimStart('/');
-                
-                databaseUrl = $"{scheme}://{username}:{encodedPassword}@{host}:{dbPort}/{database}";
-                Console.WriteLine("[DATABASE] ✅ Password encoded successfully");
-            }
-        }
+        var host = uri.Host;
+        var port = uri.Port;
+        var database = uri.AbsolutePath.TrimStart('/');
+        var userInfo = uri.UserInfo.Split(':');
+        var username = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
+        
+        // Build Npgsql-compatible connection string
+        npgsqlConnectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        
+        Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
+        Console.WriteLine($"[DATABASE] Host: {host}");
+        Console.WriteLine($"[DATABASE] Port: {port}");
+        Console.WriteLine($"[DATABASE] Database: {database}");
+        Console.WriteLine($"[DATABASE] Username: {username}");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[DATABASE] ⚠️  Could not parse URI for password encoding: {ex.Message}");
-        Console.WriteLine("[DATABASE] Proceeding with original connection string...");
+        Console.WriteLine($"[DATABASE] ⚠️  Could not convert URI format: {ex.Message}");
+        Console.WriteLine("[DATABASE] Will try to use original format...");
     }
 }
-
-Console.WriteLine("[DATABASE] Using PostgreSQL (Supabase)");
-Console.WriteLine($"[DATABASE] Connection: {MaskConnectionString(databaseUrl)}");
 
 // Test connection string parsing before registering DbContext
 try
 {
     Console.WriteLine("[DATABASE] Testing connection string parsing...");
-    Console.WriteLine($"[DATABASE] Full connection string (masked): {MaskConnectionString(databaseUrl)}");
-    Console.WriteLine($"[DATABASE] String is null or empty: {string.IsNullOrEmpty(databaseUrl)}");
-    Console.WriteLine($"[DATABASE] String is whitespace: {string.IsNullOrWhiteSpace(databaseUrl)}");
-    
-    // Try to parse with NpgsqlConnectionStringBuilder
-    var testBuilder = new Npgsql.NpgsqlConnectionStringBuilder(databaseUrl);
+    var testBuilder = new Npgsql.NpgsqlConnectionStringBuilder(npgsqlConnectionString);
     Console.WriteLine($"[DATABASE] ✅ Connection string parsed successfully");
     Console.WriteLine($"[DATABASE] Host: {testBuilder.Host}");
     Console.WriteLine($"[DATABASE] Port: {testBuilder.Port}");
@@ -149,20 +138,12 @@ catch (Exception ex)
     Console.WriteLine($"[DATABASE] ❌ ERROR parsing connection string!");
     Console.WriteLine($"[DATABASE] Exception Type: {ex.GetType().FullName}");
     Console.WriteLine($"[DATABASE] Exception Message: {ex.Message}");
-    Console.WriteLine($"[DATABASE] Connection string length: {databaseUrl?.Length ?? 0}");
-    
-    if (!string.IsNullOrEmpty(databaseUrl))
-    {
-        Console.WriteLine($"[DATABASE] First 50 chars: {(databaseUrl.Length >= 50 ? databaseUrl.Substring(0, 50) : databaseUrl)}");
-        Console.WriteLine($"[DATABASE] Contains special chars: # = {databaseUrl.Contains('#')}, @ = {databaseUrl.Contains('@')}, & = {databaseUrl.Contains('&')}");
-    }
+    Console.WriteLine($"[DATABASE] Connection string length: {npgsqlConnectionString?.Length ?? 0}");
     
     if (ex.InnerException != null)
     {
         Console.WriteLine($"[DATABASE] Inner Exception: {ex.InnerException.Message}");
     }
-    
-    Console.WriteLine($"[DATABASE] Stack Trace: {ex.StackTrace}");
     
     throw new InvalidOperationException(
         $"Failed to parse DATABASE_URL connection string: {ex.Message}. " +
@@ -174,7 +155,7 @@ Console.WriteLine("[DATABASE] Registering DbContext with Entity Framework...");
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
 {
     Console.WriteLine("[DATABASE] DbContext factory called, using connection string");
-    options.UseNpgsql(databaseUrl);
+    options.UseNpgsql(npgsqlConnectionString);
 });
 
 // Helper function to mask sensitive connection string data
