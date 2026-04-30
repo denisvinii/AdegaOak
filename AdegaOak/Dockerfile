@@ -26,11 +26,8 @@ WORKDIR /app
 
 COPY --from=build /app/out .
 
-# Copy the pre-initialized database file if it exists
-# This ensures the database with tables and admin user is available
-COPY --from=build /src/AdegaOak.Api/adegaoak.db /app/adegaoak.db 2>/dev/null || true
-
 # ASPNETCORE_URLS is set at runtime by Railway via PORT env var
 # The app reads PORT directly in Program.cs
+# Database will be created automatically by EF Core migrations on startup
 
 ENTRYPOINT ["dotnet", "AdegaOak.Api.dll"]

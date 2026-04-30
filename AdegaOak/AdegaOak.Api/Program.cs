@@ -183,9 +183,7 @@ var app = builder.Build();
 // Use forwarded headers from Railway proxy
 app.UseForwardedHeaders();
 
-// Migrate database only — no seeding.
-// The admin user must be inserted directly in the database.
-// See: Database/README_DATABASE.md for instructions.
+// Migrate database and seed admin user if needed
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdegaOakDbContext>();
@@ -224,10 +222,34 @@ using (var scope = app.Services.CreateScope())
         var usuariosCount = db.Usuarios.Count();
         Console.WriteLine($"[DATABASE] Usuarios count: {usuariosCount}");
         
+        // Seed admin user if no users exist
         if (usuariosCount == 0)
         {
-            Console.WriteLine("[DATABASE] ⚠️  WARNING: No users found in database!");
-            Console.WriteLine("[DATABASE] You need to create an admin user to login.");
+            Console.WriteLine("[DATABASE] No users found. Creating default admin user...");
+            
+            var adminPassword = "Admin@123";
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11);
+            
+            var adminUser = new AdegaOak.Models.Entities.Usuario
+            {
+                Username = "admin",
+                PasswordHash = passwordHash,
+                Role = "admin",
+                Ativo = true,
+                DataCriacao = DateTime.UtcNow
+            };
+            
+            db.Usuarios.Add(adminUser);
+            db.SaveChanges();
+            
+            Console.WriteLine("[DATABASE] ✅ Admin user created successfully!");
+            Console.WriteLine("[DATABASE]    Username: admin");
+            Console.WriteLine("[DATABASE]    Password: Admin@123");
+            Console.WriteLine("[DATABASE]    ⚠️  IMPORTANT: Change password after first login!");
+        }
+        else
+        {
+            Console.WriteLine("[DATABASE] ✅ Users found in database");
         }
     }
     catch (Exception ex)
