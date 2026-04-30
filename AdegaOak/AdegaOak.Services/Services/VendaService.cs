@@ -57,18 +57,28 @@ public class VendaService(AdegaOakDbContext db) : IVendaService
             }
 
             // Criar as movimentações para cada item
-            var movimentacoes = request.Itens.Select(item => new Movimentacao
+            var movimentacoes = request.Itens.Select(item =>
             {
-                Data = venda.Data,
-                Tipo = "Saída",
-                TipoVenda = item.TipoVenda,
-                ProdutoId = item.ProdutoId,
-                ProdutoDescricao = produtos[item.ProdutoId].Descricao,
-                Quantidade = item.Quantidade,
-                UsuarioId = usuarioId,
-                Responsavel = responsavel,
-                ValorUnitario = item.ValorUnitario,
-                VendaId = venda.Id
+                var produto = produtos[item.ProdutoId];
+                
+                // Se for Caixa ou Atacado, multiplicar pela quantidade de unidades na caixa
+                var quantidadeReal = (item.TipoVenda == "Caixa" || item.TipoVenda == "Atacado")
+                    ? item.Quantidade * produto.QuantidadeCaixa
+                    : item.Quantidade;
+
+                return new Movimentacao
+                {
+                    Data = venda.Data,
+                    Tipo = "Saída",
+                    TipoVenda = item.TipoVenda,
+                    ProdutoId = item.ProdutoId,
+                    ProdutoDescricao = produto.Descricao,
+                    Quantidade = quantidadeReal,
+                    UsuarioId = usuarioId,
+                    Responsavel = responsavel,
+                    ValorUnitario = item.ValorUnitario,
+                    VendaId = venda.Id
+                };
             }).ToList();
 
             db.Movimentacoes.AddRange(movimentacoes);

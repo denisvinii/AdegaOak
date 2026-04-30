@@ -30,7 +30,7 @@ export default function VendasPage() {
   // Dados do produto sendo adicionado
   const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoDto | null>(null);
   const [quantidade, setQuantidade] = useState(1);
-  const [tipoVenda, setTipoVenda] = useState<'Varejo' | 'Atacado'>('Varejo');
+  const [tipoVenda, setTipoVenda] = useState<'Varejo' | 'Atacado' | 'Caixa'>('Varejo');
   
   // Formas de pagamento
   const [valorDinheiro, setValorDinheiro] = useState('');
@@ -107,22 +107,42 @@ export default function VendasPage() {
   const adicionarAoCarrinho = () => {
     if (!produtoSelecionado) return;
 
+    // Calcular quantidade real de unidades que será retirada do estoque
+    const quantidadeReal = (tipoVenda === 'Caixa' || tipoVenda === 'Atacado')
+      ? quantidade * produtoSelecionado.quantidadeCaixa
+      : quantidade;
+
     // Copos não precisam validar estoque (são apenas venda)
     if (!ignoraEstoque(produtoSelecionado)) {
       const estoqueAtual = getEstoqueProduto(produtoSelecionado.id);
       const quantidadeNoCarrinho = carrinho
         .filter(item => item.produto.id === produtoSelecionado.id)
-        .reduce((acc, item) => acc + item.quantidade, 0);
+        .reduce((acc, item) => {
+          // Calcular quantidade real de cada item no carrinho
+          const qtdReal = (item.tipoVenda === 'Caixa' || item.tipoVenda === 'Atacado')
+            ? item.quantidade * item.produto.quantidadeCaixa
+            : item.quantidade;
+          return acc + qtdReal;
+        }, 0);
 
-      if (quantidadeNoCarrinho + quantidade > estoqueAtual) {
-        toast.warning(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeNoCarrinho}`);
+      if (quantidadeNoCarrinho + quantidadeReal > estoqueAtual) {
+        const disponivelUnidades = estoqueAtual - quantidadeNoCarrinho;
+        const disponivelCaixas = Math.floor(disponivelUnidades / produtoSelecionado.quantidadeCaixa);
+        
+        if (tipoVenda === 'Caixa' || tipoVenda === 'Atacado') {
+          toast.warning(`Estoque insuficiente! Disponível: ${disponivelCaixas} caixa(s) (${disponivelUnidades} unidades)`);
+        } else {
+          toast.warning(`Estoque insuficiente! Disponível: ${disponivelUnidades} unidade(s)`);
+        }
         return;
       }
     }
 
     const valorUnitario = tipoVenda === 'Varejo' 
       ? produtoSelecionado.valorVenda 
-      : produtoSelecionado.valorAtacadoCaixa;
+      : tipoVenda === 'Atacado'
+      ? produtoSelecionado.valorAtacadoCaixa
+      : produtoSelecionado.valorCaixa;
 
     const itemExistente = carrinho.find(
       item => item.produto.id === produtoSelecionado.id && item.tipoVenda === tipoVenda
@@ -157,15 +177,32 @@ export default function VendasPage() {
     
     const item = carrinho[index];
     
+    // Calcular quantidade real de unidades
+    const quantidadeReal = (item.tipoVenda === 'Caixa' || item.tipoVenda === 'Atacado')
+      ? novaQuantidade * item.produto.quantidadeCaixa
+      : novaQuantidade;
+    
     // Copos não precisam validar estoque (são apenas venda)
     if (!ignoraEstoque(item.produto)) {
       const estoqueAtual = getEstoqueProduto(item.produto.id);
       const quantidadeOutrosItens = carrinho
         .filter((_, i) => i !== index && carrinho[i].produto.id === item.produto.id)
-        .reduce((acc, item) => acc + item.quantidade, 0);
+        .reduce((acc, outroItem) => {
+          const qtdReal = (outroItem.tipoVenda === 'Caixa' || outroItem.tipoVenda === 'Atacado')
+            ? outroItem.quantidade * outroItem.produto.quantidadeCaixa
+            : outroItem.quantidade;
+          return acc + qtdReal;
+        }, 0);
 
-      if (novaQuantidade + quantidadeOutrosItens > estoqueAtual) {
-        toast.warning(`Estoque insuficiente! Disponível: ${estoqueAtual - quantidadeOutrosItens}`);
+      if (quantidadeReal + quantidadeOutrosItens > estoqueAtual) {
+        const disponivelUnidades = estoqueAtual - quantidadeOutrosItens;
+        const disponivelCaixas = Math.floor(disponivelUnidades / item.produto.quantidadeCaixa);
+        
+        if (item.tipoVenda === 'Caixa' || item.tipoVenda === 'Atacado') {
+          toast.warning(`Estoque insuficiente! Disponível: ${disponivelCaixas} caixa(s) (${disponivelUnidades} unidades)`);
+        } else {
+          toast.warning(`Estoque insuficiente! Disponível: ${disponivelUnidades} unidade(s)`);
+        }
         return;
       }
     }
@@ -592,8 +629,14 @@ export default function VendasPage() {
               <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2">
                 {produtoSelecionado.descricao}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Estoque disponível: <span className="font-semibold">{getEstoqueProduto(produtoSelecionado.id)}</span>
+              {!ignoraEstoque(produtoSelecionado) && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Estoque disponível: <span className="font-semibold">{getEstoqueProduto(produtoSelecionado.id)} unidades</span>
+                  {' '}({Math.floor(getEstoqueProduto(produtoSelecionado.id) / produtoSelecionado.quantidadeCaixa)} caixas)
+                </p>
+              )}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Caixa contém: {produtoSelecionado.quantidadeCaixa} unidades
               </p>
             </div>
 
@@ -601,7 +644,7 @@ export default function VendasPage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Tipo de Venda
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setTipoVenda('Varejo')}
                   className={`p-3 rounded-lg border-2 transition ${
@@ -610,8 +653,8 @@ export default function VendasPage() {
                       : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
-                  <p className="font-semibold text-gray-900 dark:text-white">Varejo</p>
-                  <p className="text-sm text-green-600 dark:text-green-400">
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Varejo</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">
                     R$ {produtoSelecionado.valorVenda.toFixed(2)}
                   </p>
                 </button>
@@ -623,9 +666,22 @@ export default function VendasPage() {
                       : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
-                  <p className="font-semibold text-gray-900 dark:text-white">Atacado</p>
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Atacado</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">
                     R$ {produtoSelecionado.valorAtacadoCaixa.toFixed(2)}
+                  </p>
+                </button>
+                <button
+                  onClick={() => setTipoVenda('Caixa')}
+                  className={`p-3 rounded-lg border-2 transition ${
+                    tipoVenda === 'Caixa'
+                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                      : 'border-gray-300 dark:border-gray-600'
+                  }`}
+                >
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Caixa</p>
+                  <p className="text-xs text-purple-600 dark:text-purple-400">
+                    R$ {produtoSelecionado.valorCaixa.toFixed(2)}
                   </p>
                 </button>
               </div>
@@ -633,22 +689,26 @@ export default function VendasPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Quantidade
+                Quantidade {(tipoVenda === 'Caixa' || tipoVenda === 'Atacado') ? 'de Caixas' : 'de Unidades'}
               </label>
               <input
                 type="number"
                 min="1"
-                max={getEstoqueProduto(produtoSelecionado.id)}
                 value={quantidade}
                 onChange={(e) => setQuantidade(parseInt(e.target.value) || 1)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
+              {(tipoVenda === 'Caixa' || tipoVenda === 'Atacado') && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  = {quantidade * produtoSelecionado.quantidadeCaixa} unidades
+                </p>
+              )}
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Subtotal: <span className="font-bold text-gray-900 dark:text-white text-lg">
-                  R$ {(quantidade * (tipoVenda === 'Varejo' ? produtoSelecionado.valorVenda : produtoSelecionado.valorAtacadoCaixa)).toFixed(2)}
+                  R$ {(quantidade * (tipoVenda === 'Varejo' ? produtoSelecionado.valorVenda : tipoVenda === 'Atacado' ? produtoSelecionado.valorAtacadoCaixa : produtoSelecionado.valorCaixa)).toFixed(2)}
                 </span>
               </p>
             </div>

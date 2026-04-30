@@ -101,16 +101,10 @@ public class ProdutoService(
                 $"Valor de atacado (R$ {request.ValorAtacadoCaixa:F2}) deve ser menor que o valor da caixa (R$ {request.ValorCaixa:F2}) para oferecer desconto.");
         }
 
-        // Validação 8: Estoque mínimo não pode ser negativo
+        // Validação 9: Estoque mínimo não pode ser negativo
         if (request.EstoqueMinimo < 0)
         {
             throw new InvalidOperationException("Estoque mínimo não pode ser negativo.");
-        }
-
-        // Validação 9: Quantidade mínima para atacado deve ser >= 1
-        if (request.QuantidadeMinimaAtacado < 1)
-        {
-            throw new InvalidOperationException("Quantidade mínima para atacado deve ser no mínimo 1.");
         }
 
         var produto = new Produto
@@ -123,8 +117,7 @@ public class ProdutoService(
             QuantidadeCaixa = request.QuantidadeCaixa,
             ValorCaixa = request.ValorCaixa,
             ValorAtacadoCaixa = request.ValorAtacadoCaixa,
-            EstoqueMinimo = request.EstoqueMinimo,
-            QuantidadeMinimaAtacado = request.QuantidadeMinimaAtacado
+            EstoqueMinimo = request.EstoqueMinimo
         };
 
         await produtoRepository.CreateAsync(produto);

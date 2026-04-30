@@ -25,7 +25,7 @@ export interface VendaDto {
 export interface ItemCarrinho {
   produto: ProdutoDto;
   quantidade: number;
-  tipoVenda: 'Varejo' | 'Atacado';
+  tipoVenda: 'Varejo' | 'Atacado' | 'Caixa';
   valorUnitario: number;
   valorTotal: number;
 }
