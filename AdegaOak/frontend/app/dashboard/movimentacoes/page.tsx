@@ -2,15 +2,25 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Filter } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
+import Modal from '@/components/Modal';
 
 export default function MovimentacoesPage() {
   const [movimentacoes, setMovimentacoes] = useState<any[]>([]);
+  const [produtos, setProdutos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroTipo, setFiltroTipo] = useState('Todos');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    produtoId: '',
+    quantidade: '',
+    valorUnitario: '',
+  });
 
   useEffect(() => {
     loadMovimentacoes();
+    loadProdutos();
   }, []);
 
   const loadMovimentacoes = async () => {
@@ -22,6 +32,45 @@ export default function MovimentacoesPage() {
       setMovimentacoes([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProdutos = async () => {
+    try {
+      const { data } = await api.get('/produtos');
+      setProdutos(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      await api.post('/movimentacoes', {
+        tipo: 'Entrada',
+        tipoVenda: 'Varejo',
+        produtoId: parseInt(formData.produtoId),
+        quantidade: parseInt(formData.quantidade),
+        valorUnitario: parseFloat(formData.valorUnitario),
+      });
+
+      setFormData({
+        produtoId: '',
+        quantidade: '',
+        valorUnitario: '',
+      });
+
+      setModalOpen(false);
+      loadMovimentacoes();
+      alert('Entrada registrada com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao registrar entrada:', error);
+      alert(error.response?.data?.message || 'Erro ao registrar entrada');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -46,6 +95,13 @@ export default function MovimentacoesPage() {
             Histórico de entradas e saídas de estoque
           </p>
         </div>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition"
+        >
+          <Plus size={20} />
+          Cadastrar Entrada
+        </button>
       </div>
 
       {/* Filters */}
@@ -134,6 +190,90 @@ export default function MovimentacoesPage() {
           </div>
         )}
       </div>
+
+      {/* Modal Cadastrar Entrada */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Cadastrar Entrada de Estoque"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Produto *
+            </label>
+            <select
+              required
+              value={formData.produtoId}
+              onChange={(e) => setFormData({ ...formData, produtoId: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="">Selecione um produto</option>
+              {(produtos || []).map((produto) => (
+                <option key={produto.id} value={produto.id}>
+                  {produto?.descricao || 'Produto'}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Quantidade *
+            </label>
+            <input
+              type="number"
+              required
+              min="1"
+              value={formData.quantidade}
+              onChange={(e) => setFormData({ ...formData, quantidade: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Valor de Custo (Unitário) *
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              min="0"
+              value={formData.valorUnitario}
+              onChange={(e) => setFormData({ ...formData, valorUnitario: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Valor Total: <span className="font-bold text-gray-900 dark:text-white">
+                R$ {(parseFloat(formData.quantidade || '0') * parseFloat(formData.valorUnitario || '0')).toFixed(2)}
+              </span>
+            </p>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition"
+            >
+              {saving ? 'Salvando...' : 'Salvar Entrada'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

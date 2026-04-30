@@ -9,4 +9,5 @@ public interface IProdutoService
     Task<ProdutoDto> CreateAsync(CreateProdutoRequest request);
     Task<ProdutoDto> UpdatePrecosAsync(int id, UpdatePrecosRequest request);
     Task DeleteAsync(int id);
+    Task<List<EstoqueProdutoDto>> GetEstoqueAsync();
 }

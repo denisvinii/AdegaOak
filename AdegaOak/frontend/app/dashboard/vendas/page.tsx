@@ -77,8 +77,11 @@ export default function VendasPage() {
   };
 
   const produtosFiltrados = produtos.filter(p =>
-    p.descricao.toLowerCase().includes(busca.toLowerCase())
+    busca === '' || p.descricao.toLowerCase().includes(busca.toLowerCase())
   );
+
+  // Limitar a 10 produtos quando não há busca (para não pesar a tela)
+  const produtosExibidos = busca === '' ? produtosFiltrados.slice(0, 10) : produtosFiltrados;
 
   const abrirModalProduto = (produto: Produto) => {
     const estoqueAtual = getEstoqueProduto(produto.id);
@@ -266,65 +269,78 @@ export default function VendasPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {produtosFiltrados.map(produto => {
-              const estoqueAtual = getEstoqueProduto(produto.id);
-              const semEstoque = estoqueAtual === 0;
-              const estoqueBaixo = estoqueAtual > 0 && estoqueAtual <= 5;
+            {produtosExibidos.length === 0 && busca === '' ? (
+              <div className="col-span-2 text-center py-12 text-gray-500 dark:text-gray-400">
+                Carregando produtos...
+              </div>
+            ) : produtosExibidos.length === 0 ? (
+              <div className="col-span-2 text-center py-12 text-gray-500 dark:text-gray-400">
+                Nenhum produto encontrado para "{busca}"
+              </div>
+            ) : (
+              produtosExibidos.map(produto => {
+                const estoqueAtual = getEstoqueProduto(produto.id);
+                const semEstoque = estoqueAtual === 0;
+                const estoqueBaixo = estoqueAtual > 0 && estoqueAtual <= 5;
 
-              return (
-                <div
-                  key={produto.id}
-                  onClick={() => !semEstoque && abrirModalProduto(produto)}
-                  className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border-2 transition ${
-                    semEstoque
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20 cursor-not-allowed opacity-60'
-                      : estoqueBaixo
-                      ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 cursor-pointer hover:shadow-md'
-                      : 'border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {produto.descricao}
-                    </h3>
-                    {semEstoque && (
-                      <AlertTriangle className="text-red-600 flex-shrink-0" size={20} />
-                    )}
-                    {estoqueBaixo && (
-                      <AlertTriangle className="text-yellow-600 flex-shrink-0" size={20} />
-                    )}
-                  </div>
-                  
-                  <div className="space-y-1 text-sm mb-2">
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Varejo: <span className="font-semibold text-green-600 dark:text-green-400">
-                        R$ {produto.valorVenda.toFixed(2)}
-                      </span>
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Atacado: <span className="font-semibold text-blue-600 dark:text-blue-400">
-                        R$ {produto.valorAtacadoCaixa.toFixed(2)}
-                      </span>
-                    </p>
-                  </div>
+                return (
+                  <div
+                    key={produto.id}
+                    onClick={() => !semEstoque && abrirModalProduto(produto)}
+                    className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border-2 transition ${
+                      semEstoque
+                        ? 'border-red-500 bg-red-50 dark:bg-red-900/20 cursor-not-allowed opacity-60'
+                        : estoqueBaixo
+                        ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 cursor-pointer hover:shadow-md'
+                        : 'border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {produto.descricao}
+                      </h3>
+                      {semEstoque && (
+                        <AlertTriangle className="text-red-600 flex-shrink-0" size={20} />
+                      )}
+                      {estoqueBaixo && (
+                        <AlertTriangle className="text-yellow-600 flex-shrink-0" size={20} />
+                      )}
+                    </div>
+                    
+                    <div className="space-y-1 text-sm mb-2">
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Varejo: <span className="font-semibold text-green-600 dark:text-green-400">
+                          R$ {produto.valorVenda.toFixed(2)}
+                        </span>
+                      </p>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Atacado: <span className="font-semibold text-blue-600 dark:text-blue-400">
+                          R$ {produto.valorAtacadoCaixa.toFixed(2)}
+                        </span>
+                      </p>
+                    </div>
 
-                  <div className={`text-xs font-semibold ${
-                    semEstoque
-                      ? 'text-red-600 dark:text-red-400'
-                      : estoqueBaixo
-                      ? 'text-yellow-600 dark:text-yellow-400'
-                      : 'text-gray-600 dark:text-gray-400'
-                  }`}>
-                    {semEstoque ? '❌ SEM ESTOQUE' : `📦 Estoque: ${estoqueAtual}`}
+                    <div className={`text-xs font-semibold ${
+                      semEstoque
+                        ? 'text-red-600 dark:text-red-400'
+                        : estoqueBaixo
+                        ? 'text-yellow-600 dark:text-yellow-400'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}>
+                      {semEstoque ? '❌ SEM ESTOQUE' : `📦 Estoque: ${estoqueAtual}`}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
-          {produtosFiltrados.length === 0 && (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-              Nenhum produto encontrado
+          {/* Aviso quando há mais produtos disponíveis */}
+          {busca === '' && produtos.length > 10 && (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Mostrando 10 de {produtos.length} produtos. Use a busca para encontrar mais produtos.
+              </p>
             </div>
           )}
         </div>

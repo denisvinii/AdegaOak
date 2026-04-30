@@ -69,4 +69,11 @@ public class ProdutosController(IProdutoService produtoService) : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpGet("estoque")]
+    public async Task<ActionResult<List<EstoqueProdutoDto>>> GetEstoque()
+    {
+        var estoque = await produtoService.GetEstoqueAsync();
+        return Ok(estoque);
+    }
 }

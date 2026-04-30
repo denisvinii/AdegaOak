@@ -70,6 +70,12 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
         await produtoRepository.DeleteAsync(id);
     }
 
+    public async Task<List<EstoqueProdutoDto>> GetEstoqueAsync()
+    {
+        var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
+        return estoque.Select(e => new EstoqueProdutoDto(e.Produto.Id, e.Quantidade)).ToList();
+    }
+
     private static ProdutoDto MapToDto(Produto p, int quantidade) =>
         new(
             p.Id,

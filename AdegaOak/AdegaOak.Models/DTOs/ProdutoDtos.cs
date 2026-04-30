@@ -36,3 +36,8 @@ public record UpdatePrecosRequest(
     decimal ValorCaixa,
     decimal ValorAtacadoCaixa
 );
+
+public record EstoqueProdutoDto(
+    int ProdutoId,
+    int Quantidade
+);
