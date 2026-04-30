@@ -20,7 +20,6 @@ public class DespesaRepository(AdegaOakDbContext db) : IDespesaRepository
     public async Task<List<Despesa>> GetAllAsync() =>
         await db.Despesas
             .AsNoTracking()
-            .Include(d => d.Produto)
             .OrderByDescending(d => d.Data)
             .Take(1000) // Limit to last 1000 records for performance
             .ToListAsync();
@@ -56,7 +55,6 @@ public class DespesaRepository(AdegaOakDbContext db) : IDespesaRepository
     public async Task<List<Despesa>> GetByPeriodoAsync(int mes, int ano) =>
         await db.Despesas
             .AsNoTracking()
-            .Include(d => d.Produto)
             .Where(d => d.Data.Month == mes && d.Data.Year == ano)
             .OrderByDescending(d => d.Data)
             .ToListAsync();

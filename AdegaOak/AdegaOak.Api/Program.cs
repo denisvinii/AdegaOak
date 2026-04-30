@@ -105,8 +105,8 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
         var username = userInfo[0];
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         
-        // Build Npgsql-compatible connection string
-        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;Timeout=30;Command Timeout=30";
+        // Build Npgsql-compatible connection string with increased timeouts
+        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=60;Keepalive=30;TCP Keepalive=true;TCP Keepalive Time=30;TCP Keepalive Interval=10";
         
         Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
         Console.WriteLine($"[DATABASE] Host: {host}");
@@ -255,35 +255,28 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        var allowedOriginsEnv = Environment.GetEnvironmentVariable("AllowedOrigins")
-            ?? builder.Configuration["AllowedOrigins"];
-
-        if (!string.IsNullOrEmpty(allowedOriginsEnv))
-        {
-            var origins = allowedOriginsEnv.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            Console.WriteLine($"[CORS] Configured origins from env: {string.Join(", ", origins)}");
-            policy.WithOrigins(origins)
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials()
-                  .SetIsOriginAllowed(_ => true); // Allow during preflight
-        }
-        else
-        {
-            Console.WriteLine("[CORS] No AllowedOrigins env var found, using fallback pattern matching");
-            // Fallback: allow all vercel.app and localhost origins
-            policy.SetIsOriginAllowed(origin =>
+        // Always use pattern matching to allow all Vercel deployments
+        // This includes production, preview, and git branch deployments
+        policy.SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrEmpty(origin))
                 {
-                    var allowed = origin.EndsWith(".vercel.app") || 
-                                  origin.StartsWith("http://localhost") ||
-                                  origin.StartsWith("https://localhost");
-                    Console.WriteLine($"[CORS] Origin check: {origin} -> {allowed}");
-                    return allowed;
-                })
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        }
+                    Console.WriteLine("[CORS] Origin is null or empty -> DENIED");
+                    return false;
+                }
+
+                var allowed = origin.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase) || 
+                              origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
+                              origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase);
+                
+                Console.WriteLine($"[CORS] Origin: {origin} -> {(allowed ? "ALLOWED" : "DENIED")}");
+                return allowed;
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        
+        Console.WriteLine("[CORS] Policy configured: Allow all *.vercel.app and localhost origins");
     });
 });
 
@@ -396,6 +389,6 @@ app.MapControllers();
 
 Console.WriteLine("[STARTUP] Application started successfully");
 Console.WriteLine($"[STARTUP] Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine($"[STARTUP] AllowedOrigins: {Environment.GetEnvironmentVariable("AllowedOrigins") ?? "Not set (using fallback)"}");
+Console.WriteLine("[STARTUP] CORS: Allowing all *.vercel.app and localhost origins");
 
 app.Run();

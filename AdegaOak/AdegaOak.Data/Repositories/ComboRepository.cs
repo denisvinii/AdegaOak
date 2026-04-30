@@ -82,8 +82,6 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
     {
         var query = db.ComboVendas
             .AsNoTracking()
-            .Include(cv => cv.Combo)
-            .Include(cv => cv.Usuario)
             .AsQueryable();
 
         if (comboId.HasValue)

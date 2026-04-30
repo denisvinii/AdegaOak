@@ -18,8 +18,6 @@ public class MovimentacaoRepository(AdegaOakDbContext db) : IMovimentacaoReposit
     public async Task<List<Movimentacao>> GetAllAsync() =>
         await db.Movimentacoes
             .AsNoTracking()
-            .Include(m => m.Produto)
-            .Include(m => m.Usuario)
             .OrderByDescending(m => m.Data)
             .Take(1000) // Limit to last 1000 records for performance
             .ToListAsync();
@@ -56,8 +54,6 @@ public class MovimentacaoRepository(AdegaOakDbContext db) : IMovimentacaoReposit
     {
         var query = db.Movimentacoes
             .AsNoTracking()
-            .Include(m => m.Produto)
-            .Include(m => m.Usuario)
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(tipo))
