@@ -105,8 +105,15 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
         var username = userInfo[0];
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         
-        // Build Npgsql-compatible connection string with increased timeouts
-        npgsqlConnectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true;Timeout=60;Command Timeout=60;Keepalive=30;TCP Keepalive=true;TCP Keepalive Time=30;TCP Keepalive Interval=10";
+        // Build Npgsql-compatible connection string with robust settings for Supabase
+        // Use Session Pooler (port 5432) instead of Transaction Pooler (6543) for better stability
+        var useSessionPooler = dbPort == 6543; // Auto-detect if using transaction pooler
+        var finalPort = useSessionPooler ? 5432 : dbPort; // Switch to session pooler
+        
+        npgsqlConnectionString = $"Host={host};Port={finalPort};Database={database};Username={username};Password={password};SSL Mode=Require;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Idle Lifetime=300;Connection Pruning Interval=10;Timeout=60;Command Timeout=60;Keepalive=30;TCP Keepalive=true;TCP Keepalive Time=30;TCP Keepalive Interval=10";
+        
+        Console.WriteLine($"[DATABASE] ⚠️  Detected Transaction Pooler (port 6543), switching to Session Pooler (port 5432) for better stability");
+        Console.WriteLine($"[DATABASE] Final port: {finalPort}");
         
         Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
         Console.WriteLine($"[DATABASE] Host: {host}");
@@ -155,7 +162,18 @@ Console.WriteLine("[DATABASE] Registering DbContext with Entity Framework...");
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
 {
     Console.WriteLine("[DATABASE] DbContext factory called, using connection string");
-    options.UseNpgsql(npgsqlConnectionString);
+    options.UseNpgsql(npgsqlConnectionString, npgsqlOptions =>
+    {
+        // Enable retry on transient failures (network issues, timeouts)
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null
+        );
+        
+        // Set command timeout
+        npgsqlOptions.CommandTimeout(60);
+    });
 });
 
 // Helper function to mask sensitive connection string data
