@@ -82,8 +82,9 @@ export default function VendasPage() {
     busca === '' || p.descricao.toLowerCase().includes(busca.toLowerCase())
   );
 
-  // Limitar a 10 produtos quando não há busca (para não pesar a tela)
-  const produtosExibidos = busca === '' ? produtosFiltrados.slice(0, 10) : produtosFiltrados;
+  // Limitar a 2 produtos quando não há busca (para performance)
+  // Mostra os 2 produtos mais recentes (últimos cadastrados)
+  const produtosExibidos = busca === '' ? produtosFiltrados.slice(0, 2) : produtosFiltrados;
 
   const abrirModalProduto = (produto: Produto) => {
     const estoqueAtual = getEstoqueProduto(produto.id);
@@ -338,10 +339,10 @@ export default function VendasPage() {
           </div>
 
           {/* Aviso quando há mais produtos disponíveis */}
-          {busca === '' && produtos.length > 10 && (
+          {busca === '' && produtos.length > 2 && (
             <div className="text-center py-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Mostrando 10 de {produtos.length} produtos. Use a busca para encontrar mais produtos.
+                Mostrando 2 de {produtos.length} produtos. Use a busca para encontrar mais produtos.
               </p>
             </div>
           )}
