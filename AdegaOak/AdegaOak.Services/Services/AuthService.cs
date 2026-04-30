@@ -16,14 +16,41 @@ public class AuthService(
 {
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        var usuario = await usuarioRepository.GetByUsernameAsync(request.Username)
-            ?? throw new UnauthorizedAccessException("Credenciais inválidas.");
+        Console.WriteLine($"[AUTH] Login attempt for username: {request.Username}");
+        
+        try
+        {
+            var usuario = await usuarioRepository.GetByUsernameAsync(request.Username);
+            
+            if (usuario == null)
+            {
+                Console.WriteLine($"[AUTH] User not found: {request.Username}");
+                throw new UnauthorizedAccessException("Credenciais inválidas.");
+            }
+            
+            Console.WriteLine($"[AUTH] User found: {usuario.Username}, checking password...");
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, usuario.PasswordHash))
-            throw new UnauthorizedAccessException("Credenciais inválidas.");
-
-        var token = GenerateJwtToken(usuario);
-        return new LoginResponse(token, usuario.Username, usuario.Nome, usuario.Role);
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, usuario.PasswordHash))
+            {
+                Console.WriteLine($"[AUTH] Password verification failed for: {request.Username}");
+                throw new UnauthorizedAccessException("Credenciais inválidas.");
+            }
+            
+            Console.WriteLine($"[AUTH] Password verified, generating token...");
+            var token = GenerateJwtToken(usuario);
+            Console.WriteLine($"[AUTH] Login successful for: {request.Username}");
+            
+            return new LoginResponse(token, usuario.Username, usuario.Nome, usuario.Role);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AUTH] Login error: {ex.GetType().Name} - {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[AUTH] Inner exception: {ex.InnerException.Message}");
+            }
+            throw;
+        }
     }
 
     public async Task<UsuarioDto> CreateUsuarioAsync(CreateUsuarioRequest request)
