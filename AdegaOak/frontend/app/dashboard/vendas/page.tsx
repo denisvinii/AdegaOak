@@ -242,7 +242,10 @@ export default function VendasPage() {
   };
 
   const finalizarVenda = async () => {
-    const totalPago = parseFloat(valorDinheiro || '0') + parseFloat(valorCartao || '0') + parseFloat(valorPix || '0');
+    const dinheiro = parseFloat(valorDinheiro || '0');
+    const cartao = parseFloat(valorCartao || '0');
+    const pix = parseFloat(valorPix || '0');
+    const totalPago = dinheiro + cartao + pix;
     
     if (Math.abs(totalPago - valorTotalCarrinho) > 0.01) {
       toast.error(`O valor pago (R$ ${totalPago.toFixed(2)}) não corresponde ao total da venda (R$ ${valorTotalCarrinho.toFixed(2)})`);
@@ -258,10 +261,10 @@ export default function VendasPage() {
           valorUnitario: item.valorUnitario,
           tipoVenda: item.tipoVenda
         })),
-        valorDinheiro: parseFloat(valorDinheiro || '0'),
-        valorCartao: parseFloat(valorCartao || '0'),
-        valorPix: parseFloat(valorPix || '0'),
-        observacao: observacao || null
+        valorDinheiro: dinheiro,
+        valorCartao: cartao,
+        valorPix: pix,
+        observacao: observacao.trim() || null
       });
 
       toast.success('Venda registrada com sucesso!');
@@ -798,6 +801,12 @@ export default function VendasPage() {
               min="0"
               value={valorDinheiro}
               onChange={(e) => setValorDinheiro(e.target.value)}
+              onBlur={(e) => {
+                // Se estiver vazio, preenche com 0
+                if (e.target.value === '' || e.target.value === '-') {
+                  setValorDinheiro('0');
+                }
+              }}
               className="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder="0.00"
             />
@@ -813,6 +822,12 @@ export default function VendasPage() {
               min="0"
               value={valorCartao}
               onChange={(e) => setValorCartao(e.target.value)}
+              onBlur={(e) => {
+                // Se estiver vazio, preenche com 0
+                if (e.target.value === '' || e.target.value === '-') {
+                  setValorCartao('0');
+                }
+              }}
               className="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder="0.00"
             />
@@ -828,6 +843,12 @@ export default function VendasPage() {
               min="0"
               value={valorPix}
               onChange={(e) => setValorPix(e.target.value)}
+              onBlur={(e) => {
+                // Se estiver vazio, preenche com 0
+                if (e.target.value === '' || e.target.value === '-') {
+                  setValorPix('0');
+                }
+              }}
               className="w-full px-3 md:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               placeholder="0.00"
             />
