@@ -213,6 +213,9 @@ static string MaskConnectionString(string connStr)
     return string.Join(";", masked);
 }
 
+// Memory Cache (necessário para ProdutoService)
+builder.Services.AddMemoryCache();
+
 // Repositories
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
