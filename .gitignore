@@ -1,0 +1,42 @@
+# .NET build output
+**/bin/
+**/obj/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/
+!**/packages/build/
+nuget.exe
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend
+AdegaOak/frontend/node_modules/
+AdegaOak/frontend/.next/
+AdegaOak/frontend/.env.local
+AdegaOak/frontend/.env*.local
+
+# SQLite database files (don't commit the database)
+*.db
+*.db-shm
+*.db-wal
+*.db.backup*
+
+# EXCEPTION: Include production database for Railway deployment
+!AdegaOak/AdegaOak.Api/adegaoak.db
+
+# Logs
+*.log
