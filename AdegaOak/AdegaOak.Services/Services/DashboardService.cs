@@ -112,10 +112,20 @@ public class DashboardService(
             .OrderBy(v => v.Data)
             .ToList();
 
-        // Top produtos (usando projeção para melhor performance)
-        var topProdutos = await db.Movimentacoes
+        // Top produtos - Buscar dados e agrupar em memória
+        var movimentacoesTopProdutos = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .Select(m => new
+            {
+                m.ProdutoId,
+                m.ProdutoDescricao,
+                m.Quantidade,
+                m.ValorUnitario
+            })
+            .ToListAsync();
+
+        var topProdutos = movimentacoesTopProdutos
             .GroupBy(m => new { m.ProdutoId, m.ProdutoDescricao })
             .Select(g => new TopProdutoDto(
                 g.Key.ProdutoId,
@@ -125,7 +135,7 @@ public class DashboardService(
             ))
             .OrderByDescending(p => p.ValorTotal)
             .Take(10)
-            .ToListAsync();
+            .ToList();
 
         // Estoque baixo
         var estoque = await produtoRepository.GetEstoqueComQuantidadeAsync();
@@ -139,22 +149,40 @@ public class DashboardService(
             ))
             .ToList();
 
-        // Despesas por tipo (usando projeção)
-        var despesasPorTipo = await db.Despesas
+        // Despesas por tipo - Buscar dados e agrupar em memória
+        var despesasData = await db.Despesas
             .AsNoTracking()
             .Where(d => d.Data >= dataInicio && d.Data <= dataFim)
+            .Select(d => new
+            {
+                d.Tipo,
+                d.Valor
+            })
+            .ToListAsync();
+
+        var despesasPorTipo = despesasData
             .GroupBy(d => d.Tipo)
             .Select(g => new DespesasPorTipoDto(
                 g.Key.ToString(),
                 (decimal)g.Sum(d => (double)d.Valor),
                 g.Count()
             ))
-            .ToListAsync();
+            .ToList();
 
-        // Vendas por usuário (usando projeção)
-        var vendasPorUsuario = await db.Movimentacoes
+        // Vendas por usuário - Buscar dados e agrupar em memória
+        var movimentacoesUsuario = await db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
+            .Select(m => new
+            {
+                m.UsuarioId,
+                m.Responsavel,
+                m.ValorUnitario,
+                m.Quantidade
+            })
+            .ToListAsync();
+
+        var vendasPorUsuario = movimentacoesUsuario
             .GroupBy(m => new { m.UsuarioId, m.Responsavel })
             .Select(g => new VendasPorUsuarioDto(
                 g.Key.UsuarioId,
@@ -163,7 +191,7 @@ public class DashboardService(
                 g.Sum(m => m.Quantidade)
             ))
             .OrderByDescending(v => v.Total)
-            .ToListAsync();
+            .ToList();
 
         var receitaMesList = await db.Movimentacoes
             .AsNoTracking()
