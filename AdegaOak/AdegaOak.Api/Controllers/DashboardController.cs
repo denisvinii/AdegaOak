@@ -61,4 +61,25 @@ public class DashboardController(IDashboardService dashboardService) : Controlle
             return StatusCode(500, new { error = "Erro ao carregar dashboard", details = ex.Message });
         }
     }
+
+    [Authorize(Roles = "admin")]
+    [HttpPost("relatorio-vendas")]
+    public async Task<ActionResult<RelatorioVendasDto>> GetRelatorioVendas([FromBody] FiltrosRelatorioRequest filtros)
+    {
+        try
+        {
+            var relatorio = await dashboardService.GetRelatorioVendasAsync(filtros);
+            return Ok(relatorio);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DASHBOARD] Error in GetRelatorioVendas: {ex.Message}");
+            Console.WriteLine($"[DASHBOARD] Stack trace: {ex.StackTrace}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"[DASHBOARD] Inner exception: {ex.InnerException.Message}");
+            }
+            return StatusCode(500, new { error = "Erro ao carregar relatório de vendas", details = ex.Message });
+        }
+    }
 }

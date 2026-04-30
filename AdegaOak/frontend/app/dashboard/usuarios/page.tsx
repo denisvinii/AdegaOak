@@ -274,7 +274,7 @@ export default function UsuariosPage() {
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {(usuarios || []).map((usuario) => (
-              <tr key={usuario?.id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr key={usuario.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">

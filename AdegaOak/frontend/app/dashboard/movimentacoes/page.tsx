@@ -196,7 +196,7 @@ export default function MovimentacoesPage() {
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {movimentacoesFiltradas.map((mov) => (
-              <tr key={mov?.id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr key={mov.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {mov?.data ? new Date(mov.data).toLocaleDateString('pt-BR') : '-'}
                 </td>
@@ -285,7 +285,7 @@ export default function MovimentacoesPage() {
             >
               <option value="">Selecione um produto</option>
               {(produtos || []).map((produto) => (
-                <option key={produto?.id || Math.random()} value={produto?.id || ''}>
+                <option key={produto.id} value={produto.id}>
                   {produto?.descricao || 'Produto'}
                 </option>
               ))}

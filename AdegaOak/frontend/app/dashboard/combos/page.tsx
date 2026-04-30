@@ -200,7 +200,7 @@ export default function CombosPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(combos || []).map((combo) => (
             <div
-              key={combo?.id || Math.random()}
+              key={combo.id}
               className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition"
             >
               <div className="flex items-start justify-between mb-4">
@@ -354,7 +354,7 @@ export default function CombosPage() {
                   >
                     <option value="0">Selecione um produto</option>
                     {(produtos || []).map((produto) => (
-                      <option key={produto?.id || Math.random()} value={produto?.id || 0}>
+                      <option key={produto.id} value={produto.id}>
                         {produto?.descricao || 'Produto'}
                       </option>
                     ))}

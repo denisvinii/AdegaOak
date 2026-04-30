@@ -37,3 +37,26 @@ public record FiltrosDashboardRequest(
     DateTime? DataFim,
     int? UsuarioId
 );
+
+public record VendaMensalDto(
+    int Mes,
+    int Ano,
+    string MesNome,
+    decimal TotalVendas,
+    int QuantidadeVendas,
+    decimal TicketMedio
+);
+
+public record RelatorioVendasDto(
+    List<VendaMensalDto> VendasMensais,
+    List<VendasPorUsuarioDto> VendasPorUsuario,
+    decimal TotalGeral,
+    int QuantidadeGeral,
+    decimal TicketMedioGeral
+);
+
+public record FiltrosRelatorioRequest(
+    int Ano,
+    int? Mes,
+    int? UsuarioId
+);

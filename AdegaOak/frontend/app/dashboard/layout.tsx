@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   X,
+  FileText,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -81,6 +82,7 @@ export default function DashboardLayout({
     { href: '/dashboard/despesas', icon: DollarSign, label: 'Despesas', adminOnly: true },
     { href: '/dashboard/combos', icon: Wine, label: 'Combos' },
     { href: '/dashboard/historico', icon: History, label: 'Histórico' },
+    { href: '/dashboard/relatorios', icon: FileText, label: 'Relatórios', adminOnly: true },
     { href: '/dashboard/usuarios', icon: Users, label: 'Usuários', adminOnly: true },
   ];
 

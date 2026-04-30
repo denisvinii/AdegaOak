@@ -139,7 +139,7 @@ export default function EstoquePage() {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {(produtos || []).map((produto) => (
-                <tr key={produto?.id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr key={produto.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Package size={16} className="text-gray-400" />

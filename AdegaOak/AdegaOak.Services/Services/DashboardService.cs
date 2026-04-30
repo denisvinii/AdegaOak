@@ -192,4 +192,150 @@ public class DashboardService(
             totalMovimentacoesMes
         );
     }
+
+    public async Task<RelatorioVendasDto> GetRelatorioVendasAsync(FiltrosRelatorioRequest filtros)
+    {
+        var dataInicio = new DateTime(filtros.Ano, filtros.Mes ?? 1, 1);
+        var dataFim = filtros.Mes.HasValue 
+            ? new DateTime(filtros.Ano, filtros.Mes.Value, DateTime.DaysInMonth(filtros.Ano, filtros.Mes.Value), 23, 59, 59)
+            : new DateTime(filtros.Ano, 12, 31, 23, 59, 59);
+
+        // Query base de vendas
+        var query = db.Movimentacoes
+            .AsNoTracking()
+            .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim);
+
+        // Filtrar por usuário se especificado
+        if (filtros.UsuarioId.HasValue)
+        {
+            query = query.Where(m => m.UsuarioId == filtros.UsuarioId.Value);
+        }
+
+        var movimentacoes = await query.ToListAsync();
+
+        // Incluir vendas de combos
+        var queryCombo = db.ComboVendas
+            .AsNoTracking()
+            .Include(cv => cv.Usuario)
+            .Where(cv => cv.DataVenda >= dataInicio && cv.DataVenda <= dataFim);
+
+        if (filtros.UsuarioId.HasValue)
+        {
+            queryCombo = queryCombo.Where(cv => cv.UsuarioId == filtros.UsuarioId.Value);
+        }
+
+        var comboVendas = await queryCombo.ToListAsync();
+
+        // Agrupar vendas por mês
+        var vendasPorMes = movimentacoes
+            .GroupBy(m => new { m.Data.Year, m.Data.Month })
+            .Select(g => new
+            {
+                Ano = g.Key.Year,
+                Mes = g.Key.Month,
+                TotalVendas = (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)),
+                QuantidadeVendas = g.Sum(m => m.Quantidade)
+            })
+            .ToList();
+
+        // Adicionar vendas de combos ao agrupamento mensal
+        var combosPorMes = comboVendas
+            .GroupBy(cv => new { cv.DataVenda.Year, cv.DataVenda.Month })
+            .Select(g => new
+            {
+                Ano = g.Key.Year,
+                Mes = g.Key.Month,
+                TotalVendas = (decimal)g.Sum(cv => (double)cv.PrecoTotal),
+                QuantidadeVendas = g.Sum(cv => cv.Quantidade)
+            })
+            .ToList();
+
+        // Combinar vendas de produtos e combos
+        var vendasCombinadas = vendasPorMes
+            .Concat(combosPorMes)
+            .GroupBy(v => new { v.Ano, v.Mes })
+            .Select(g => new VendaMensalDto(
+                g.Key.Mes,
+                g.Key.Ano,
+                ObterNomeMes(g.Key.Mes),
+                g.Sum(v => v.TotalVendas),
+                g.Sum(v => v.QuantidadeVendas),
+                g.Sum(v => v.QuantidadeVendas) > 0 
+                    ? g.Sum(v => v.TotalVendas) / g.Sum(v => v.QuantidadeVendas) 
+                    : 0
+            ))
+            .OrderBy(v => v.Ano)
+            .ThenBy(v => v.Mes)
+            .ToList();
+
+        // Vendas por usuário
+        var vendasPorUsuario = movimentacoes
+            .GroupBy(m => new { m.UsuarioId, m.Responsavel })
+            .Select(g => new
+            {
+                UsuarioId = g.Key.UsuarioId,
+                Nome = g.Key.Responsavel,
+                Total = (decimal)g.Sum(m => (double)(m.ValorUnitario * m.Quantidade)),
+                Quantidade = g.Sum(m => m.Quantidade)
+            })
+            .ToList();
+
+        // Adicionar vendas de combos por usuário
+        var combosPorUsuario = comboVendas
+            .Where(cv => cv.Usuario != null)
+            .GroupBy(cv => new { cv.UsuarioId, cv.Usuario.Nome })
+            .Select(g => new
+            {
+                UsuarioId = g.Key.UsuarioId,
+                Nome = g.Key.Nome,
+                Total = (decimal)g.Sum(cv => (double)cv.PrecoTotal),
+                Quantidade = g.Sum(cv => cv.Quantidade)
+            })
+            .ToList();
+
+        var vendasUsuarioCombinadas = vendasPorUsuario
+            .Concat(combosPorUsuario)
+            .GroupBy(v => new { v.UsuarioId, v.Nome })
+            .Select(g => new VendasPorUsuarioDto(
+                g.Key.UsuarioId,
+                g.Key.Nome,
+                g.Sum(v => v.Total),
+                g.Sum(v => v.Quantidade)
+            ))
+            .OrderByDescending(v => v.Total)
+            .ToList();
+
+        // Totais gerais
+        var totalGeral = vendasCombinadas.Sum(v => v.TotalVendas);
+        var quantidadeGeral = vendasCombinadas.Sum(v => v.QuantidadeVendas);
+        var ticketMedioGeral = quantidadeGeral > 0 ? totalGeral / quantidadeGeral : 0;
+
+        return new RelatorioVendasDto(
+            vendasCombinadas,
+            vendasUsuarioCombinadas,
+            totalGeral,
+            quantidadeGeral,
+            ticketMedioGeral
+        );
+    }
+
+    private static string ObterNomeMes(int mes)
+    {
+        return mes switch
+        {
+            1 => "Janeiro",
+            2 => "Fevereiro",
+            3 => "Março",
+            4 => "Abril",
+            5 => "Maio",
+            6 => "Junho",
+            7 => "Julho",
+            8 => "Agosto",
+            9 => "Setembro",
+            10 => "Outubro",
+            11 => "Novembro",
+            12 => "Dezembro",
+            _ => "Desconhecido"
+        };
+    }
 }

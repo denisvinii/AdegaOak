@@ -175,7 +175,7 @@ export default function DespesasPage() {
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {(despesas || []).map((despesa) => (
-              <tr key={despesa?.id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <tr key={despesa.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {despesa?.data ? new Date(despesa.data).toLocaleDateString('pt-BR') : '-'}
                 </td>
