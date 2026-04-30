@@ -13,35 +13,45 @@ public class DashboardService(
 {
     public async Task<SaldoDto> GetSaldoAsync()
     {
-        var config = await saldoRepository.GetConfigAsync();
+        var configTask = saldoRepository.GetConfigAsync();
 
-        // Use AsNoTracking for read-only queries
-        var totalEntradas = await db.Movimentacoes
+        // Execute all queries in parallel for better performance
+        var movimentacoesEntradaTask = db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Entrada")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
 
-        var totalSaidas = await db.Movimentacoes
+        var movimentacoesSaidaTask = db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída")
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
 
-        var totalDespesasPagas = await db.Despesas
+        var despesasPagasTask = db.Despesas
             .AsNoTracking()
             .Where(d => d.Pago)
             .Select(d => (double)d.Valor)
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
 
-        var totalComboVendas = await db.ComboVendas
+        var comboVendasTask = db.ComboVendas
             .AsNoTracking()
             .Select(cv => (double)cv.PrecoTotal)
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
+
+        // Wait for all queries to complete
+        await Task.WhenAll(configTask, movimentacoesEntradaTask, movimentacoesSaidaTask, despesasPagasTask, comboVendasTask);
+
+        var config = await configTask;
+        var movimentacoesEntrada = await movimentacoesEntradaTask;
+        var movimentacoesSaida = await movimentacoesSaidaTask;
+        var despesasPagas = await despesasPagasTask;
+        var comboVendas = await comboVendasTask;
+
+        var totalEntradas = movimentacoesEntrada.Any() ? movimentacoesEntrada.Sum() : 0;
+        var totalSaidas = movimentacoesSaida.Any() ? movimentacoesSaida.Sum() : 0;
+        var totalDespesasPagas = despesasPagas.Any() ? despesasPagas.Sum() : 0;
+        var totalComboVendas = comboVendas.Any() ? comboVendas.Sum() : 0;
 
         var capitalEmpresa = (decimal)((totalSaidas - totalEntradas) + (double)config.CapitalAdmin - totalDespesasPagas + totalComboVendas);
         var saldo = (decimal)((totalSaidas - totalEntradas) - totalDespesasPagas + totalComboVendas);
@@ -67,10 +77,11 @@ public class DashboardService(
     {
         var dataInicio = filtros.DataInicio ?? DateTime.UtcNow.AddMonths(-1);
         var dataFim = filtros.DataFim ?? DateTime.UtcNow;
+        var mesAtual = DateTime.UtcNow;
 
-        // Parallel execution for independent queries to improve performance
+        // Parallel execution for ALL independent queries to improve performance
         var movimentacoesSaidaTask = db.Movimentacoes
-            .AsNoTracking() // No tracking for read-only queries
+            .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data >= dataInicio && m.Data <= dataFim)
             .ToListAsync();
 
@@ -81,20 +92,17 @@ public class DashboardService(
 
         var estoqueTask = produtoRepository.GetEstoqueComQuantidadeAsync();
 
-        var mesAtual = DateTime.UtcNow;
         var receitaMesTask = db.Movimentacoes
             .AsNoTracking()
             .Where(m => m.Tipo == "Saída" && m.Data.Month == mesAtual.Month && m.Data.Year == mesAtual.Year)
             .Select(m => (double)(m.ValorUnitario * m.Quantidade))
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
 
         var despesasMesTask = db.Despesas
             .AsNoTracking()
             .Where(d => d.Data.Month == mesAtual.Month && d.Data.Year == mesAtual.Year && d.Pago)
             .Select(d => (double)d.Valor)
-            .DefaultIfEmpty(0)
-            .SumAsync();
+            .ToListAsync();
 
         var totalMovimentacoesMesTask = db.Movimentacoes
             .AsNoTracking()
@@ -116,6 +124,12 @@ public class DashboardService(
         var movimentacoesSaida = await movimentacoesSaidaTask;
         var despesas = await despesasTask;
         var estoque = await estoqueTask;
+        var receitaMesList = await receitaMesTask;
+        var despesasMesList = await despesasMesTask;
+        
+        var receitaMes = receitaMesList.Any() ? receitaMesList.Sum() : 0;
+        var despesasMes = despesasMesList.Any() ? despesasMesList.Sum() : 0;
+        var totalMovimentacoesMes = await totalMovimentacoesMesTask;
 
         // Vendas por dia
         var vendasPorDia = movimentacoesSaida
@@ -180,9 +194,9 @@ public class DashboardService(
             estoqueBaixo,
             despesasPorTipo,
             vendasPorUsuario,
-            (decimal)await receitaMesTask,
-            (decimal)await despesasMesTask,
-            await totalMovimentacoesMesTask
+            (decimal)receitaMes,
+            (decimal)despesasMes,
+            totalMovimentacoesMes
         );
     }
 }
