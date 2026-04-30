@@ -61,8 +61,13 @@ export default function RelatoriosPage() {
     try {
       const { data } = await api.get('/usuarios');
       setUsuarios(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao carregar usuários:', error);
+      // Se o endpoint não existir (404), apenas não mostra o filtro de usuários
+      if (error.response?.status === 404) {
+        console.warn('Endpoint /api/usuarios não disponível. Filtro por usuário desabilitado.');
+      }
+      setUsuarios([]);
     }
   };
 
@@ -142,7 +147,7 @@ export default function RelatoriosPage() {
           Filtros
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className={`grid grid-cols-1 gap-4 ${usuarios.length > 0 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
           {/* Ano */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -179,23 +184,25 @@ export default function RelatoriosPage() {
           </div>
 
           {/* Usuário */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Vendedor
-            </label>
-            <select
-              value={usuarioSelecionado || ''}
-              onChange={(e) => setUsuarioSelecionado(e.target.value ? Number(e.target.value) : null)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="">Todos os vendedores</option>
-              {usuarios.map(usuario => (
-                <option key={usuario.id} value={usuario.id}>
-                  {usuario.nome}
-                </option>
-              ))}
-            </select>
-          </div>
+          {usuarios.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Vendedor
+              </label>
+              <select
+                value={usuarioSelecionado || ''}
+                onChange={(e) => setUsuarioSelecionado(e.target.value ? Number(e.target.value) : null)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="">Todos os vendedores</option>
+                {usuarios.map(usuario => (
+                  <option key={usuario.id} value={usuario.id}>
+                    {usuario.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Visualização */}
           <div>

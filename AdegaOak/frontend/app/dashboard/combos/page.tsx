@@ -178,51 +178,52 @@ export default function CombosPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Combos</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Combos</h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1 md:mt-2">
             Crie e gerencie combos de produtos
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition"
+          className="bg-amber-600 hover:bg-amber-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg flex items-center justify-center gap-2 transition text-sm md:text-base"
         >
-          <Plus size={20} />
-          Novo Combo
+          <Plus size={18} className="md:w-5 md:h-5" />
+          <span className="hidden sm:inline">Novo Combo</span>
+          <span className="sm:hidden">Novo</span>
         </button>
       </div>
 
       {/* Combos Grid */}
       {(combos || []).length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {(combos || []).map((combo) => (
             <div
               key={combo.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition"
+              className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700 hover:shadow-md transition"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="bg-amber-100 dark:bg-amber-900 p-3 rounded-lg">
-                  <Wine className="text-amber-600 dark:text-amber-400" size={24} />
+              <div className="flex items-start justify-between mb-3 md:mb-4">
+                <div className="bg-amber-100 dark:bg-amber-900 p-2 md:p-3 rounded-lg">
+                  <Wine className="text-amber-600 dark:text-amber-400" size={20} />
                 </div>
-                <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                <span className="text-xl md:text-2xl font-bold text-amber-600 dark:text-amber-400">
                   R$ {(combo?.preco || 0).toFixed(2)}
                 </span>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2">
                 {combo?.nome || 'Sem nome'}
               </h3>
 
               {combo?.descricao && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mb-3 md:mb-4 line-clamp-2">
                   {combo.descricao}
                 </p>
               )}
 
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 md:pt-4">
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold mb-2">
                   Produtos inclusos:
                 </p>
@@ -230,19 +231,19 @@ export default function CombosPage() {
                   {(combo?.itens || []).map((item: any, index: number) => (
                     <li
                       key={index}
-                      className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2"
+                      className="text-xs md:text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2"
                     >
-                      <span className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full"></span>
-                      {item?.quantidade || 0}x {item?.produtoDescricao || 'Produto'}
+                      <span className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full flex-shrink-0"></span>
+                      <span className="truncate">{item?.quantidade || 0}x {item?.produtoDescricao || 'Produto'}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => openVendaModal(combo)}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg transition"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg transition text-sm md:text-base"
                 >
                   Vender Combo
                 </button>
@@ -251,15 +252,15 @@ export default function CombosPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <Wine className="mx-auto text-gray-400 dark:text-gray-600 mb-4" size={48} />
-          <p className="text-gray-500 dark:text-gray-400 mb-2">Nenhum combo cadastrado</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
+        <div className="text-center py-8 md:py-12">
+          <Wine className="mx-auto text-gray-400 dark:text-gray-600 mb-4" size={40} />
+          <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-2">Nenhum combo cadastrado</p>
+          <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 mb-4">
             Crie combos de produtos para facilitar as vendas
           </p>
           <button 
             onClick={() => setModalOpen(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg transition"
+            className="bg-amber-600 hover:bg-amber-700 text-white px-4 md:px-6 py-2 rounded-lg transition text-sm md:text-base"
           >
             Criar Primeiro Combo
           </button>

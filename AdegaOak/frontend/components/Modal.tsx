@@ -33,23 +33,23 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
       />
 
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-700">
+      <div className="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="relative bg-white dark:bg-gray-800 rounded-t-xl sm:rounded-xl shadow-2xl w-full max-w-2xl border-t sm:border border-gray-200 dark:border-gray-700 max-h-[90vh] sm:max-h-[85vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition flex-shrink-0"
             >
               <X size={20} className="text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="p-6">{children}</div>
+          <div className="p-4 sm:p-6 overflow-y-auto flex-1">{children}</div>
         </div>
       </div>
     </div>

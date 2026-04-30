@@ -86,137 +86,141 @@ export default function DespesasPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Despesas</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Despesas</h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1 md:mt-2">
             Controle de despesas e contas a pagar
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition"
+          className="bg-amber-600 hover:bg-amber-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg flex items-center justify-center gap-2 transition text-sm md:text-base"
         >
-          <Plus size={20} />
-          Nova Despesa
+          <Plus size={18} className="md:w-5 md:h-5" />
+          <span className="hidden sm:inline">Nova Despesa</span>
+          <span className="sm:hidden">Nova</span>
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Despesas</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Total Despesas</p>
+              <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mt-1 md:mt-2 truncate">
                 R$ {totalDespesas.toFixed(2)}
               </p>
             </div>
-            <div className="bg-blue-500 p-3 rounded-lg">
-              <DollarSign className="text-white" size={24} />
+            <div className="bg-blue-500 p-2 md:p-3 rounded-lg flex-shrink-0">
+              <DollarSign className="text-white" size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Pagas</p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Pagas</p>
+              <p className="text-xl md:text-2xl font-bold text-green-600 dark:text-green-400 mt-1 md:mt-2 truncate">
                 R$ {totalPagas.toFixed(2)}
               </p>
             </div>
-            <div className="bg-green-500 p-3 rounded-lg">
-              <DollarSign className="text-white" size={24} />
+            <div className="bg-green-500 p-2 md:p-3 rounded-lg flex-shrink-0">
+              <DollarSign className="text-white" size={20} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Pendentes</p>
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">Pendentes</p>
+              <p className="text-xl md:text-2xl font-bold text-red-600 dark:text-red-400 mt-1 md:mt-2 truncate">
                 R$ {totalPendentes.toFixed(2)}
               </p>
             </div>
-            <div className="bg-red-500 p-3 rounded-lg">
-              <DollarSign className="text-white" size={24} />
+            <div className="bg-red-500 p-2 md:p-3 rounded-lg flex-shrink-0">
+              <DollarSign className="text-white" size={20} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-gray-900">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Data
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Descrição
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Tipo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Valor
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {(despesas || []).map((despesa) => (
-              <tr key={despesa.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                  {despesa?.data ? new Date(despesa.data).toLocaleDateString('pt-BR') : '-'}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                  {despesa?.descricao || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                  {despesa?.tipo || '-'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  R$ {(despesa?.valor || 0).toFixed(2)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      despesa?.pago
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    }`}
-                  >
-                    {despesa?.pago ? 'Paga' : 'Pendente'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onClick={() => togglePago(despesa?.id, !despesa?.pago)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
-                      despesa?.pago
-                        ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200'
-                        : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200'
-                    }`}
-                  >
-                    {despesa?.pago ? 'Marcar Pendente' : 'Marcar Paga'}
-                  </button>
-                </td>
+      <div className="bg-white dark:bg-gray-800 rounded-lg md:rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[700px]">
+            <thead className="bg-gray-50 dark:bg-gray-900">
+              <tr>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Data
+                </th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Descrição
+                </th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Tipo
+                </th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Valor
+                </th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Ações
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {(despesas || []).map((despesa) => (
+                <tr key={despesa.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-900 dark:text-gray-100">
+                    {despesa?.data ? new Date(despesa.data).toLocaleDateString('pt-BR') : '-'}
+                  </td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-900 dark:text-gray-100">
+                    <span className="line-clamp-2">{despesa?.descricao || '-'}</span>
+                  </td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                    {despesa?.tipo || '-'}
+                  </td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    R$ {(despesa?.valor || 0).toFixed(2)}
+                  </td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        despesa?.pago
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                      }`}
+                    >
+                      {despesa?.pago ? 'Paga' : 'Pendente'}
+                    </span>
+                  </td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => togglePago(despesa?.id, !despesa?.pago)}
+                      className={`px-2 md:px-3 py-1 text-xs font-semibold rounded-lg transition ${
+                        despesa?.pago
+                          ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-200'
+                          : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200'
+                      }`}
+                    >
+                      <span className="hidden sm:inline">{despesa?.pago ? 'Marcar Pendente' : 'Marcar Paga'}</span>
+                      <span className="sm:hidden">{despesa?.pago ? 'Pendente' : 'Pagar'}</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {(despesas || []).length === 0 && (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 md:py-12 text-sm md:text-base text-gray-500 dark:text-gray-400">
             Nenhuma despesa cadastrada
           </div>
         )}

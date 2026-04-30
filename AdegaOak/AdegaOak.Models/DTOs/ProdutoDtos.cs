@@ -33,6 +33,7 @@ public record CreateProdutoRequest(
 );
 
 public record UpdatePrecosRequest(
+    decimal Valor,
     decimal ValorVenda,
     decimal ValorCaixa,
     decimal ValorAtacadoCaixa

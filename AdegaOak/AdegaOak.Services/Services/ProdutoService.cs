@@ -47,10 +47,13 @@ public class ProdutoService(IProdutoRepository produtoRepository) : IProdutoServ
         var produto = await produtoRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException($"Produto {id} não encontrado.");
 
+        // Update cost value
+        produto.Valor = request.Valor;
+
         // Validate minimum margin (10%)
-        var margemMinima = produto.Valor * 1.10m;
+        var margemMinima = request.Valor * 1.10m;
         if (request.ValorVenda < margemMinima)
-            throw new InvalidOperationException($"Valor de venda deve ser no mínimo {margemMinima:C}.");
+            throw new InvalidOperationException($"Valor de venda deve ser no mínimo {margemMinima:C} (10% acima do custo).");
 
         produto.ValorVenda = request.ValorVenda;
         produto.ValorCaixa = request.ValorCaixa;
