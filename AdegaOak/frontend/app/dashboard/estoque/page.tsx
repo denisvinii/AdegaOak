@@ -108,12 +108,16 @@ export default function EstoquePage() {
     setSaving(true);
 
     try {
-      await api.put(`/produtos/${produtoEditando.id}/precos`, {
+      const payload = {
         valor: parseFloat(editFormData.valor),
         valorVenda: parseFloat(editFormData.valorVenda),
         valorCaixa: parseFloat(editFormData.valorCaixa),
         valorAtacadoCaixa: parseFloat(editFormData.valorAtacadoCaixa),
-      });
+      };
+      
+      console.log('Enviando atualização de preços:', payload);
+      
+      await api.put(`/produtos/${produtoEditando.id}/precos`, payload);
 
       setEditModalOpen(false);
       setProdutoEditando(null);
@@ -121,7 +125,25 @@ export default function EstoquePage() {
       alert('Preços atualizados com sucesso!');
     } catch (error: any) {
       console.error('Erro ao atualizar preços:', error);
-      alert(error.response?.data?.message || 'Erro ao atualizar preços');
+      console.error('Detalhes do erro:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      
+      let errorMessage = 'Erro ao atualizar preços';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Não autorizado. Faça login novamente.';
+      } else if (error.response?.status === 403) {
+        errorMessage = 'Acesso negado. Apenas administradores podem editar preços.';
+      } else if (error.message === 'Network Error') {
+        errorMessage = 'Erro de conexão. Verifique se o backend está rodando.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setSaving(false);
     }

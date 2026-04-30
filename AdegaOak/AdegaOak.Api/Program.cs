@@ -292,10 +292,11 @@ builder.Services.AddCors(options =>
                 return allowed;
             })
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod() // Permite GET, POST, PUT, DELETE, PATCH, OPTIONS
+            .AllowCredentials()
+            .WithExposedHeaders("*"); // Expõe todos os headers na resposta
         
-        Console.WriteLine("[CORS] Policy configured: Allow all *.vercel.app and localhost origins");
+        Console.WriteLine("[CORS] Policy configured: Allow all *.vercel.app and localhost origins with ANY method");
     });
 });
 
