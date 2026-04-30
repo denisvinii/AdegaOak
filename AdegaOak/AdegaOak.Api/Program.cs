@@ -1,13 +1,32 @@
 using System.Text;
 using AdegaOak.Data.Data;
-using AdegaOak.Data.Repositories;using AdegaOak.Services.Interfaces;
+using AdegaOak.Data.Repositories;
+using AdegaOak.Services.Interfaces;
 using AdegaOak.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/adegaoak-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+try
+{
+    Log.Information("Starting AdegaOak API");
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Serilog
+builder.Host.UseSerilog();
 
 // Configure forwarded headers for Railway proxy
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -23,70 +42,43 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Database configuration - PostgreSQL (Supabase) only
-Console.WriteLine("[DATABASE] Reading DATABASE_URL environment variable...");
+Log.Information("[DATABASE] Reading DATABASE_URL environment variable");
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-Console.WriteLine($"[DATABASE] DATABASE_URL from env: {(string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS")}");
+Log.Information("[DATABASE] DATABASE_URL from env: {Status}", string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS");
 
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
-    Console.WriteLine("[DATABASE] DATABASE_URL is empty, trying appsettings.json...");
+    Log.Warning("[DATABASE] DATABASE_URL is empty, trying appsettings.json");
     databaseUrl = builder.Configuration.GetConnectionString("DefaultConnection");
-    Console.WriteLine($"[DATABASE] DefaultConnection from config: {(string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS")}");
+    Log.Information("[DATABASE] DefaultConnection from config: {Status}", string.IsNullOrEmpty(databaseUrl) ? "NULL/EMPTY" : "EXISTS");
 }
 
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
-    Console.WriteLine("[DATABASE] ❌ ERROR: DATABASE_URL not configured!");
-    Console.WriteLine("[DATABASE] Please configure DATABASE_URL environment variable with your Supabase connection string.");
-    Console.WriteLine("[DATABASE] Example: postgresql://postgres.xxxxx:password@aws-0-us-east-1.pooler.supabase.com:6543/postgres");
-    
-    // List all environment variables for debugging
-    Console.WriteLine("[DATABASE] Available environment variables:");
-    foreach (System.Collections.DictionaryEntry env in Environment.GetEnvironmentVariables())
-    {
-        var key = env.Key?.ToString() ?? "";
-        var value = env.Value?.ToString() ?? "";
-        
-        if (key.Contains("DATABASE", StringComparison.OrdinalIgnoreCase) ||
-            key.Contains("CONNECTION", StringComparison.OrdinalIgnoreCase))
-        {
-            Console.WriteLine($"[DATABASE]   {key} = {value}");
-        }
-    }
+    Log.Fatal("[DATABASE] DATABASE_URL not configured!");
+    Log.Fatal("[DATABASE] Please configure DATABASE_URL environment variable with your Supabase connection string");
+    Log.Fatal("[DATABASE] Example: postgresql://postgres.xxxxx:password@aws-0-us-east-1.pooler.supabase.com:6543/postgres");
     
     throw new InvalidOperationException(
         "DATABASE_URL environment variable is required. " +
         "Please configure it with your Supabase PostgreSQL connection string.");
 }
 
-// Debug: Show connection string length and first/last chars
-Console.WriteLine($"[DATABASE] Connection string length: {databaseUrl.Length}");
-Console.WriteLine($"[DATABASE] First 20 chars: {(databaseUrl.Length >= 20 ? databaseUrl.Substring(0, 20) : databaseUrl)}");
-Console.WriteLine($"[DATABASE] Last 20 chars: {(databaseUrl.Length >= 20 ? databaseUrl.Substring(databaseUrl.Length - 20) : databaseUrl)}");
-Console.WriteLine($"[DATABASE] Contains newline: {databaseUrl.Contains('\n')}");
-Console.WriteLine($"[DATABASE] Contains carriage return: {databaseUrl.Contains('\r')}");
-Console.WriteLine($"[DATABASE] Starts with space: {databaseUrl.StartsWith(" ")}");
-Console.WriteLine($"[DATABASE] Ends with space: {databaseUrl.EndsWith(" ")}");
-
 // Trim whitespace and remove any hidden characters
 databaseUrl = databaseUrl.Trim().Replace("\r", "").Replace("\n", "");
-Console.WriteLine($"[DATABASE] After trim length: {databaseUrl.Length}");
 
 // Validate connection string format
 if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgres://") && 
     !databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
 {
-    Console.WriteLine("[DATABASE] ❌ ERROR: Invalid connection string format!");
-    Console.WriteLine($"[DATABASE] Current value: {databaseUrl}");
-    Console.WriteLine("[DATABASE] Expected format: postgresql://user:password@host:port/database");
-    Console.WriteLine("[DATABASE] Or: Host=host;Database=db;Username=user;Password=pass");
+    Log.Fatal("[DATABASE] Invalid connection string format");
+    Log.Fatal("[DATABASE] Expected format: postgresql://user:password@host:port/database");
     throw new InvalidOperationException(
         "DATABASE_URL has invalid format. " +
         "Expected PostgreSQL connection string starting with 'postgresql://' or 'Host='");
 }
 
-Console.WriteLine("[DATABASE] Using PostgreSQL (Supabase)");
-Console.WriteLine($"[DATABASE] Connection: {MaskConnectionString(databaseUrl)}");
+Log.Information("[DATABASE] Using PostgreSQL (Supabase)");
 
 // Convert URI format to Npgsql connection string format
 string npgsqlConnectionString = databaseUrl;
@@ -95,7 +87,7 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
 {
     try
     {
-        Console.WriteLine("[DATABASE] Converting URI format to Npgsql format...");
+        Log.Information("[DATABASE] Converting URI format to Npgsql format");
         var uri = new Uri(databaseUrl);
         
         var host = uri.Host;
@@ -106,72 +98,50 @@ if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres:
         var password = userInfo.Length > 1 ? userInfo[1] : "";
         
         // Build Npgsql-compatible connection string with robust settings for Supabase
-        // Use Session Pooler (port 5432) instead of Transaction Pooler (6543) for better stability
-        var useSessionPooler = dbPort == 6543; // Auto-detect if using transaction pooler
-        var finalPort = useSessionPooler ? 5432 : dbPort; // Switch to session pooler
+        var useSessionPooler = dbPort == 6543;
+        var finalPort = useSessionPooler ? 5432 : dbPort;
         
         npgsqlConnectionString = $"Host={host};Port={finalPort};Database={database};Username={username};Password={password};SSL Mode=Require;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Idle Lifetime=300;Connection Pruning Interval=10;Timeout=60;Command Timeout=60;Keepalive=30;TCP Keepalive=true;TCP Keepalive Time=30;TCP Keepalive Interval=10";
         
-        Console.WriteLine($"[DATABASE] ⚠️  Detected Transaction Pooler (port 6543), switching to Session Pooler (port 5432) for better stability");
-        Console.WriteLine($"[DATABASE] Final port: {finalPort}");
+        if (useSessionPooler)
+        {
+            Log.Warning("[DATABASE] Detected Transaction Pooler (port 6543), switching to Session Pooler (port 5432) for better stability");
+        }
         
-        Console.WriteLine("[DATABASE] ✅ Converted to Npgsql format");
-        Console.WriteLine($"[DATABASE] Host: {host}");
-        Console.WriteLine($"[DATABASE] Port: {dbPort}");
-        Console.WriteLine($"[DATABASE] Database: {database}");
-        Console.WriteLine($"[DATABASE] Username: {username}");
+        Log.Information("[DATABASE] Converted to Npgsql format successfully");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[DATABASE] ⚠️  Could not convert URI format: {ex.Message}");
-        Console.WriteLine("[DATABASE] Will try to use original format...");
+        Log.Warning(ex, "[DATABASE] Could not convert URI format, will try to use original format");
     }
 }
 
 // Test connection string parsing before registering DbContext
 try
 {
-    Console.WriteLine("[DATABASE] Testing connection string parsing...");
+    Log.Information("[DATABASE] Testing connection string parsing");
     var testBuilder = new Npgsql.NpgsqlConnectionStringBuilder(npgsqlConnectionString);
-    Console.WriteLine($"[DATABASE] ✅ Connection string parsed successfully");
-    Console.WriteLine($"[DATABASE] Host: {testBuilder.Host}");
-    Console.WriteLine($"[DATABASE] Port: {testBuilder.Port}");
-    Console.WriteLine($"[DATABASE] Database: {testBuilder.Database}");
-    Console.WriteLine($"[DATABASE] Username: {testBuilder.Username}");
-    Console.WriteLine($"[DATABASE] Password set: {!string.IsNullOrEmpty(testBuilder.Password)}");
+    Log.Information("[DATABASE] Connection string parsed successfully");
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"[DATABASE] ❌ ERROR parsing connection string!");
-    Console.WriteLine($"[DATABASE] Exception Type: {ex.GetType().FullName}");
-    Console.WriteLine($"[DATABASE] Exception Message: {ex.Message}");
-    Console.WriteLine($"[DATABASE] Connection string length: {npgsqlConnectionString?.Length ?? 0}");
-    
-    if (ex.InnerException != null)
-    {
-        Console.WriteLine($"[DATABASE] Inner Exception: {ex.InnerException.Message}");
-    }
-    
+    Log.Fatal(ex, "[DATABASE] Failed to parse connection string");
     throw new InvalidOperationException(
         $"Failed to parse DATABASE_URL connection string: {ex.Message}. " +
         "Please verify the connection string format is correct: postgresql://user:password@host:port/database", ex);
 }
 
 // Register DbContext with validated connection string
-Console.WriteLine("[DATABASE] Registering DbContext with Entity Framework...");
+Log.Information("[DATABASE] Registering DbContext with Entity Framework");
 builder.Services.AddDbContext<AdegaOakDbContext>(options =>
 {
-    Console.WriteLine("[DATABASE] DbContext factory called, using connection string");
     options.UseNpgsql(npgsqlConnectionString, npgsqlOptions =>
     {
-        // Enable retry on transient failures (network issues, timeouts)
         npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 3,
             maxRetryDelay: TimeSpan.FromSeconds(10),
             errorCodesToAdd: null
         );
-        
-        // Set command timeout
         npgsqlOptions.CommandTimeout(60);
     });
 });
@@ -277,13 +247,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        // Always use pattern matching to allow all Vercel deployments
-        // This includes production, preview, and git branch deployments
         policy.SetIsOriginAllowed(origin =>
             {
                 if (string.IsNullOrEmpty(origin))
                 {
-                    Console.WriteLine("[CORS] Origin is null or empty -> DENIED");
                     return false;
                 }
 
@@ -291,15 +258,16 @@ builder.Services.AddCors(options =>
                               origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
                               origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase);
                 
-                Console.WriteLine($"[CORS] Origin: {origin} -> {(allowed ? "ALLOWED" : "DENIED")}");
+                Log.Debug("[CORS] Origin: {Origin} -> {Status}", origin, allowed ? "ALLOWED" : "DENIED");
                 return allowed;
             })
             .AllowAnyHeader()
-            .AllowAnyMethod() // Permite GET, POST, PUT, DELETE, PATCH, OPTIONS
+            .AllowAnyMethod()
             .AllowCredentials()
-            .WithExposedHeaders("*"); // Expõe todos os headers na resposta
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
+            .WithExposedHeaders("*");
         
-        Console.WriteLine("[CORS] Policy configured: Allow all *.vercel.app and localhost origins with ANY method");
+        Log.Information("[CORS] Policy configured: Allow all *.vercel.app and localhost origins");
     });
 });
 
@@ -355,17 +323,19 @@ app.Use(async (context, next) =>
          origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
          origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase)))
     {
-        context.Response.Headers.Add("Access-Control-Allow-Origin", origin);
-        context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-        context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-        context.Response.Headers.Add("Access-Control-Allow-Headers", "*");
-        context.Response.Headers.Add("Access-Control-Expose-Headers", "*");
+        context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+        context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+        context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
+        context.Response.Headers.Append("Access-Control-Expose-Headers", "*");
+        context.Response.Headers.Append("Access-Control-Max-Age", "600");
     }
     
     // Handle preflight requests
     if (context.Request.Method == "OPTIONS")
     {
         context.Response.StatusCode = 200;
+        await context.Response.CompleteAsync();
         return;
     }
     
@@ -416,8 +386,7 @@ using (var scope = app.Services.CreateScope())
 }
 */
 
-Console.WriteLine("[DATABASE] ⚠️  Migrations disabled - using existing Supabase tables");
-Console.WriteLine("[DATABASE] Make sure all tables are created manually in Supabase");
+Log.Information("[DATABASE] Migrations disabled - using existing Supabase tables");
 
 if (app.Environment.IsDevelopment())
 {
@@ -426,19 +395,26 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    // Also expose Swagger in production for Railway health checks
     app.UseSwagger();
 }
 
 // CORS is already applied above (before migrations)
-// app.UseCors("AllowFrontend"); // REMOVED - already called above
-app.UseResponseCompression(); // Enable compression
+app.UseResponseCompression();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-Console.WriteLine("[STARTUP] Application started successfully");
-Console.WriteLine($"[STARTUP] Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine("[STARTUP] CORS: Allowing all *.vercel.app and localhost origins");
+Log.Information("[STARTUP] Application started successfully");
+Log.Information("[STARTUP] Environment: {Environment}", app.Environment.EnvironmentName);
 
 app.Run();
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

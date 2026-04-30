@@ -6,17 +6,19 @@ using AdegaOak.Models.DTOs;
 using AdegaOak.Models.Models;
 using AdegaOak.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AdegaOak.Services.Services;
 
 public class AuthService(
     IUsuarioRepository usuarioRepository,
-    IConfiguration configuration) : IAuthService
+    IConfiguration configuration,
+    ILogger<AuthService> logger) : IAuthService
 {
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        Console.WriteLine($"[AUTH] Login attempt for username: {request.Username}");
+        logger.LogInformation("Login attempt for username: {Username}", request.Username);
         
         try
         {
@@ -24,31 +26,24 @@ public class AuthService(
             
             if (usuario == null)
             {
-                Console.WriteLine($"[AUTH] User not found: {request.Username}");
+                logger.LogWarning("User not found: {Username}", request.Username);
                 throw new UnauthorizedAccessException("Credenciais inválidas.");
             }
             
-            Console.WriteLine($"[AUTH] User found: {usuario.Username}, checking password...");
-
             if (!BCrypt.Net.BCrypt.Verify(request.Password, usuario.PasswordHash))
             {
-                Console.WriteLine($"[AUTH] Password verification failed for: {request.Username}");
+                logger.LogWarning("Password verification failed for: {Username}", request.Username);
                 throw new UnauthorizedAccessException("Credenciais inválidas.");
             }
             
-            Console.WriteLine($"[AUTH] Password verified, generating token...");
             var token = GenerateJwtToken(usuario);
-            Console.WriteLine($"[AUTH] Login successful for: {request.Username}");
+            logger.LogInformation("Login successful for: {Username}", request.Username);
             
             return new LoginResponse(token, usuario.Username, usuario.Nome, usuario.Role);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AUTH] Login error: {ex.GetType().Name} - {ex.Message}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"[AUTH] Inner exception: {ex.InnerException.Message}");
-            }
+            logger.LogError(ex, "Login error for username: {Username}", request.Username);
             throw;
         }
     }

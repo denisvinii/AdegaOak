@@ -3,52 +3,45 @@ using AdegaOak.Data.Repositories;
 using AdegaOak.Models.DTOs;
 using AdegaOak.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AdegaOak.Services.Services;
 
 public class DashboardService(
     AdegaOakDbContext db,
     ISaldoRepository saldoRepository,
-    IProdutoRepository produtoRepository) : IDashboardService
+    IProdutoRepository produtoRepository,
+    ILogger<DashboardService> logger) : IDashboardService
 {
     public async Task<SaldoDto> GetSaldoAsync()
     {
         try
         {
-            var configTask = saldoRepository.GetConfigAsync();
+            // Execute queries sequentially to avoid DbContext concurrency issues
+            var config = await saldoRepository.GetConfigAsync();
 
-            // Execute all queries in parallel for better performance
-            var movimentacoesEntradaTask = db.Movimentacoes
+            var movimentacoesEntrada = await db.Movimentacoes
                 .AsNoTracking()
                 .Where(m => m.Tipo == "Entrada")
                 .Select(m => (double)(m.ValorUnitario * m.Quantidade))
                 .ToListAsync();
 
-            var movimentacoesSaidaTask = db.Movimentacoes
+            var movimentacoesSaida = await db.Movimentacoes
                 .AsNoTracking()
                 .Where(m => m.Tipo == "Saída")
                 .Select(m => (double)(m.ValorUnitario * m.Quantidade))
                 .ToListAsync();
 
-            var despesasPagasTask = db.Despesas
+            var despesasPagas = await db.Despesas
                 .AsNoTracking()
                 .Where(d => d.Pago)
                 .Select(d => (double)d.Valor)
                 .ToListAsync();
 
-            var comboVendasTask = db.ComboVendas
+            var comboVendas = await db.ComboVendas
                 .AsNoTracking()
                 .Select(cv => (double)cv.PrecoTotal)
                 .ToListAsync();
-
-            // Wait for all queries to complete
-            await Task.WhenAll(configTask, movimentacoesEntradaTask, movimentacoesSaidaTask, despesasPagasTask, comboVendasTask);
-
-            var config = await configTask;
-            var movimentacoesEntrada = await movimentacoesEntradaTask;
-            var movimentacoesSaida = await movimentacoesSaidaTask;
-            var despesasPagas = await despesasPagasTask;
-            var comboVendas = await comboVendasTask;
 
             var totalEntradas = movimentacoesEntrada.Any() ? movimentacoesEntrada.Sum() : 0.0;
             var totalSaidas = movimentacoesSaida.Any() ? movimentacoesSaida.Sum() : 0.0;
@@ -70,8 +63,7 @@ public class DashboardService(
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[DASHBOARD] Error in GetSaldoAsync: {ex.Message}");
-            Console.WriteLine($"[DASHBOARD] Stack trace: {ex.StackTrace}");
+            logger.LogError(ex, "Error in GetSaldoAsync");
             
             // Return default values if error occurs
             return new SaldoDto(0, 0, 0, 0, 0, 0, 0);

@@ -47,35 +47,20 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
             
             if (existingEntity != null)
             {
-                Console.WriteLine($"[REPOSITORY] Detaching existing entity for produto {produto.Id}");
                 db.Entry(existingEntity.Entity).State = EntityState.Detached;
             }
             
             // Fix DateTime Kind for PostgreSQL (must be UTC)
             produto.CriadoEm = produto.CriadoEm.ToUtc();
             
-            Console.WriteLine($"[REPOSITORY] Updating produto {produto.Id}");
             db.Produtos.Update(produto);
-            
-            Console.WriteLine($"[REPOSITORY] Saving changes...");
             await db.SaveChangesAsync();
             
-            Console.WriteLine($"[REPOSITORY] Produto {produto.Id} updated successfully");
             return produto;
         }
         catch (DbUpdateException ex)
         {
-            Console.WriteLine($"[REPOSITORY] DbUpdateException for produto {produto.Id}: {ex.Message}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"[REPOSITORY] Inner exception: {ex.InnerException.Message}");
-            }
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[REPOSITORY] Unexpected exception for produto {produto.Id}: {ex.Message}");
-            throw;
+            throw new InvalidOperationException($"Erro ao atualizar produto {produto.Id}", ex);
         }
     }
 
@@ -92,11 +77,14 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<bool> ProdutoExisteAsync(string bebida, string tamanho, string material, int? excludeId = null)
     {
-        var query = db.Produtos.Where(p => 
-            p.Bebida == bebida && 
-            p.Tamanho == tamanho && 
-            p.Material == material && 
-            p.Ativo);
+        // Use AsNoTracking to avoid tracking conflicts
+        var query = db.Produtos
+            .AsNoTracking()
+            .Where(p => 
+                p.Bebida == bebida && 
+                p.Tamanho == tamanho && 
+                p.Material == material && 
+                p.Ativo);
         
         if (excludeId.HasValue)
             query = query.Where(p => p.Id != excludeId.Value);

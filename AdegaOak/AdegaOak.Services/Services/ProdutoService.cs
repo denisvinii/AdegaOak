@@ -3,12 +3,14 @@ using AdegaOak.Models.DTOs;
 using AdegaOak.Models.Models;
 using AdegaOak.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace AdegaOak.Services.Services;
 
 public class ProdutoService(
     IProdutoRepository produtoRepository,
-    IMemoryCache cache) : IProdutoService
+    IMemoryCache cache,
+    ILogger<ProdutoService> logger) : IProdutoService
 {
     private const string CacheProdutosKey = "produtos_ativos";
     private static readonly TimeSpan CacheExpiration = TimeSpan.FromMinutes(3); // Cache de 3 minutos
@@ -203,11 +205,7 @@ public class ProdutoService(
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[PRODUTO_SERVICE] Erro ao atualizar produto {id}: {ex.Message}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"[PRODUTO_SERVICE] Inner exception: {ex.InnerException.Message}");
-            }
+            logger.LogError(ex, "Erro ao atualizar produto {ProdutoId}", id);
             throw;
         }
 
