@@ -56,6 +56,19 @@ if (string.IsNullOrWhiteSpace(databaseUrl))
         "Please configure it with your Supabase PostgreSQL connection string.");
 }
 
+// Debug: Show connection string length and first/last chars
+Console.WriteLine($"[DATABASE] Connection string length: {databaseUrl.Length}");
+Console.WriteLine($"[DATABASE] First 20 chars: {(databaseUrl.Length >= 20 ? databaseUrl.Substring(0, 20) : databaseUrl)}");
+Console.WriteLine($"[DATABASE] Last 20 chars: {(databaseUrl.Length >= 20 ? databaseUrl.Substring(databaseUrl.Length - 20) : databaseUrl)}");
+Console.WriteLine($"[DATABASE] Contains newline: {databaseUrl.Contains('\n')}");
+Console.WriteLine($"[DATABASE] Contains carriage return: {databaseUrl.Contains('\r')}");
+Console.WriteLine($"[DATABASE] Starts with space: {databaseUrl.StartsWith(" ")}");
+Console.WriteLine($"[DATABASE] Ends with space: {databaseUrl.EndsWith(" ")}");
+
+// Trim whitespace
+databaseUrl = databaseUrl.Trim();
+Console.WriteLine($"[DATABASE] After trim length: {databaseUrl.Length}");
+
 // Validate connection string format
 if (!databaseUrl.StartsWith("postgresql://") && !databaseUrl.StartsWith("postgres://") && 
     !databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase))
