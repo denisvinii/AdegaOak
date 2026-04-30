@@ -73,11 +73,11 @@ public class MovimentacaoService(
 
         var totalEntradas = movimentacoes
             .Where(m => m.Tipo == "Entrada")
-            .Sum(m => (decimal?)m.ValorTotal) ?? 0;
+            .Sum(m => (decimal?)m.ValorTotal) ?? 0m;
 
         var totalSaidas = movimentacoes
             .Where(m => m.Tipo == "Saída")
-            .Sum(m => (decimal?)m.ValorTotal) ?? 0;
+            .Sum(m => (decimal?)m.ValorTotal) ?? 0m;
 
         return new MovimentacaoResumoDto(
             totalEntradas,

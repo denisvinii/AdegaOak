@@ -23,6 +23,7 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
     public async Task<List<Combo>> GetAllAsync(bool? ehCopao = null)
     {
         var query = db.Combos
+            .AsNoTracking()
             .Include(c => c.Composicao)
                 .ThenInclude(cc => cc.Produto)
             .Where(c => c.Ativo)
@@ -36,6 +37,7 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
 
     public async Task<Combo?> GetByIdAsync(int id) =>
         await db.Combos
+            .AsNoTracking()
             .Include(c => c.Composicao)
                 .ThenInclude(cc => cc.Produto)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -79,6 +81,7 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
     public async Task<List<ComboVenda>> GetVendasAsync(int? comboId = null, int? mes = null, int? ano = null)
     {
         var query = db.ComboVendas
+            .AsNoTracking()
             .Include(cv => cv.Combo)
             .Include(cv => cv.Usuario)
             .AsQueryable();
@@ -92,7 +95,10 @@ public class ComboRepository(AdegaOakDbContext db) : IComboRepository
         if (ano.HasValue)
             query = query.Where(cv => cv.DataVenda.Year == ano.Value);
 
-        return await query.OrderByDescending(cv => cv.DataVenda).ToListAsync();
+        return await query
+            .OrderByDescending(cv => cv.DataVenda)
+            .Take(1000) // Limit to 1000 records for performance
+            .ToListAsync();
     }
 
     public async Task<ComboVenda> CreateVendaAsync(ComboVenda venda)

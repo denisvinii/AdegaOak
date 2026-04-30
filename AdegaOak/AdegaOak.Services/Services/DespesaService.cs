@@ -114,8 +114,8 @@ public class DespesaService(
             ? await despesaRepository.GetByPeriodoAsync(mes.Value, ano.Value)
             : await despesaRepository.GetAllAsync();
 
-        var totalPago = despesas.Where(d => d.Pago).Sum(d => (decimal?)d.Valor) ?? 0;
-        var totalPendente = despesas.Where(d => !d.Pago).Sum(d => (decimal?)d.Valor) ?? 0;
+        var totalPago = despesas.Where(d => d.Pago).Sum(d => (decimal?)d.Valor) ?? 0m;
+        var totalPendente = despesas.Where(d => !d.Pago).Sum(d => (decimal?)d.Valor) ?? 0m;
 
         return new DespesaResumoDto(
             totalPago,

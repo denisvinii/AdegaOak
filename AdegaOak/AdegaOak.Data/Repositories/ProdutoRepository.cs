@@ -19,7 +19,11 @@ public interface IProdutoRepository
 public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 {
     public async Task<List<Produto>> GetAllAsync() =>
-        await db.Produtos.Where(p => p.Ativo).OrderBy(p => p.Bebida).ToListAsync();
+        await db.Produtos
+            .AsNoTracking()
+            .Where(p => p.Ativo)
+            .OrderBy(p => p.Bebida)
+            .ToListAsync();
 
     public async Task<Produto?> GetByIdAsync(int id) =>
         await db.Produtos.FindAsync(id);
@@ -64,9 +68,13 @@ public class ProdutoRepository(AdegaOakDbContext db) : IProdutoRepository
 
     public async Task<List<(Produto Produto, int Quantidade)>> GetEstoqueComQuantidadeAsync()
     {
-        var produtos = await db.Produtos.Where(p => p.Ativo).ToListAsync();
+        var produtos = await db.Produtos
+            .AsNoTracking()
+            .Where(p => p.Ativo)
+            .ToListAsync();
 
         var movimentacoes = await db.Movimentacoes
+            .AsNoTracking()
             .GroupBy(m => new { m.ProdutoId, m.Tipo })
             .Select(g => new { g.Key.ProdutoId, g.Key.Tipo, Total = g.Sum(m => m.Quantidade) })
             .ToListAsync();

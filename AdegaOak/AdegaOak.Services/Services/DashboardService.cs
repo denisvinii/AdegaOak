@@ -48,10 +48,10 @@ public class DashboardService(
         var despesasPagas = await despesasPagasTask;
         var comboVendas = await comboVendasTask;
 
-        var totalEntradas = movimentacoesEntrada.Any() ? movimentacoesEntrada.Sum() : 0;
-        var totalSaidas = movimentacoesSaida.Any() ? movimentacoesSaida.Sum() : 0;
-        var totalDespesasPagas = despesasPagas.Any() ? despesasPagas.Sum() : 0;
-        var totalComboVendas = comboVendas.Any() ? comboVendas.Sum() : 0;
+        var totalEntradas = movimentacoesEntrada.Any() ? movimentacoesEntrada.Sum() : 0.0;
+        var totalSaidas = movimentacoesSaida.Any() ? movimentacoesSaida.Sum() : 0.0;
+        var totalDespesasPagas = despesasPagas.Any() ? despesasPagas.Sum() : 0.0;
+        var totalComboVendas = comboVendas.Any() ? comboVendas.Sum() : 0.0;
 
         var capitalEmpresa = (decimal)((totalSaidas - totalEntradas) + (double)config.CapitalAdmin - totalDespesasPagas + totalComboVendas);
         var saldo = (decimal)((totalSaidas - totalEntradas) - totalDespesasPagas + totalComboVendas);
@@ -127,8 +127,8 @@ public class DashboardService(
         var receitaMesList = await receitaMesTask;
         var despesasMesList = await despesasMesTask;
         
-        var receitaMes = receitaMesList.Any() ? receitaMesList.Sum() : 0;
-        var despesasMes = despesasMesList.Any() ? despesasMesList.Sum() : 0;
+        var receitaMes = receitaMesList.Any() ? receitaMesList.Sum() : 0.0;
+        var despesasMes = despesasMesList.Any() ? despesasMesList.Sum() : 0.0;
         var totalMovimentacoesMes = await totalMovimentacoesMesTask;
 
         // Vendas por dia
